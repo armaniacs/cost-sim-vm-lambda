@@ -1,0 +1,97 @@
+# Documentation and design files
+docs/
+Design/
+ref/
+README*.md
+*.md
+!requirements.txt
+
+# Version control
+.git/
+.gitignore
+
+# Python cache and build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.pytest_cache/
+.tox/
+.nox/
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+.env
+.venv/
+venv/
+ENV/
+env/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+tests/
+test/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Development tools
+.pre-commit-config.yaml
+.mise.toml
+pytest.ini
+setup.cfg
+tox.ini
+.flake8
+.isort.cfg
+mypy.ini
+
+# Logs
+*.log
+logs/
+log/
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Package files
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# Node.js (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Jupyter notebooks (if any)
+.ipynb_checkpoints

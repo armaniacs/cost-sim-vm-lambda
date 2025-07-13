@@ -1,0 +1,41 @@
+{
+  "name": "cost-sim-vm-lambda",
+  "version": "0.1.0",
+  "description": "AWS Lambda vs VM Cost Comparison Simulator",
+  "main": "app/main.py",
+  "scripts": {
+    "dev": "python app/main.py",
+    "test": "pytest tests/ --cov=app",
+    "lint": "flake8 app/ tests/",
+    "format": "black app/ tests/ && isort app/ tests/",
+    "build": "echo 'Build process not implemented yet'",
+    "start": "python app/main.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/armaniacs/cost-sim-vm-lambda.git"
+  },
+  "keywords": [
+    "aws",
+    "lambda",
+    "vm",
+    "cost",
+    "comparison",
+    "simulator",
+    "break-even"
+  ],
+  "author": "Cost Simulator Team",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/armaniacs/cost-sim-vm-lambda/issues"
+  },
+  "homepage": "https://github.com/armaniacs/cost-sim-vm-lambda#readme",
+  "devDependencies": {
+    "chart.js": "^4.4.0",
+    "chartjs-adapter-date-fns": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "python": ">=3.11.0"
+  }
+}

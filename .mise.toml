@@ -1,0 +1,60 @@
+[tools]
+python = "3.11.8"
+node = "20.11.0"
+
+[env]
+FLASK_ENV = "development"
+FLASK_DEBUG = "1"
+PYTHONPATH = "."
+
+[tasks.install]
+description = "Install Python dependencies"
+run = "pip install -r requirements.txt"
+
+[tasks.test]
+description = "Run tests with coverage"
+run = "pytest tests/ --cov=app --cov-report=term-missing --cov-report=html"
+
+[tasks.test-unit]
+description = "Run unit tests only"
+run = "pytest tests/unit/ -v"
+
+[tasks.test-integration]
+description = "Run integration tests only"
+run = "pytest tests/integration/ -v"
+
+[tasks.lint]
+description = "Run all linting checks"
+run = [
+    "black --check app/ tests/",
+    "isort --check-only app/ tests/",
+    "flake8 app/ tests/ --max-line-length=88 --extend-ignore=E203,W503",
+    "mypy app/"
+]
+
+[tasks.format]
+description = "Format code with black and isort"
+run = [
+    "black app/ tests/",
+    "isort app/ tests/"
+]
+
+[tasks.dev]
+description = "Start development server"
+run = "python app/main.py"
+
+[tasks.pre-commit-install]
+description = "Install pre-commit hooks"
+run = "pre-commit install"
+
+[tasks.clean]
+description = "Clean up cache and temporary files"
+run = [
+    "rm -rf .pytest_cache/",
+    "rm -rf htmlcov/",
+    "rm -rf .coverage",
+    "rm -rf app/__pycache__/",
+    "rm -rf tests/__pycache__/",
+    "find . -name '*.pyc' -delete",
+    "find . -name '__pycache__' -type d -exec rm -rf {} + 2>/dev/null || true"
+]

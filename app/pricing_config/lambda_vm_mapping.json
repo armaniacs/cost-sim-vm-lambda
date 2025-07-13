@@ -1,0 +1,32 @@
+{
+  "mapping_rules": {
+    "description": "Recommended VM instances based on Lambda memory configuration",
+    "recommendations": {
+      "128": {
+        "description": "Minimal Lambda (128MB)",
+        "ec2": ["t3.micro", "t3.small"],
+        "sakura": ["1core_1gb", "2core_2gb"]
+      },
+      "512": {
+        "description": "Small Lambda (512MB)",
+        "ec2": ["t3.micro", "t3.small"],
+        "sakura": ["1core_1gb", "2core_2gb"]
+      },
+      "1024": {
+        "description": "Medium Lambda (1024MB)",
+        "ec2": ["t3.small", "t3.medium"],
+        "sakura": ["2core_2gb", "2core_4gb"]
+      },
+      "2048": {
+        "description": "Large Lambda (2048MB)",
+        "ec2": ["t3.medium", "c5.large"],
+        "sakura": ["2core_4gb", "4core_8gb"]
+      },
+      "3008": {
+        "description": "High-performance Lambda (3008MB)",
+        "ec2": ["c5.large", "c5.xlarge"],
+        "sakura": ["4core_8gb", "6core_12gb"]
+      }
+    }
+  }
+}

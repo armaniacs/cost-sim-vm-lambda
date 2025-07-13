@@ -1,0 +1,54 @@
+{
+  "provider": "sakura_cloud",
+  "region": "tokyo",
+  "currency": "JPY",
+  "last_updated": "2024-01-01",
+  "instances": {
+    "1core_1gb": {
+      "monthly_price": 1595,
+      "specs": {
+        "vcpu": 1,
+        "memory_gb": 1,
+        "storage_gb": 20,
+        "storage_type": "SSD"
+      }
+    },
+    "2core_2gb": {
+      "monthly_price": 3190,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 2,
+        "storage_gb": 20,
+        "storage_type": "SSD"
+      }
+    },
+    "2core_4gb": {
+      "monthly_price": 4180,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 4,
+        "storage_gb": 20,
+        "storage_type": "SSD"
+      },
+      "recommended": true
+    },
+    "4core_8gb": {
+      "monthly_price": 7370,
+      "specs": {
+        "vcpu": 4,
+        "memory_gb": 8,
+        "storage_gb": 40,
+        "storage_type": "SSD"
+      }
+    },
+    "6core_12gb": {
+      "monthly_price": 11560,
+      "specs": {
+        "vcpu": 6,
+        "memory_gb": 12,
+        "storage_gb": 60,
+        "storage_type": "SSD"
+      }
+    }
+  }
+}

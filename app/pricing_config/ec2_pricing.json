@@ -1,0 +1,62 @@
+{
+  "provider": "aws_ec2",
+  "region": "ap-northeast-1",
+  "currency": "USD",
+  "last_updated": "2024-01-01",
+  "instances": {
+    "t3.micro": {
+      "hourly_price": 0.0136,
+      "monthly_price": 9.79,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 1,
+        "network": "Up to 5 Gigabit"
+      }
+    },
+    "t3.small": {
+      "hourly_price": 0.0272,
+      "monthly_price": 19.58,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 2,
+        "network": "Up to 5 Gigabit"
+      }
+    },
+    "t3.medium": {
+      "hourly_price": 0.0544,
+      "monthly_price": 39.17,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 4,
+        "network": "Up to 5 Gigabit"
+      }
+    },
+    "t3.large": {
+      "hourly_price": 0.1088,
+      "monthly_price": 79.42,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 8,
+        "network": "Up to 5 Gigabit"
+      }
+    },
+    "c5.large": {
+      "hourly_price": 0.096,
+      "monthly_price": 69.12,
+      "specs": {
+        "vcpu": 2,
+        "memory_gb": 4,
+        "network": "Up to 10 Gigabit"
+      }
+    },
+    "c5.xlarge": {
+      "hourly_price": 0.192,
+      "monthly_price": 140.16,
+      "specs": {
+        "vcpu": 4,
+        "memory_gb": 8,
+        "network": "Up to 10 Gigabit"
+      }
+    }
+  }
+}
