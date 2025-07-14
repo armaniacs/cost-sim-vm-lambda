@@ -31,9 +31,9 @@ def calculate_lambda_cost() -> Union[Response, tuple[Response, int]]:
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
 
-        if not data:
+        if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
         # Validate required fields
@@ -58,6 +58,14 @@ def calculate_lambda_cost() -> Union[Response, tuple[Response, int]]:
                 400,
             )
 
+        # Validate internet transfer ratio parameter (PBI10)
+        internet_transfer_ratio = data.get("internet_transfer_ratio", 100.0)
+        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
+            return (
+                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
+                400,
+            )
+
         # Create configuration
         config = LambdaConfig(
             memory_mb=int(data["memory_mb"]),
@@ -65,6 +73,7 @@ def calculate_lambda_cost() -> Union[Response, tuple[Response, int]]:
             monthly_executions=int(data["monthly_executions"]),
             include_free_tier=data.get("include_free_tier", True),
             egress_per_request_kb=float(egress_per_request_kb),
+            internet_transfer_ratio=float(internet_transfer_ratio),  # PBI10
         )
 
         # Calculate cost
@@ -104,9 +113,9 @@ def calculate_vm_cost() -> Union[Response, tuple[Response, int]]:
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
 
-        if not data:
+        if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
         # Validate required fields
@@ -126,8 +135,45 @@ def calculate_vm_cost() -> Union[Response, tuple[Response, int]]:
             region=data.get("region", "ap-northeast-1"),
         )
 
-        # Calculate cost
-        result = vm_calc.calculate_vm_cost(config)
+        # Check if egress parameters are provided for PBI10
+        monthly_executions = data.get("monthly_executions", 0)
+        egress_per_request_kb = data.get("egress_per_request_kb", 0.0)
+        internet_transfer_ratio = data.get("internet_transfer_ratio", 100.0)
+
+        # Validate internet transfer ratio if provided
+        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
+            return (
+                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
+                400,
+            )
+
+        # Calculate cost with or without egress
+        if monthly_executions > 0 and egress_per_request_kb >= 0:
+            # Calculate cost including egress
+            custom_egress_rates = data.get("custom_egress_rates", {})
+            include_egress_free_tier = data.get("include_egress_free_tier", True)
+
+            if custom_egress_rates:
+                result = vm_calc.get_monthly_cost_with_egress(
+                    config,
+                    monthly_executions,
+                    egress_per_request_kb,
+                    custom_egress_rates,
+                    include_egress_free_tier,
+                    internet_transfer_ratio,  # PBI10
+                )
+            else:
+                result = vm_calc.get_monthly_cost_with_egress(
+                    config,
+                    monthly_executions,
+                    egress_per_request_kb,
+                    None,
+                    include_egress_free_tier,
+                    internet_transfer_ratio,  # PBI10
+                )
+        else:
+            # Calculate basic cost only
+            result = vm_calc.calculate_vm_cost(config)
 
         if result is None:
             return (
@@ -181,9 +227,9 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
 
-        if not data:
+        if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
         lambda_config_data = data.get("lambda_config", {})
@@ -213,6 +259,16 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
                 400,
             )
 
+        # Validate internet transfer ratio parameter for comparison (PBI10)
+        internet_transfer_ratio = lambda_config_data.get(
+            "internet_transfer_ratio", 100.0
+        )
+        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
+            return (
+                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
+                400,
+            )
+
         # Calculate Lambda costs for each execution point
         comparison_data = []
         break_even_points = []
@@ -227,6 +283,7 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
                 monthly_executions=executions,
                 include_free_tier=lambda_config_data.get("include_free_tier", True),
                 egress_per_request_kb=float(egress_per_request_kb),
+                internet_transfer_ratio=float(internet_transfer_ratio),  # PBI10
             )
 
             # Use custom egress rates if provided
@@ -258,6 +315,7 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
                         egress_per_request_kb,
                         custom_egress_rates,
                         include_egress_free_tier,
+                        internet_transfer_ratio,  # PBI10
                     )
                 else:
                     vm_result = vm_calc.get_monthly_cost_with_egress(
@@ -266,6 +324,7 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
                         egress_per_request_kb,
                         None,
                         include_egress_free_tier,
+                        internet_transfer_ratio,  # PBI10
                     )
                 if vm_result:
                     vm_key = f"{vm_config.provider}_{vm_config.instance_type}"
@@ -355,9 +414,9 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
 
-        if not data:
+        if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
         lambda_config_data = data.get("lambda_config", {})
@@ -374,6 +433,16 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
                 400,
             )
 
+        # Validate internet transfer ratio parameter for CSV export (PBI10)
+        internet_transfer_ratio = lambda_config_data.get(
+            "internet_transfer_ratio", 100.0
+        )
+        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
+            return (
+                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
+                400,
+            )
+
         # Create lambda config
         lambda_config = LambdaConfig(
             memory_mb=lambda_config_data.get("memory_mb", 512),
@@ -381,6 +450,7 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
             monthly_executions=lambda_config_data.get("monthly_executions", 1_000_000),
             include_free_tier=lambda_config_data.get("include_free_tier", True),
             egress_per_request_kb=float(egress_per_request_kb),
+            internet_transfer_ratio=float(internet_transfer_ratio),  # PBI10
         )
 
         # Calculate Lambda costs
@@ -410,6 +480,7 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
                     egress_per_request_kb,
                     custom_egress_rates,
                     include_egress_free_tier,
+                    internet_transfer_ratio,  # PBI10
                 )
             else:
                 vm_result = vm_calc.get_monthly_cost_with_egress(
@@ -418,6 +489,7 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
                     egress_per_request_kb,
                     None,
                     include_egress_free_tier,
+                    internet_transfer_ratio,  # PBI10
                 )
             if vm_result:
                 vm_results.append(vm_result)
@@ -560,9 +632,9 @@ def recommend_instances() -> Union[Response, tuple[Response, int]]:
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
 
-        if not data:
+        if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
         lambda_memory_mb = data.get("lambda_memory_mb")
@@ -596,9 +668,9 @@ def convert_currency() -> Union[Response, tuple[Response, int]]:
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True)
 
-        if not data:
+        if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
         amount = data.get("amount")

@@ -15,6 +15,9 @@ class LambdaConfig:
     monthly_executions: int
     include_free_tier: bool
     egress_per_request_kb: float = 0.0  # KB transferred per request (default: 0)
+    internet_transfer_ratio: float = (
+        100.0  # PBI10: % of traffic to internet (default: 100%)
+    )
 
 
 class LambdaCalculator:
@@ -111,9 +114,14 @@ class LambdaCalculator:
         else:
             egress_calculator = self.egress_calculator
 
+        # PBI10: Apply internet transfer ratio to egress calculation
+        effective_egress_kb = config.egress_per_request_kb * (
+            config.internet_transfer_ratio / 100.0
+        )
+
         egress_config = EgressConfig(
             executions_per_month=config.monthly_executions,
-            transfer_kb_per_request=config.egress_per_request_kb,
+            transfer_kb_per_request=effective_egress_kb,
             provider="aws_lambda",
             include_free_tier=include_egress_free_tier,
         )
@@ -156,5 +164,6 @@ class LambdaCalculator:
                 "monthly_executions": config.monthly_executions,
                 "include_free_tier": config.include_free_tier,
                 "egress_per_request_kb": config.egress_per_request_kb,
+                "internet_transfer_ratio": config.internet_transfer_ratio,  # PBI10
             },
         }

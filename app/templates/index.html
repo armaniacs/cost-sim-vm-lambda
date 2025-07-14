@@ -72,6 +72,43 @@
                             </div>
                         </div>
 
+                        <!-- Internet Transfer Ratio Configuration (PBI10) -->
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-globe me-1"></i>Internet Transfer Ratio
+                            </label>
+                            <div class="row g-2 align-items-center">
+                                <div class="col-8">
+                                    <div class="btn-group w-100" role="group" aria-label="Transfer ratio presets">
+                                        <input type="radio" class="btn-check" name="transferRatioPreset" id="ratio0" value="0">
+                                        <label class="btn btn-outline-primary btn-sm" for="ratio0">0%</label>
+                                        
+                                        <input type="radio" class="btn-check" name="transferRatioPreset" id="ratio10" value="10">
+                                        <label class="btn btn-outline-primary btn-sm" for="ratio10">10%</label>
+                                        
+                                        <input type="radio" class="btn-check" name="transferRatioPreset" id="ratio50" value="50">
+                                        <label class="btn btn-outline-primary btn-sm" for="ratio50">50%</label>
+                                        
+                                        <input type="radio" class="btn-check" name="transferRatioPreset" id="ratio100" value="100" checked>
+                                        <label class="btn btn-outline-primary btn-sm" for="ratio100">100%</label>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="input-group input-group-sm">
+                                        <input type="number" id="transferRatioCustom" class="form-control" 
+                                               placeholder="Custom" min="0" max="100" step="0.1">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text">
+                                Percentage of traffic that goes to the internet. 0% = fully private network, 100% = all traffic to internet
+                            </div>
+                            <div id="transferRatioError" class="invalid-feedback" style="display: none;">
+                                Transfer ratio must be between 0-100%
+                            </div>
+                        </div>
+
                         <!-- Egress Rate Customization -->
                         <div class="mb-3">
                             <label class="form-label">
@@ -91,6 +128,18 @@
                             </div>
                             <div class="row g-2 mt-1">
                                 <div class="col-md-6">
+                                    <label for="azureEgressRate" class="form-label text-muted small">Azure</label>
+                                    <input type="number" id="azureEgressRate" class="form-control form-control-sm" 
+                                           value="0.12" min="0" step="0.001" placeholder="0.12">
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="ociEgressRate" class="form-label text-muted small">OCI</label>
+                                    <input type="number" id="ociEgressRate" class="form-control form-control-sm" 
+                                           value="0.025" min="0" step="0.001" placeholder="0.025">
+                                </div>
+                            </div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-md-6">
                                     <label for="sakuraEgressRate" class="form-label text-muted small">Sakura Cloud (JPY/GB)</label>
                                     <input type="number" id="sakuraEgressRate" class="form-control form-control-sm" 
                                            value="0.0" min="0" step="0.001" placeholder="0.0">
@@ -102,7 +151,7 @@
                                 </div>
                             </div>
                             <div class="form-text">
-                                Customize egress pricing rates. Defaults: AWS 0.114, GCP 0.12, Sakura 0.0 (free)
+                                Customize egress pricing rates. Defaults: AWS 0.114, GCP 0.12, Azure 0.12, OCI 0.025, Sakura 0.0 (free)
                             </div>
                         </div>
 
@@ -110,10 +159,10 @@
                         <div class="form-check mb-3">
                             <input class="form-check-input" type="checkbox" id="includeEgressFreeTier" checked>
                             <label class="form-check-label" for="includeEgressFreeTier">
-                                <i class="bi bi-cloud-arrow-up me-1"></i>Include 100GB/month free egress (AWS & Google Cloud)
+                                <i class="bi bi-cloud-arrow-up me-1"></i>Include free egress tier (AWS, Google Cloud, Azure, OCI)
                             </label>
                             <div class="form-text">
-                                AWS and Google Cloud provide 100GB/month of free internet egress transfer
+                                AWS, Google Cloud, Azure provide 100GB/month, OCI provides 10TB/month of free internet egress transfer
                             </div>
                         </div>
 
@@ -181,6 +230,34 @@
                                 <option value="n2-standard-1">n2-standard-1 (1 vCPU, 4GB)</option>
                                 <option value="n2-standard-2">n2-standard-2 (2 vCPU, 8GB)</option>
                                 <option value="c2-standard-4">c2-standard-4 (4 vCPU, 16GB)</option>
+                            </select>
+                        </div>
+
+                        <!-- Azure Configuration -->
+                        <div class="mb-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="compareAzure" checked>
+                                <label class="form-check-label" for="compareAzure">
+                                    Azure
+                                </label>
+                            </div>
+                            <select id="azureInstanceType" class="form-select form-select-sm">
+                                <option value="B2ms">B2ms (2 vCPU, 8GB, $60.74/month)</option>
+                                <option value="D3">D3 (4 vCPU, 14GB, $224.84/month)</option>
+                                <option value="D4">D4 (8 vCPU, 28GB, $450.08/month)</option>
+                            </select>
+                        </div>
+
+                        <!-- OCI Configuration -->
+                        <div class="mb-3">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" id="compareOCI" checked>
+                                <label class="form-check-label" for="compareOCI">
+                                    Oracle Cloud Infrastructure (OCI)
+                                </label>
+                            </div>
+                            <select id="ociInstanceType" class="form-select form-select-sm">
+                                <option value="VM.Standard.E4.Flex_2_16">VM.Standard.E4.Flex_2_16 (2 vCPU, 16GB, $35.77/month)</option>
                             </select>
                         </div>
 
@@ -263,12 +340,15 @@
                                 <th>Lambda Cost</th>
                                 <th>EC2 Cost</th>
                                 <th>Sakura Cost</th>
+                                <th>Google Cloud Cost</th>
+                                <th>Azure Cost</th>
+                                <th>OCI Cost</th>
                                 <th>Break-even</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="5" class="text-center text-muted">No data available</td>
+                                <td colspan="8" class="text-center text-muted">No data available</td>
                             </tr>
                         </tbody>
                     </table>
@@ -350,6 +430,12 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('compareGCP').addEventListener('change', function() {
         document.getElementById('gcpInstanceType').disabled = !this.checked;
     });
+    document.getElementById('compareAzure').addEventListener('change', function() {
+        document.getElementById('azureInstanceType').disabled = !this.checked;
+    });
+    document.getElementById('compareOCI').addEventListener('change', function() {
+        document.getElementById('ociInstanceType').disabled = !this.checked;
+    });
     
     // Load available instances
     loadAvailableInstances();
@@ -424,65 +510,6 @@ const executionRateLinesPlugin = {
             }
         });
         
-        // Draw purple break-even lines
-        if (window.lastBreakEvenData && window.lastBreakEvenData.length > 0) {
-            ctx.save();
-            
-            window.lastBreakEvenData.forEach((breakEven, index) => {
-                const executionsPerMonth = breakEven.executions_per_month;
-                const executionsPerSecond = breakEven.executions_per_second;
-                
-                // Get pixel position for this execution count
-                const xPixel = xScale.getPixelForValue(executionsPerMonth);
-                
-                // Only draw if within chart area
-                if (xPixel >= chartArea.left && xPixel <= chartArea.right) {
-                    // Draw vertical line
-                    ctx.strokeStyle = 'rgba(128, 0, 128, 0.8)';  // Purple color
-                    ctx.lineWidth = 3;
-                    ctx.setLineDash([10, 5]);  // Longer dash pattern
-                    ctx.beginPath();
-                    ctx.moveTo(xPixel, chartArea.top);
-                    ctx.lineTo(xPixel, chartArea.bottom);
-                    ctx.stroke();
-                    
-                    // Draw arrow pointing down
-                    ctx.fillStyle = 'rgba(128, 0, 128, 0.8)';
-                    ctx.beginPath();
-                    ctx.moveTo(xPixel, chartArea.bottom - 10);
-                    ctx.lineTo(xPixel - 5, chartArea.bottom - 20);
-                    ctx.lineTo(xPixel + 5, chartArea.bottom - 20);
-                    ctx.closePath();
-                    ctx.fill();
-                    
-                    // Draw label on X-axis
-                    ctx.fillStyle = 'rgba(128, 0, 128, 1)';
-                    ctx.font = 'bold 12px Arial';
-                    ctx.textAlign = 'center';
-                    
-                    // Format executions per second
-                    let label = '';
-                    if (executionsPerSecond < 1) {
-                        label = `${(executionsPerSecond).toFixed(2)}/秒`;
-                    } else if (executionsPerSecond < 10) {
-                        label = `${(executionsPerSecond).toFixed(1)}/秒`;
-                    } else {
-                        label = `${Math.round(executionsPerSecond)}/秒`;
-                    }
-                    
-                    // Add provider info (shortened)
-                    const provider = breakEven.vm_provider === 'aws_ec2' ? 'EC2' : 'Sakura';
-                    
-                    // Draw label below X-axis
-                    ctx.fillText(label, xPixel, chartArea.bottom + 15);
-                    ctx.font = '10px Arial';
-                    ctx.fillText(`(${provider})`, xPixel, chartArea.bottom + 28);
-                }
-            });
-            
-            ctx.restore();
-        }
-        
         ctx.restore();
     }
 };
@@ -550,8 +577,69 @@ function initializeEgressInput() {
     resetEgressRates.addEventListener('click', function() {
         document.getElementById('awsEgressRate').value = '0.114';
         document.getElementById('gcpEgressRate').value = '0.12';
+        document.getElementById('azureEgressRate').value = '0.12';
+        document.getElementById('ociEgressRate').value = '0.025';
         document.getElementById('sakuraEgressRate').value = '0.0';
     });
+
+    // PBI10: Internet Transfer Ratio functionality
+    const transferRatioPresets = document.querySelectorAll('input[name="transferRatioPreset"]');
+    const transferRatioCustom = document.getElementById('transferRatioCustom');
+    const transferRatioError = document.getElementById('transferRatioError');
+
+    // Handle preset selection
+    transferRatioPresets.forEach(preset => {
+        preset.addEventListener('change', function() {
+            if (this.checked) {
+                transferRatioCustom.value = '';
+                transferRatioError.style.display = 'none';
+            }
+        });
+    });
+
+    // Handle custom input
+    transferRatioCustom.addEventListener('input', function() {
+        // Clear preset selection when custom input is used
+        transferRatioPresets.forEach(preset => preset.checked = false);
+        
+        // Validate input
+        validateTransferRatio();
+    });
+
+    // Validation function for transfer ratio
+    function validateTransferRatio() {
+        const value = parseFloat(transferRatioCustom.value);
+        
+        if (transferRatioCustom.value !== '' && (isNaN(value) || value < 0 || value > 100)) {
+            transferRatioError.style.display = 'block';
+            transferRatioCustom.classList.add('is-invalid');
+            return false;
+        } else {
+            transferRatioError.style.display = 'none';
+            transferRatioCustom.classList.remove('is-invalid');
+            return true;
+        }
+    }
+
+    // Expose transfer ratio functions globally
+    window.validateTransferRatio = validateTransferRatio;
+    
+    window.getInternetTransferRatio = function() {
+        // Check if custom value is entered
+        if (transferRatioCustom.value !== '') {
+            const value = parseFloat(transferRatioCustom.value);
+            return isNaN(value) ? 100 : Math.min(100, Math.max(0, value)); // Clamp between 0-100
+        }
+        
+        // Check preset selection
+        const selectedPreset = document.querySelector('input[name="transferRatioPreset"]:checked');
+        if (selectedPreset) {
+            return parseFloat(selectedPreset.value);
+        }
+        
+        // Default to 100% if nothing selected
+        return 100;
+    };
     
     // Get current egress rates function
     window.getEgressRates = function() {
@@ -559,6 +647,8 @@ function initializeEgressInput() {
             aws_lambda: parseFloat(document.getElementById('awsEgressRate').value) || 0.114,
             aws_ec2: parseFloat(document.getElementById('awsEgressRate').value) || 0.114,
             google_cloud: parseFloat(document.getElementById('gcpEgressRate').value) || 0.12,
+            azure: parseFloat(document.getElementById('azureEgressRate').value) || 0.12,
+            oci: parseFloat(document.getElementById('ociEgressRate').value) || 0.025,
             sakura_cloud: parseFloat(document.getElementById('sakuraEgressRate').value) || 0.0
         };
     };
@@ -599,6 +689,20 @@ function initializeCostChart() {
                     data: [],
                     borderColor: '#FFC107',
                     backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    borderDash: [5, 5]
+                },
+                {
+                    label: 'Azure (B2ms)',
+                    data: [],
+                    borderColor: '#0078D4',
+                    backgroundColor: 'rgba(0, 120, 212, 0.1)',
+                    borderDash: [5, 5]
+                },
+                {
+                    label: 'OCI (VM.Standard.E4.Flex_2_16)',
+                    data: [],
+                    borderColor: '#F80000',
+                    backgroundColor: 'rgba(248, 0, 0, 0.1)',
                     borderDash: [5, 5]
                 }
             ]
@@ -674,13 +778,21 @@ async function calculateCosts(event) {
             return;
         }
 
+        // Validate transfer ratio input before proceeding (PBI10)
+        if (!window.validateTransferRatio()) {
+            hideCalculating();
+            showError('Please enter a valid internet transfer ratio (0-100%)');
+            return;
+        }
+
         // Call comparison API
         const requestData = {
             lambda_config: {
                 memory_mb: parseInt(formData.lambdaMemory),
                 execution_time_seconds: parseInt(formData.executionTime),
                 include_free_tier: formData.includeFreeTier,
-                egress_per_request_kb: window.getEgressValue()
+                egress_per_request_kb: window.getEgressValue(),
+                internet_transfer_ratio: formData.internetTransferRatio  // PBI10
             },
             vm_configs: getVMConfigs(formData),
             execution_range: {
@@ -745,11 +857,16 @@ function getFormData() {
         compareEC2: document.getElementById('compareEC2').checked,
         compareSakura: document.getElementById('compareSakura').checked,
         compareGCP: document.getElementById('compareGCP').checked,
+        compareAzure: document.getElementById('compareAzure').checked,
+        compareOCI: document.getElementById('compareOCI').checked,
         ec2InstanceType: document.getElementById('ec2InstanceType').value,
         sakuraInstanceType: document.getElementById('sakuraInstanceType').value,
         gcpInstanceType: document.getElementById('gcpInstanceType').value,
+        azureInstanceType: document.getElementById('azureInstanceType').value,
+        ociInstanceType: document.getElementById('ociInstanceType').value,
         exchangeRate: parseFloat(document.getElementById('exchangeRate').value),
-        displayCurrency: document.getElementById('displayCurrency').checked
+        displayCurrency: document.getElementById('displayCurrency').checked,
+        internetTransferRatio: window.getInternetTransferRatio()  // PBI10
     };
     
     // Validate required fields
@@ -786,6 +903,20 @@ function getVMConfigs(formData) {
         });
     }
     
+    if (formData.compareAzure) {
+        configs.push({
+            provider: 'azure',
+            instance_type: formData.azureInstanceType
+        });
+    }
+    
+    if (formData.compareOCI) {
+        configs.push({
+            provider: 'oci',
+            instance_type: formData.ociInstanceType
+        });
+    }
+    
     return configs;
 }
 
@@ -805,16 +936,22 @@ function updateChart(data) {
     const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
     const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
     const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+    const azureKey = `azure_${formData.azureInstanceType}`;
+    const ociKey = `oci_${formData.ociInstanceType}`;
     
     const ec2Data = data.comparison_data.map(d => convertCurrency(d.vm_costs[ec2Key] || 0));
     const sakuraData = data.comparison_data.map(d => convertCurrency(d.vm_costs[sakuraKey] || 0));
     const gcpData = data.comparison_data.map(d => convertCurrency(d.vm_costs[gcpKey] || 0));
+    const azureData = data.comparison_data.map(d => convertCurrency(d.vm_costs[azureKey] || 0));
+    const ociData = data.comparison_data.map(d => convertCurrency(d.vm_costs[ociKey] || 0));
     
     // Update chart labels and Y-axis
     const currencySymbol = displayInJPY ? '¥' : '$';
     costChart.data.datasets[1].label = `AWS EC2 (${formData.ec2InstanceType})`;
     costChart.data.datasets[2].label = `Sakura Cloud (${formData.sakuraInstanceType})`;
     costChart.data.datasets[3].label = `Google Cloud (${formData.gcpInstanceType})`;
+    costChart.data.datasets[4].label = `Azure (${formData.azureInstanceType})`;
+    costChart.data.datasets[5].label = `OCI (${formData.ociInstanceType})`;
     costChart.options.scales.y.title.text = `Monthly Cost (${currencySymbol})`;
     
     costChart.data.labels = labels;
@@ -822,6 +959,8 @@ function updateChart(data) {
     costChart.data.datasets[1].data = ec2Data;
     costChart.data.datasets[2].data = sakuraData;
     costChart.data.datasets[3].data = gcpData;
+    costChart.data.datasets[4].data = azureData;
+    costChart.data.datasets[5].data = ociData;
     
     costChart.update();
 }
@@ -834,6 +973,9 @@ function updateQuickResults(formData) {
     if (relevantData) {
         const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
         const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+        const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+        const azureKey = `azure_${formData.azureInstanceType}`;
+        const ociKey = `oci_${formData.ociInstanceType}`;
         
         const exchangeRate = parseFloat(formData.exchangeRate);
         const displayInJPY = formData.displayCurrency;
@@ -871,10 +1013,25 @@ function updateQuickResults(formData) {
         }
         
         if (formData.compareGCP) {
-            const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
             html += `
                 <div class="col-12">
                     <div class="text-info fw-bold">Google Cloud: ${currencySymbol}${formatCurrency(relevantData.vm_costs[gcpKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareAzure) {
+            html += `
+                <div class="col-12">
+                    <div class="text-azure fw-bold">Azure: ${currencySymbol}${formatCurrency(relevantData.vm_costs[azureKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareOCI) {
+            html += `
+                <div class="col-12">
+                    <div class="text-oci fw-bold">OCI: ${currencySymbol}${formatCurrency(relevantData.vm_costs[ociKey] || 0)}</div>
                 </div>
             `;
         }
@@ -892,6 +1049,9 @@ function updateDataTable(data) {
     const formData = getFormData();
     const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
     const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+    const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+    const azureKey = `azure_${formData.azureInstanceType}`;
+    const ociKey = `oci_${formData.ociInstanceType}`;
     
     const exchangeRate = parseFloat(formData.exchangeRate);
     const displayInJPY = formData.displayCurrency;
@@ -908,10 +1068,18 @@ function updateDataTable(data) {
     filteredData.forEach(row => {
         const ec2Cost = row.vm_costs[ec2Key] || 0;
         const sakuraCost = row.vm_costs[sakuraKey] || 0;
-        const lowestVMCost = Math.min(
-            formData.compareEC2 ? ec2Cost : Infinity,
-            formData.compareSakura ? sakuraCost : Infinity
-        );
+        const gcpCost = row.vm_costs[gcpKey] || 0;
+        const azureCost = row.vm_costs[azureKey] || 0;
+        const ociCost = row.vm_costs[ociKey] || 0;
+
+        const vmCosts = [];
+        if (formData.compareEC2) vmCosts.push(ec2Cost);
+        if (formData.compareSakura) vmCosts.push(sakuraCost);
+        if (formData.compareGCP) vmCosts.push(gcpCost);
+        if (formData.compareAzure) vmCosts.push(azureCost);
+        if (formData.compareOCI) vmCosts.push(ociCost);
+
+        const lowestVMCost = vmCosts.length > 0 ? Math.min(...vmCosts) : Infinity;
         
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -919,6 +1087,9 @@ function updateDataTable(data) {
             <td>${currencySymbol}${formatCurrency(row.lambda_cost_usd)}</td>
             <td>${formData.compareEC2 ? currencySymbol + formatCurrency(ec2Cost) : 'N/A'}</td>
             <td>${formData.compareSakura ? currencySymbol + formatCurrency(sakuraCost) : 'N/A'}</td>
+            <td>${formData.compareGCP ? currencySymbol + formatCurrency(gcpCost) : 'N/A'}</td>
+            <td>${formData.compareAzure ? currencySymbol + formatCurrency(azureCost) : 'N/A'}</td>
+            <td>${formData.compareOCI ? currencySymbol + formatCurrency(ociCost) : 'N/A'}</td>
             <td>${row.lambda_cost_usd > lowestVMCost ? '🔴' : '🟢'}</td>
         `;
         tbody.appendChild(tr);
@@ -943,11 +1114,20 @@ function updateBreakEvenAnalysis(breakEvenPoints) {
     if (breakEvenPoints.length > 0) {
         html = '<div class="row g-3">';
         breakEvenPoints.forEach(point => {
+            const providerMap = {
+                'aws_ec2': 'EC2',
+                'sakura_cloud': 'Sakura',
+                'google_cloud': 'GCP',
+                'azure': 'Azure',
+                'oci': 'OCI'
+            };
+            const providerName = providerMap[point.vm_provider] || point.vm_provider;
+
             html += `
                 <div class="col-md-6">
                     <div class="card border-warning">
                         <div class="card-body p-3">
-                            <h6 class="card-title mb-1">${point.vm_provider} ${point.vm_instance}</h6>
+                            <h6 class="card-title mb-1">${providerName} ${point.vm_instance}</h6>
                             <p class="card-text mb-0">
                                 <strong>${point.executions_per_month.toLocaleString()}</strong> executions/month<br>
                                 <small class="text-muted">(${point.executions_per_second.toFixed(2)} exec/sec)</small>
@@ -975,6 +1155,10 @@ function exportToCSV() {
     const formData = getFormData();
     const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
     const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+    const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+    const azureKey = `azure_${formData.azureInstanceType}`;
+    const ociKey = `oci_${formData.ociInstanceType}`;
+
     const exchangeRate = parseFloat(formData.exchangeRate);
     const displayInJPY = formData.displayCurrency;
     const currencySymbol = displayInJPY ? 'JPY' : 'USD';
@@ -995,18 +1179,24 @@ function exportToCSV() {
     
     csv += '"Lambda Configuration"\n';
     csv += '"Memory (MB)","Execution Time (sec)","Monthly Executions"\n';
-    csv += `"${formData.lambdaMemory}","${formData.executionDuration}","${formData.executionFrequency}"\n\n`;
+    csv += `"${formData.lambdaMemory}","${formData.executionTime}","${formData.executionFrequency}"\n\n`;
     
     csv += '"Cost Comparison"\n';
     csv += `"Executions/Month","Lambda Cost (${currencySymbol})"`;
     if (formData.compareEC2) csv += `,"EC2 ${formData.ec2InstanceType} (${currencySymbol})"`;
     if (formData.compareSakura) csv += `,"Sakura ${formData.sakuraInstanceType} (${currencySymbol})"`;
+    if (formData.compareGCP) csv += `,"Google Cloud ${formData.gcpInstanceType} (${currencySymbol})"`;
+    if (formData.compareAzure) csv += `,"Azure ${formData.azureInstanceType} (${currencySymbol})"`;
+    if (formData.compareOCI) csv += `,"OCI ${formData.ociInstanceType} (${currencySymbol})"`;
     csv += '\n';
     
     comparisonData.forEach(row => {
         csv += `"${row.executions_per_month}","${formatCurrency(row.lambda_cost_usd)}"`;
         if (formData.compareEC2) csv += `,"${formatCurrency(row.vm_costs[ec2Key] || 0)}"`;
         if (formData.compareSakura) csv += `,"${formatCurrency(row.vm_costs[sakuraKey] || 0)}"`;
+        if (formData.compareGCP) csv += `,"${formatCurrency(row.vm_costs[gcpKey] || 0)}"`;
+        if (formData.compareAzure) csv += `,"${formatCurrency(row.vm_costs[azureKey] || 0)}"`;
+        if (formData.compareOCI) csv += `,"${formatCurrency(row.vm_costs[ociKey] || 0)}"`;
         csv += '\n';
     });
     
@@ -1015,7 +1205,15 @@ function exportToCSV() {
         csv += '\n"Break-even Points"\n';
         csv += '"Service","Executions/Month","Executions/Second"\n';
         lastBreakEvenData.forEach(point => {
-            csv += `"${point.vm_provider} ${point.vm_instance}","${point.executions_per_month}","${point.executions_per_second.toFixed(2)}"\n`;
+            const providerMap = {
+                'aws_ec2': 'EC2',
+                'sakura_cloud': 'Sakura',
+                'google_cloud': 'GCP',
+                'azure': 'Azure',
+                'oci': 'OCI'
+            };
+            const providerName = providerMap[point.vm_provider] || point.vm_provider;
+            csv += `"${providerName} ${point.vm_instance}","${point.executions_per_month}","${point.executions_per_second.toFixed(2)}"\n`;
         });
     }
     
@@ -1100,11 +1298,18 @@ async function updateVMRecommendations() {
                 recommendationText += `GCP: ${gcpRec.instance_type} `;
             }
             
-            // Sakura recommendations
-            if (result.data.sakura_cloud && result.data.sakura_cloud.length > 0) {
-                const sakuraRec = result.data.sakura_cloud[0];
+            // Azure recommendations
+            if (result.data.azure && result.data.azure.length > 0) {
+                const azureRec = result.data.azure[0];
                 if (recommendationText) recommendationText += '| ';
-                recommendationText += `Sakura: ${sakuraRec.instance_type}`;
+                recommendationText += `Azure: ${azureRec.instance_type}`;
+            }
+            
+            // OCI recommendations
+            if (result.data.oci && result.data.oci.length > 0) {
+                const ociRec = result.data.oci[0];
+                if (recommendationText) recommendationText += '| ';
+                recommendationText += `OCI: ${ociRec.instance_type}`;
             }
             
             document.getElementById('vmRecommendations').textContent = recommendationText || 'No recommendations available';

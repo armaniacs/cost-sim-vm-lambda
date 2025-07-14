@@ -1,6 +1,6 @@
 """
 VM cost calculation module
-AWS EC2 and Sakura Cloud pricing calculator
+AWS EC2, Sakura Cloud, Google Cloud, Azure, and OCI pricing calculator
 """
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
@@ -10,16 +10,16 @@ from typing import Any, Dict, List, Optional
 class VMConfig:
     """Configuration for VM cost calculation"""
 
-    provider: str  # "aws_ec2", "sakura_cloud", or "google_cloud"
+    provider: str  # "aws_ec2", "sakura_cloud", "google_cloud", "azure", "oci"
     instance_type: str
     region: str = "ap-northeast-1"  # Tokyo region
 
 
 class VMCalculator:
-    """Calculator for VM costs (EC2, Sakura Cloud, and Google Cloud)"""
+    """Calculator for VM costs (EC2, Sakura Cloud, Google Cloud, Azure, and OCI)"""
 
     # AWS EC2 pricing (Tokyo region, USD per hour)
-    EC2_PRICING = {
+    EC2_PRICING: Dict[str, Dict[str, Any]] = {
         "t3.micro": {"hourly_usd": 0.0136, "vcpu": 2, "memory_gb": 1},
         "t3.small": {"hourly_usd": 0.0272, "vcpu": 2, "memory_gb": 2},
         "t3.medium": {"hourly_usd": 0.0544, "vcpu": 2, "memory_gb": 4},
@@ -29,7 +29,7 @@ class VMCalculator:
     }
 
     # Sakura Cloud pricing (JPY per month)
-    SAKURA_PRICING = {
+    SAKURA_PRICING: Dict[str, Dict[str, Any]] = {
         "1core_1gb": {"monthly_jpy": 1595, "vcpu": 1, "memory_gb": 1, "storage_gb": 20},
         "2core_2gb": {"monthly_jpy": 3190, "vcpu": 2, "memory_gb": 2, "storage_gb": 20},
         "2core_4gb": {"monthly_jpy": 4180, "vcpu": 2, "memory_gb": 4, "storage_gb": 20},
@@ -43,13 +43,25 @@ class VMCalculator:
     }
 
     # Google Cloud Compute Engine pricing (Tokyo region, USD per hour)
-    GCP_PRICING = {
+    GCP_PRICING: Dict[str, Dict[str, Any]] = {
         "e2-micro": {"hourly_usd": 0.0084, "vcpu": 0.25, "memory_gb": 1},
         "e2-small": {"hourly_usd": 0.0168, "vcpu": 0.5, "memory_gb": 2},
         "e2-medium": {"hourly_usd": 0.0335, "vcpu": 1, "memory_gb": 4},
         "n2-standard-1": {"hourly_usd": 0.0485, "vcpu": 1, "memory_gb": 4},
         "n2-standard-2": {"hourly_usd": 0.0970, "vcpu": 2, "memory_gb": 8},
         "c2-standard-4": {"hourly_usd": 0.2088, "vcpu": 4, "memory_gb": 16},
+    }
+
+    # Azure pricing (Japan East, USD per hour)
+    AZURE_PRICING: Dict[str, Dict[str, Any]] = {
+        "B2ms": {"hourly_usd": 0.0832, "vcpu": 2, "memory_gb": 8},
+        "D3": {"hourly_usd": 0.308, "vcpu": 4, "memory_gb": 14},
+        "D4": {"hourly_usd": 0.616, "vcpu": 8, "memory_gb": 28},
+    }
+
+    # OCI pricing (Tokyo, USD per hour)
+    OCI_PRICING: Dict[str, Dict[str, Any]] = {
+        "VM.Standard.E4.Flex_2_16": {"hourly_usd": 0.049, "vcpu": 2, "memory_gb": 16},
     }
 
     # Hours per month (average)
@@ -142,6 +154,60 @@ class VMCalculator:
             },
         }
 
+    def get_azure_cost(self, instance_type: str) -> Optional[Dict[str, Any]]:
+        """
+        Get Azure instance cost information
+
+        Args:
+            instance_type: Azure instance type
+
+        Returns:
+            Dictionary with cost and spec information, or None if not found
+        """
+        if instance_type not in self.AZURE_PRICING:
+            return None
+
+        pricing = self.AZURE_PRICING[instance_type]
+        monthly_cost = pricing["hourly_usd"] * self.HOURS_PER_MONTH
+
+        return {
+            "provider": "azure",
+            "instance_type": instance_type,
+            "hourly_cost_usd": pricing["hourly_usd"],
+            "monthly_cost_usd": monthly_cost,
+            "specs": {
+                "vcpu": pricing["vcpu"],
+                "memory_gb": pricing["memory_gb"],
+            },
+        }
+
+    def get_oci_cost(self, instance_type: str) -> Optional[Dict[str, Any]]:
+        """
+        Get OCI instance cost information
+
+        Args:
+            instance_type: OCI instance type
+
+        Returns:
+            Dictionary with cost and spec information, or None if not found
+        """
+        if instance_type not in self.OCI_PRICING:
+            return None
+
+        pricing = self.OCI_PRICING[instance_type]
+        monthly_cost = pricing["hourly_usd"] * self.HOURS_PER_MONTH
+
+        return {
+            "provider": "oci",
+            "instance_type": instance_type,
+            "hourly_cost_usd": pricing["hourly_usd"],
+            "monthly_cost_usd": monthly_cost,
+            "specs": {
+                "vcpu": pricing["vcpu"],
+                "memory_gb": pricing["memory_gb"],
+            },
+        }
+
     def calculate_vm_cost(self, config: VMConfig) -> Optional[Dict[str, Any]]:
         """
         Calculate VM cost based on configuration
@@ -158,6 +224,10 @@ class VMCalculator:
             result = self.get_sakura_cost(config.instance_type)
         elif config.provider == "google_cloud":
             result = self.get_gcp_cost(config.instance_type)
+        elif config.provider == "azure":
+            result = self.get_azure_cost(config.instance_type)
+        elif config.provider == "oci":
+            result = self.get_oci_cost(config.instance_type)
         else:
             return None
 
@@ -178,25 +248,12 @@ class VMCalculator:
         Get list of available instances for a provider
 
         Args:
-            provider: "aws_ec2", "sakura_cloud", or "google_cloud"
+            provider: "aws_ec2", "sakura_cloud", "google_cloud", "azure", or "oci"
 
         Returns:
             Dictionary of available instances with their specifications
         """
-        if provider == "aws_ec2":
-            result = {}
-            for instance_type, pricing in self.EC2_PRICING.items():
-                monthly_cost = pricing["hourly_usd"] * self.HOURS_PER_MONTH
-                result[instance_type] = {
-                    "hourly_cost_usd": pricing["hourly_usd"],
-                    "monthly_cost_usd": monthly_cost,
-                    "specs": {
-                        "vcpu": pricing["vcpu"],
-                        "memory_gb": pricing["memory_gb"],
-                    },
-                }
-            return result
-        elif provider == "sakura_cloud":
+        if provider == "sakura_cloud":
             return {
                 instance_type: {
                     "monthly_cost_jpy": pricing["monthly_jpy"],
@@ -208,21 +265,31 @@ class VMCalculator:
                 }
                 for instance_type, pricing in self.SAKURA_PRICING.items()
             }
+
+        pricing_data: Dict[str, Any]
+        if provider == "aws_ec2":
+            pricing_data = self.EC2_PRICING
         elif provider == "google_cloud":
-            result = {}
-            for instance_type, pricing in self.GCP_PRICING.items():
-                monthly_cost = pricing["hourly_usd"] * self.HOURS_PER_MONTH
-                result[instance_type] = {
-                    "hourly_cost_usd": pricing["hourly_usd"],
-                    "monthly_cost_usd": monthly_cost,
-                    "specs": {
-                        "vcpu": pricing["vcpu"],
-                        "memory_gb": pricing["memory_gb"],
-                    },
-                }
-            return result
+            pricing_data = self.GCP_PRICING
+        elif provider == "azure":
+            pricing_data = self.AZURE_PRICING
+        elif provider == "oci":
+            pricing_data = self.OCI_PRICING
         else:
             return {}
+
+        result = {}
+        for instance_type, pricing in pricing_data.items():
+            monthly_cost = pricing["hourly_usd"] * self.HOURS_PER_MONTH
+            result[instance_type] = {
+                "hourly_cost_usd": pricing["hourly_usd"],
+                "monthly_cost_usd": monthly_cost,
+                "specs": {
+                    "vcpu": pricing["vcpu"],
+                    "memory_gb": pricing["memory_gb"],
+                },
+            }
+        return result
 
     def recommend_instance_for_lambda(
         self, lambda_memory_mb: int
@@ -234,7 +301,7 @@ class VMCalculator:
             lambda_memory_mb: Lambda memory size in MB
 
         Returns:
-            Dictionary with recommendations for both providers
+            Dictionary with recommendations for all providers
         """
         lambda_memory_gb = lambda_memory_mb / 1024
 
@@ -242,46 +309,30 @@ class VMCalculator:
             "aws_ec2": [],
             "sakura_cloud": [],
             "google_cloud": [],
+            "azure": [],
+            "oci": [],
         }
 
-        # EC2 recommendations
-        for instance_type, pricing in self.EC2_PRICING.items():
-            if float(pricing["memory_gb"]) >= lambda_memory_gb:
-                ec2_cost = self.get_ec2_cost(instance_type)
-                if ec2_cost:
-                    recommendations["aws_ec2"].append(
-                        {
-                            "instance_type": instance_type,
-                            "memory_ratio": pricing["memory_gb"] / lambda_memory_gb,
-                            **ec2_cost,
-                        }
-                    )
+        provider_map = {
+            "aws_ec2": (self.EC2_PRICING, self.get_ec2_cost),
+            "google_cloud": (self.GCP_PRICING, self.get_gcp_cost),
+            "azure": (self.AZURE_PRICING, self.get_azure_cost),
+            "oci": (self.OCI_PRICING, self.get_oci_cost),
+            "sakura_cloud": (self.SAKURA_PRICING, self.get_sakura_cost),
+        }
 
-        # Sakura Cloud recommendations
-        for instance_type, pricing in self.SAKURA_PRICING.items():  # type: ignore
-            if float(pricing["memory_gb"]) >= lambda_memory_gb:
-                sakura_cost = self.get_sakura_cost(instance_type)
-                if sakura_cost:
-                    recommendations["sakura_cloud"].append(
-                        {
-                            "instance_type": instance_type,
-                            "memory_ratio": pricing["memory_gb"] / lambda_memory_gb,
-                            **sakura_cost,
-                        }
-                    )
-
-        # Google Cloud recommendations
-        for instance_type, pricing in self.GCP_PRICING.items():
-            if float(pricing["memory_gb"]) >= lambda_memory_gb:
-                gcp_cost = self.get_gcp_cost(instance_type)
-                if gcp_cost:
-                    recommendations["google_cloud"].append(
-                        {
-                            "instance_type": instance_type,
-                            "memory_ratio": pricing["memory_gb"] / lambda_memory_gb,
-                            **gcp_cost,
-                        }
-                    )
+        for provider, (pricing_data, cost_func) in provider_map.items():
+            for instance_type, pricing in pricing_data.items():
+                if float(pricing["memory_gb"]) >= lambda_memory_gb:
+                    cost = cost_func(instance_type)
+                    if cost:
+                        recommendations[provider].append(
+                            {
+                                "instance_type": instance_type,
+                                "memory_ratio": pricing["memory_gb"] / lambda_memory_gb,
+                                **cost,
+                            }
+                        )
 
         # Sort by memory ratio (closest match first)
         for provider in recommendations:
@@ -311,15 +362,18 @@ class VMCalculator:
         egress_per_request_kb: float,
         custom_rates: Optional[Dict[str, float]] = None,
         include_egress_free_tier: bool = True,
+        internet_transfer_ratio: float = 100.0,  # PBI10: % of traffic to internet
     ) -> float:
         """
         Calculate egress cost for VM provider
 
         Args:
-            provider: VM provider ("aws_ec2", "google_cloud", "sakura_cloud")
+            provider: VM provider ("aws_ec2", "google_cloud", "sakura_cloud",
+            "azure", "oci")
             monthly_executions: Number of executions per month
             egress_per_request_kb: KB transferred per request
             custom_rates: Optional custom egress rates
+            internet_transfer_ratio: % of traffic going to internet (PBI10)
 
         Returns:
             Monthly egress cost in provider's currency
@@ -335,9 +389,12 @@ class VMCalculator:
         else:
             egress_calculator = self.egress_calculator
 
+        # PBI10: Apply internet transfer ratio to egress calculation
+        effective_egress_kb = egress_per_request_kb * (internet_transfer_ratio / 100.0)
+
         egress_config = EgressConfig(
             executions_per_month=monthly_executions,
-            transfer_kb_per_request=egress_per_request_kb,
+            transfer_kb_per_request=effective_egress_kb,
             provider=provider,
             include_free_tier=include_egress_free_tier,
         )
@@ -351,6 +408,7 @@ class VMCalculator:
         egress_per_request_kb: float = 0.0,
         custom_egress_rates: Optional[Dict[str, float]] = None,
         include_egress_free_tier: bool = True,
+        internet_transfer_ratio: float = 100.0,  # PBI10: % of traffic to internet
     ) -> Optional[Dict[str, Any]]:
         """
         Get VM monthly cost including egress charges
@@ -365,14 +423,7 @@ class VMCalculator:
             Dictionary with cost breakdown including egress
         """
         # Get base VM cost
-        if config.provider == "aws_ec2":
-            base_cost = self.get_ec2_cost(config.instance_type)
-        elif config.provider == "sakura_cloud":
-            base_cost = self.get_sakura_cost(config.instance_type)
-        elif config.provider == "google_cloud":
-            base_cost = self.get_gcp_cost(config.instance_type)
-        else:
-            return None
+        base_cost = self.calculate_vm_cost(config)
 
         if base_cost is None:
             return None
@@ -384,6 +435,7 @@ class VMCalculator:
             egress_per_request_kb,
             custom_egress_rates,
             include_egress_free_tier,
+            internet_transfer_ratio,  # PBI10
         )
 
         # Add egress cost to base cost
