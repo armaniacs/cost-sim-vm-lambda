@@ -79,6 +79,44 @@ All prices in JPY per month:
 | 4core_8gb     | 4    | 8           | ¥7,370            |
 | 6core_12gb    | 6    | 12          | ¥11,560           |
 
+#### Azure Instances (Japan East)
+All prices in USD per hour for on-demand instances:
+
+| Instance Type | vCPU | Memory (GB) | Hourly Cost | Monthly Cost |
+|---------------|------|-------------|-------------|--------------|
+| B2ms          | 2    | 8           | $0.0832     | $60.74       |
+| D3            | 4    | 14          | $0.308      | $224.84      |
+| D4            | 8    | 28          | $0.616      | $450.08      |
+
+#### Oracle Cloud Infrastructure (OCI) Instances (Tokyo Region)
+All prices in USD per hour for on-demand instances:
+
+| Instance Type         | vCPU | Memory (GB) | Hourly Cost | Monthly Cost |
+|-----------------------|------|-------------|-------------|--------------|
+| VM.Standard.E4.Flex_2_16 | 2    | 16          | $0.049      | $35.77       |
+
+### Egress Data Transfer Pricing
+
+#### AWS (Lambda/EC2)
+- **Free Tier**: First 100 GB/month free
+- **Rate**: $0.114 per GB thereafter
+
+#### Google Cloud
+- **Free Tier**: First 100 GB/month free
+- **Rate**: $0.12 per GB thereafter
+
+#### Azure
+- **Free Tier**: First 100 GB/month free
+- **Rate**: $0.12 per GB thereafter (Asia)
+
+#### Oracle Cloud Infrastructure (OCI)
+- **Free Tier**: First 10 TB/month free
+- **Rate**: $0.025 per GB thereafter (APAC, Japan)
+
+#### Sakura Cloud
+- **Free Tier**: Unlimited (0 JPY/GB)
+- **Rate**: ¥0.0 per GB
+
 ### Currency Conversion
 
 #### Exchange Rate Configuration
@@ -139,7 +177,7 @@ class LambdaConfig:
 ```python
 @dataclass
 class VMConfig:
-    provider: str                     # "aws_ec2" or "sakura_cloud"
+    provider: str                     # "aws_ec2", "sakura_cloud", "google_cloud", "azure", "oci"
     instance_type: str                # Provider-specific instance ID
     region: str = "ap-northeast-1"    # Default to Tokyo
 ```
@@ -222,6 +260,14 @@ VALID_SAKURA_INSTANCES = [
     "1core_1gb", "2core_2gb", "2core_4gb", 
     "4core_8gb", "6core_12gb"
 ]
+
+VALID_AZURE_INSTANCES = [
+    "B2ms", "D3", "D4"
+]
+
+VALID_OCI_INSTANCES = [
+    "VM.Standard.E4.Flex_2_16"
+]
 ```
 
 ## Chart Visualization Specifications
@@ -286,6 +332,6 @@ Purple dashed lines with:
 
 ---
 
-**Last Updated**: January 2025  
-**Version**: 1.0.0  
-**Pricing Data**: Current as of January 2025
+**Last Updated**: July 2025  
+**Version**: 1.1.0  
+**Pricing Data**: Current as of July 2025

@@ -1,6 +1,8 @@
 """
 Main Flask application module
 """
+import os
+
 from flask import Flask
 from flask_cors import CORS  # type: ignore
 
@@ -18,7 +20,10 @@ def create_app(config_name: str = "default") -> Flask:
         Configured Flask application instance
     """
     app = Flask(__name__)
-    app.config.from_object(config[config_name])
+
+    # Determine configuration
+    config_name_to_use = os.environ.get("FLASK_ENV") or config_name
+    app.config.from_object(config.get(config_name_to_use, config["default"]))
 
     # Enable CORS for frontend integration
     CORS(app)
@@ -73,8 +78,6 @@ def create_app(config_name: str = "default") -> Flask:
 
 
 if __name__ == "__main__":
-    import os
-
     # Determine configuration based on environment
     env = os.environ.get("FLASK_ENV", "development")
     app = create_app(env)

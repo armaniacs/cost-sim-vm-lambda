@@ -233,3 +233,120 @@ class TestVMCalculator:
         """Test hours per month constant"""
         calculator = VMCalculator()
         assert calculator.HOURS_PER_MONTH == 730
+
+    def test_get_azure_cost_valid_instance(self):
+        """Test Azure cost calculation for valid instance"""
+        calculator = VMCalculator()
+        result = calculator.get_azure_cost("B2ms")
+
+        assert result is not None
+        assert result["provider"] == "azure"
+        assert result["instance_type"] == "B2ms"
+        assert result["hourly_cost_usd"] == 0.0832
+        assert result["monthly_cost_usd"] == pytest.approx(0.0832 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 2
+        assert result["specs"]["memory_gb"] == 8
+
+    def test_get_azure_cost_invalid_instance(self):
+        """Test Azure cost calculation for invalid instance"""
+        calculator = VMCalculator()
+        result = calculator.get_azure_cost("invalid.instance")
+        assert result is None
+
+    def test_get_oci_cost_valid_instance(self):
+        """Test OCI cost calculation for valid instance"""
+        calculator = VMCalculator()
+        result = calculator.get_oci_cost("VM.Standard.E4.Flex_2_16")
+
+        assert result is not None
+        assert result["provider"] == "oci"
+        assert result["instance_type"] == "VM.Standard.E4.Flex_2_16"
+        assert result["hourly_cost_usd"] == 0.049
+        assert result["monthly_cost_usd"] == pytest.approx(0.049 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 2
+        assert result["specs"]["memory_gb"] == 16
+
+    def test_get_oci_cost_invalid_instance(self):
+        """Test OCI cost calculation for invalid instance"""
+        calculator = VMCalculator()
+        result = calculator.get_oci_cost("invalid.instance")
+        assert result is None
+
+    def test_calculate_vm_cost_azure(self):
+        """Test VM cost calculation for Azure"""
+        calculator = VMCalculator()
+        config = VMConfig(provider="azure", instance_type="B2ms", region="japaneast")
+
+        result = calculator.calculate_vm_cost(config)
+
+        assert result is not None
+        assert result["provider"] == "azure"
+        assert result["monthly_cost_usd"] == pytest.approx(0.0832 * 730, rel=1e-3)
+        assert result["configuration"]["provider"] == "azure"
+        assert result["configuration"]["instance_type"] == "B2ms"
+
+    def test_calculate_vm_cost_oci(self):
+        """Test VM cost calculation for OCI"""
+        calculator = VMCalculator()
+        config = VMConfig(
+            provider="oci",
+            instance_type="VM.Standard.E4.Flex_2_16",
+            region="ap-tokyo-1",
+        )
+
+        result = calculator.calculate_vm_cost(config)
+
+        assert result is not None
+        assert result["provider"] == "oci"
+        assert result["monthly_cost_usd"] == pytest.approx(0.049 * 730, rel=1e-3)
+        assert result["configuration"]["provider"] == "oci"
+        assert result["configuration"]["instance_type"] == "VM.Standard.E4.Flex_2_16"
+
+    def test_get_available_instances_azure(self):
+        """Test getting available Azure instances"""
+        calculator = VMCalculator()
+        instances = calculator.get_available_instances("azure")
+
+        assert "B2ms" in instances
+        assert instances["B2ms"]["hourly_cost_usd"] == 0.0832
+        assert instances["B2ms"]["specs"]["memory_gb"] == 8
+
+    def test_get_available_instances_oci(self):
+        """Test getting available OCI instances"""
+        calculator = VMCalculator()
+        instances = calculator.get_available_instances("oci")
+
+        assert "VM.Standard.E4.Flex_2_16" in instances
+        assert instances["VM.Standard.E4.Flex_2_16"]["hourly_cost_usd"] == 0.049
+        assert instances["VM.Standard.E4.Flex_2_16"]["specs"]["memory_gb"] == 16
+
+    def test_recommend_instance_for_lambda_512mb_with_azure_oci(self):
+        """Test instance recommendation for 512MB Lambda including Azure and OCI"""
+        calculator = VMCalculator()
+        recommendations = calculator.recommend_instance_for_lambda(512)
+
+        assert "azure" in recommendations
+        assert "oci" in recommendations
+
+        azure_recs = recommendations["azure"]
+        assert len(azure_recs) > 0
+        for rec in azure_recs:
+            assert rec["specs"]["memory_gb"] >= 0.5
+
+        oci_recs = recommendations["oci"]
+        assert len(oci_recs) > 0
+        for rec in oci_recs:
+            assert rec["specs"]["memory_gb"] >= 0.5
+
+    def test_recommend_instance_for_lambda_2048mb_with_azure_oci(self):
+        """Test instance recommendation for 2048MB Lambda including Azure and OCI"""
+        calculator = VMCalculator()
+        recommendations = calculator.recommend_instance_for_lambda(2048)
+
+        azure_recs = recommendations["azure"]
+        for rec in azure_recs:
+            assert rec["specs"]["memory_gb"] >= 2.0
+
+        oci_recs = recommendations["oci"]
+        for rec in oci_recs:
+            assert rec["specs"]["memory_gb"] >= 2.0

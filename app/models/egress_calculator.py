@@ -14,7 +14,8 @@ class EgressConfig:
 
     executions_per_month: int
     transfer_kb_per_request: float  # KB transferred per request
-    provider: str  # "aws_lambda", "aws_ec2", "google_cloud", "sakura_cloud"
+    provider: str  # "aws_lambda", "aws_ec2", "google_cloud", "sakura_cloud", "azure",
+    # "oci"
     include_free_tier: bool = True  # Include 100GB/month free tier for AWS & Google
 
 
@@ -26,12 +27,19 @@ class EgressCalculator:
         "aws_lambda": 0.114,  # AWS Lambda egress: 0.114 USD/GB
         "aws_ec2": 0.114,  # AWS EC2 egress: 0.114 USD/GB
         "google_cloud": 0.12,  # Google Cloud egress: 0.12 USD/GB
+        "azure": 0.12,  # Azure egress: 0.12 USD/GB (Asia)
+        "oci": 0.025,  # OCI egress: 0.025 USD/GB (APAC, Japan) after 10TB free
         "sakura_cloud": 0.0,  # Sakura Cloud egress: 0.0 JPY/GB (egress free)
     }
 
-    # Free tier limits (100GB/month for AWS and Google Cloud)
-    FREE_TIER_GB_PER_MONTH = 100.0
-    FREE_TIER_PROVIDERS = {"aws_lambda", "aws_ec2", "google_cloud"}
+    # Free tier limits
+    FREE_TIER_GB_PER_MONTH = {
+        "aws_lambda": 100.0,
+        "aws_ec2": 100.0,
+        "google_cloud": 100.0,
+        "azure": 100.0,
+        "oci": 10240.0,  # 10 TB free for OCI
+    }
 
     def __init__(self, custom_rates: Optional[Dict[str, float]] = None) -> None:
         """Initialize the egress calculator with optional custom rates"""
@@ -69,18 +77,12 @@ class EgressCalculator:
 
         # Apply free tier if applicable
         billable_gb_per_month = total_gb_per_month
-        if (
-            config.include_free_tier
-            and config.provider in self.FREE_TIER_PROVIDERS
-            and total_gb_per_month > self.FREE_TIER_GB_PER_MONTH
-        ):
-            billable_gb_per_month = total_gb_per_month - self.FREE_TIER_GB_PER_MONTH
-        elif (
-            config.include_free_tier
-            and config.provider in self.FREE_TIER_PROVIDERS
-            and total_gb_per_month <= self.FREE_TIER_GB_PER_MONTH
-        ):
-            billable_gb_per_month = 0.0
+        if config.include_free_tier and config.provider in self.FREE_TIER_GB_PER_MONTH:
+            free_tier_limit = self.FREE_TIER_GB_PER_MONTH[config.provider]
+            if total_gb_per_month <= free_tier_limit:
+                billable_gb_per_month = 0.0
+            else:
+                billable_gb_per_month = total_gb_per_month - free_tier_limit
 
         total_cost = billable_gb_per_month * rate_per_gb
 

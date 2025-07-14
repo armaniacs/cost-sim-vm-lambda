@@ -6,6 +6,7 @@ Tests the API layer integration for egress cost calculations
 """
 import pytest
 from flask import Flask
+from flask.testing import FlaskClient
 
 from app.main import create_app
 
@@ -224,10 +225,7 @@ class TestEgressAPIIntegration:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "egress" in data["error"].lower()
-        assert any(
-            word in data["error"].lower() for word in ["negative", "positive", "zero"]
-        )
+        assert "Egress transfer amount must be zero or positive" in data["error"]
 
     def test_egress_validation_missing_parameter(self, client):
         """
@@ -339,8 +337,291 @@ class TestEgressAPIIntegration:
                 if idx < len(data_row):
                     try:
                         float(data_row[idx])
-                        break  # Found at least one valid egress cost
+                        break
+                        # Found at least one valid egress cost
                     except ValueError:
                         continue
             else:
                 pytest.fail("No valid egress cost values found in CSV data")
+
+    def test_calculate_lambda_cost_negative_egress(self, client: FlaskClient):
+        """Test lambda_cost with negative egress"""
+        response = client.post(
+            "/api/v1/calculator/lambda",
+            json={
+                "memory_mb": 512,
+                "execution_time_seconds": 10,
+                "monthly_executions": 1000000,
+                "egress_per_request_kb": -1,
+            },
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "Egress transfer amount must be zero or positive" in data["error"]
+
+    def test_calculate_vm_cost_no_json(self, client: FlaskClient):
+        """Test vm_cost with no JSON data"""
+        response = client.post("/api/v1/calculator/vm", data="not json")
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "No JSON data provided" in data["error"]
+
+    def test_calculate_vm_cost_missing_fields(self, client: FlaskClient):
+        """Test vm_cost with missing fields"""
+        response = client.post(
+            "/api/v1/calculator/vm",
+            json={"provider": "aws_ec2"},
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "Missing required fields" in data["error"]
+
+    def test_calculate_comparison_negative_egress(self, client: FlaskClient):
+        """Test comparison with negative egress"""
+        response = client.post(
+            "/api/v1/calculator/comparison",
+            json={
+                "lambda_config": {"egress_per_request_kb": -1},
+                "vm_configs": [],
+            },
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "Egress transfer amount must be zero or positive" in data["error"]
+
+    def test_export_csv_no_json(self, client: FlaskClient):
+        """Test export_csv with no JSON data"""
+        response = client.post("/api/v1/calculator/export_csv", data="not json")
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "No JSON data provided" in data["error"]
+
+    def test_export_csv_negative_egress(self, client: FlaskClient):
+        """Test export_csv with negative egress"""
+        response = client.post(
+            "/api/v1/calculator/export_csv",
+            json={"lambda_config": {"egress_per_request_kb": -1}},
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "Egress transfer amount must be zero or positive" in data["error"]
+
+    def test_recommend_instances_no_json(self, client: FlaskClient):
+        """Test recommend_instances with no JSON data"""
+        response = client.post("/api/v1/calculator/recommend", data="not json")
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "No JSON data provided" in data["error"]
+
+    def test_recommend_instances_missing_memory(self, client: FlaskClient):
+        """Test recommend_instances with missing memory"""
+        response = client.post("/api/v1/calculator/recommend", json={})
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "lambda_memory_mb is required" in data["error"]
+
+    def test_convert_currency_no_json(self, client: FlaskClient):
+        """Test convert_currency with no JSON data"""
+        response = client.post("/api/v1/calculator/currency/convert", data="not json")
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "No JSON data provided" in data["error"]
+
+    def test_convert_currency_missing_amount(self, client: FlaskClient):
+        """Test convert_currency with missing amount"""
+        response = client.post(
+            "/api/v1/calculator/currency/convert",
+            json={"from_currency": "USD", "to_currency": "JPY"},
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "amount is required" in data["error"]
+
+    def test_convert_currency_unsupported_conversion(self, client: FlaskClient):
+        """Test convert_currency with unsupported conversion"""
+        response = client.post(
+            "/api/v1/calculator/currency/convert",
+            json={"amount": 100, "from_currency": "EUR", "to_currency": "GBP"},
+        )
+        assert response.status_code == 400
+        data = response.get_json()
+        assert "error" in data
+        assert "Only USD<->JPY conversion supported" in data["error"]
+
+    def test_vm_egress_cost_calculation_azure(self, client: FlaskClient):
+        """
+        Test Azure egress cost calculation
+        Azure egress: 0.12 USD/GB (Asia)
+        """
+        request_data = {
+            "lambda_config": {
+                "memory_mb": 512,
+                "execution_time_seconds": 5,
+                "monthly_executions": 1_000_000,
+                "include_free_tier": True,
+                "egress_per_request_kb": 1000,  # 1MB per request
+            },
+            "vm_configs": [{"provider": "azure", "instance_type": "B2ms"}],
+            "currency": "USD",
+        }
+
+        response = client.post("/api/v1/calculator/comparison", json=request_data)
+
+        assert response.status_code == 200
+        data = response.get_json()
+
+        comparison_data = data["data"]["comparison_data"]
+        assert len(comparison_data) > 0
+
+        # Simple validation that Azure costs are being calculated
+        found_costs = any(
+            "vm_costs" in point and len(point["vm_costs"]) > 0
+            for point in comparison_data
+        )
+        assert found_costs, "Azure VM costs should be calculated"
+
+    def test_vm_egress_cost_calculation_oci(self, client: FlaskClient):
+        """
+        Test OCI egress cost calculation
+        OCI egress: 0.025 USD/GB (APAC, Japan) after 10TB free
+        """
+        request_data = {
+            "lambda_config": {
+                "memory_mb": 512,
+                "execution_time_seconds": 5,
+                "monthly_executions": 1_000_000,
+                "include_free_tier": True,
+                "egress_per_request_kb": 1000,  # 1MB per request
+            },
+            "vm_configs": [
+                {"provider": "oci", "instance_type": "VM.Standard.E4.Flex_2_16"}
+            ],
+            "currency": "USD",
+        }
+
+        response = client.post("/api/v1/calculator/comparison", json=request_data)
+
+        assert response.status_code == 200
+        data = response.get_json()
+
+        comparison_data = data["data"]["comparison_data"]
+        assert len(comparison_data) > 0
+
+        # Simple validation that OCI costs are being calculated
+        found_costs = any(
+            "vm_costs" in point and len(point["vm_costs"]) > 0
+            for point in comparison_data
+        )
+        assert found_costs, "OCI VM costs should be calculated"
+
+    def test_vm_egress_cost_calculation_oci_free_tier(self, client: FlaskClient):
+        """
+        Test OCI egress cost calculation with free tier (10TB free)
+        """
+        # Total egress will be 1,000,000 executions * 10KB/request = 10GB/month
+        # This should be within OCI's 10TB free tier, so egress cost should be 0
+        request_data = {
+            "lambda_config": {
+                "memory_mb": 512,
+                "execution_time_seconds": 5,
+                "monthly_executions": 1_000_000,
+                "include_free_tier": True,
+                "egress_per_request_kb": 10,  # 10KB per request
+            },
+            "vm_configs": [
+                {"provider": "oci", "instance_type": "VM.Standard.E4.Flex_2_16"}
+            ],
+            "currency": "USD",
+        }
+
+        response = client.post("/api/v1/calculator/comparison", json=request_data)
+
+        assert response.status_code == 200
+        data = response.get_json()
+
+        comparison_data = data["data"]["comparison_data"]
+        assert len(comparison_data) > 0
+
+        # Check that OCI egress cost is 0 due to free tier
+        oci_cost = comparison_data[0]["vm_costs"]["oci_VM.Standard.E4.Flex_2_16"]
+        assert oci_cost == pytest.approx(
+            0.049 * 730, rel=1e-3
+        )  # Only fixed cost, no egress
+
+    def test_vm_egress_cost_calculation_oci_above_free_tier(self, client: FlaskClient):
+        """
+        Test OCI egress cost calculation above free tier (10TB free)
+        """
+        # Total egress will be 1,000,000 executions * 10MB/request =
+        # 10,000GB/month = 10TB/month
+        # This should be exactly at OCI's 10TB free tier,
+        # so egress cost should be 0
+        request_data = {
+            "lambda_config": {
+                "memory_mb": 512,
+                "execution_time_seconds": 5,
+                "monthly_executions": 1_000_000,
+                "include_free_tier": True,
+                "egress_per_request_kb": 10 * 1024,  # 10MB per request
+            },
+            "vm_configs": [
+                {"provider": "oci", "instance_type": "VM.Standard.E4.Flex_2_16"}
+            ],
+            "currency": "USD",
+        }
+
+        response = client.post("/api/v1/calculator/comparison", json=request_data)
+
+        assert response.status_code == 200
+        data = response.get_json()
+
+        comparison_data = data["data"]["comparison_data"]
+        assert len(comparison_data) > 0
+
+        # Check that OCI egress cost is 0 due to free tier
+        oci_cost = comparison_data[0]["vm_costs"]["oci_VM.Standard.E4.Flex_2_16"]
+        assert oci_cost == pytest.approx(
+            0.049 * 730, rel=1e-3
+        )  # Only fixed cost, no egress
+
+        # Now test with 10MB + 1KB to go over the free tier
+        request_data = {
+            "lambda_config": {
+                "memory_mb": 512,
+                "execution_time_seconds": 5,
+                "monthly_executions": 1_000_000,
+                "include_free_tier": True,
+                "egress_per_request_kb": 10 * 1024 + 1,  # 10MB + 1KB per request
+            },
+            "vm_configs": [
+                {"provider": "oci", "instance_type": "VM.Standard.E4.Flex_2_16"}
+            ],
+            "currency": "USD",
+        }
+
+        response = client.post("/api/v1/calculator/comparison", json=request_data)
+
+        assert response.status_code == 200
+        data = response.get_json()
+
+        comparison_data = data["data"]["comparison_data"]
+        assert len(comparison_data) > 0
+
+        # Calculate expected egress cost for 1KB over 10TB
+        # 1,000,000 executions * 1KB/request = 1GB
+        # 1GB * 0.025 USD/GB = 0.025 USD
+        expected_egress_cost = 1 * 0.025
+        expected_total_cost = (0.049 * 730) + expected_egress_cost
+
+        oci_cost = comparison_data[0]["vm_costs"]["oci_VM.Standard.E4.Flex_2_16"]
+        assert oci_cost == pytest.approx(expected_total_cost, rel=1e-3)

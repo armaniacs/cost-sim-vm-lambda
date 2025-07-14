@@ -1,6 +1,6 @@
 # AWS Lambda vs VM Cost Simulator
 
-AWS LambdaとVirtual Machine（AWS EC2、Sakura Cloud、Google Cloud Compute Engine）のコスト比較シミュレーター
+AWS LambdaとVirtual Machine（AWS EC2、Sakura Cloud、Google Cloud Compute Engine、Azure、Oracle Cloud Infrastructure）のコスト比較シミュレーター
 
 ## 概要
 
@@ -11,7 +11,7 @@ AWS LambdaとVirtual Machine（AWS EC2、Sakura Cloud、Google Cloud Compute Eng
 - **インタラクティブなコスト比較グラフ** - Chart.jsによる対数軸での表示
 - **実行頻度参考線** - 秒間1〜1000リクエストの黄色い参考線
 - **ブレークイーブンポイント表示** - LambdaとVMのコストが交差する点を紫線で表示
-- **複数のVMプロバイダー対応** - AWS EC2、Sakura Cloud、Google Cloud Compute Engineの比較
+- **複数のVMプロバイダー対応** - AWS EC2、Sakura Cloud、Google Cloud Compute Engine、Azure、Oracle Cloud Infrastructureの比較
 - **通貨変換** - USD/JPY自動変換対応
 - **CSV出力** - 計算結果をCSVファイルで出力
 - **リアルタイム計算** - 設定変更時の即座な再計算

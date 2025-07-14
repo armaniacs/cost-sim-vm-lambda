@@ -14,15 +14,17 @@ class TestAppCreation:
         assert app is not None
         assert app.config["DEBUG"] is True  # default is development
 
-    def test_app_creation_testing_config(self):
+    def test_app_creation_testing_config(self, monkeypatch):
         """Test that app can be created with testing configuration"""
+        monkeypatch.delenv("FLASK_ENV", raising=False)
         app = create_app("testing")
         assert app is not None
         assert app.config["TESTING"] is True
         assert app.config["DEBUG"] is True
 
-    def test_app_creation_production_config(self):
+    def test_app_creation_production_config(self, monkeypatch):
         """Test that app can be created with production configuration"""
+        monkeypatch.delenv("FLASK_ENV", raising=False)
         app = create_app("production")
         assert app is not None
         assert app.config["DEBUG"] is False
@@ -34,6 +36,19 @@ class TestAppCreation:
         assert response.status_code == 200
         assert b"Cost Simulator" in response.data
         assert response.content_type.startswith("text/html")
+
+    def test_app_creation_invalid_config_name(self):
+        """Test app creation with an invalid configuration name"""
+        app = create_app("invalid_config")
+        assert app is not None
+        # Should fall back to default (development) config
+        assert app.config["DEBUG"] is True
+
+    def test_app_creation_force_testing_env(self, monkeypatch):
+        """Test that FLASK_ENV=testing forces testing config"""
+        monkeypatch.setenv("FLASK_ENV", "testing")
+        app = create_app()
+        assert app.config["TESTING"] is True
 
     def test_api_info_endpoint(self, client):
         """Test API info endpoint"""
