@@ -247,6 +247,45 @@ class TestVMCalculator:
         assert result["specs"]["vcpu"] == 2
         assert result["specs"]["memory_gb"] == 8
 
+    def test_get_azure_cost_b1ls(self):
+        """Test Azure cost calculation for B1ls (cheapest option)"""
+        calculator = VMCalculator()
+        result = calculator.get_azure_cost("B1ls")
+
+        assert result is not None
+        assert result["provider"] == "azure"
+        assert result["instance_type"] == "B1ls"
+        assert result["hourly_cost_usd"] == 0.0092
+        assert result["monthly_cost_usd"] == pytest.approx(0.0092 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 1
+        assert result["specs"]["memory_gb"] == 0.5
+
+    def test_get_azure_cost_b1s(self):
+        """Test Azure cost calculation for B1s"""
+        calculator = VMCalculator()
+        result = calculator.get_azure_cost("B1s")
+
+        assert result is not None
+        assert result["provider"] == "azure"
+        assert result["instance_type"] == "B1s"
+        assert result["hourly_cost_usd"] == 0.0104
+        assert result["monthly_cost_usd"] == pytest.approx(0.0104 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 1
+        assert result["specs"]["memory_gb"] == 1
+
+    def test_get_azure_cost_a1_basic(self):
+        """Test Azure cost calculation for A1 Basic"""
+        calculator = VMCalculator()
+        result = calculator.get_azure_cost("A1_Basic")
+
+        assert result is not None
+        assert result["provider"] == "azure"
+        assert result["instance_type"] == "A1_Basic"
+        assert result["hourly_cost_usd"] == 0.016
+        assert result["monthly_cost_usd"] == pytest.approx(0.016 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 1
+        assert result["specs"]["memory_gb"] == 1.75
+
     def test_get_azure_cost_invalid_instance(self):
         """Test Azure cost calculation for invalid instance"""
         calculator = VMCalculator()
@@ -265,6 +304,58 @@ class TestVMCalculator:
         assert result["monthly_cost_usd"] == pytest.approx(0.049 * 730, rel=1e-3)
         assert result["specs"]["vcpu"] == 2
         assert result["specs"]["memory_gb"] == 16
+
+    def test_get_oci_cost_e2_micro(self):
+        """Test OCI cost calculation for E2.1.Micro (cheapest paid option)"""
+        calculator = VMCalculator()
+        result = calculator.get_oci_cost("VM.Standard.E2.1.Micro")
+
+        assert result is not None
+        assert result["provider"] == "oci"
+        assert result["instance_type"] == "VM.Standard.E2.1.Micro"
+        assert result["hourly_cost_usd"] == 0.005
+        assert result["monthly_cost_usd"] == pytest.approx(0.005 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 1
+        assert result["specs"]["memory_gb"] == 1
+
+    def test_get_oci_cost_a1_flex(self):
+        """Test OCI cost calculation for A1.Flex"""
+        calculator = VMCalculator()
+        result = calculator.get_oci_cost("VM.Standard.A1.Flex_1_6")
+
+        assert result is not None
+        assert result["provider"] == "oci"
+        assert result["instance_type"] == "VM.Standard.A1.Flex_1_6"
+        assert result["hourly_cost_usd"] == 0.015
+        assert result["monthly_cost_usd"] == pytest.approx(0.015 * 730, rel=1e-3)
+        assert result["specs"]["vcpu"] == 1
+        assert result["specs"]["memory_gb"] == 6
+
+    def test_get_oci_cost_free_tier(self):
+        """Test OCI cost calculation for Always Free tier"""
+        calculator = VMCalculator()
+        result = calculator.get_oci_cost("VM.Standard.E2.1.Micro_Free")
+
+        assert result is not None
+        assert result["provider"] == "oci"
+        assert result["instance_type"] == "VM.Standard.E2.1.Micro_Free"
+        assert result["hourly_cost_usd"] == 0.0
+        assert result["monthly_cost_usd"] == 0.0
+        assert result["specs"]["vcpu"] == 1
+        assert result["specs"]["memory_gb"] == 1
+
+    def test_get_oci_cost_a1_free_tier(self):
+        """Test OCI cost calculation for A1.Flex Always Free tier"""
+        calculator = VMCalculator()
+        result = calculator.get_oci_cost("VM.Standard.A1.Flex_Free")
+
+        assert result is not None
+        assert result["provider"] == "oci"
+        assert result["instance_type"] == "VM.Standard.A1.Flex_Free"
+        assert result["hourly_cost_usd"] == 0.0
+        assert result["monthly_cost_usd"] == 0.0
+        assert result["specs"]["vcpu"] == 4
+        assert result["specs"]["memory_gb"] == 24
 
     def test_get_oci_cost_invalid_instance(self):
         """Test OCI cost calculation for invalid instance"""
@@ -307,18 +398,51 @@ class TestVMCalculator:
         calculator = VMCalculator()
         instances = calculator.get_available_instances("azure")
 
+        # Test existing instances
         assert "B2ms" in instances
         assert instances["B2ms"]["hourly_cost_usd"] == 0.0832
         assert instances["B2ms"]["specs"]["memory_gb"] == 8
+
+        # Test new cheapest instances
+        assert "B1ls" in instances
+        assert instances["B1ls"]["hourly_cost_usd"] == 0.0092
+        assert instances["B1ls"]["specs"]["memory_gb"] == 0.5
+
+        assert "B1s" in instances
+        assert instances["B1s"]["hourly_cost_usd"] == 0.0104
+        assert instances["B1s"]["specs"]["memory_gb"] == 1
+
+        assert "A1_Basic" in instances
+        assert instances["A1_Basic"]["hourly_cost_usd"] == 0.016
+        assert instances["A1_Basic"]["specs"]["memory_gb"] == 1.75
 
     def test_get_available_instances_oci(self):
         """Test getting available OCI instances"""
         calculator = VMCalculator()
         instances = calculator.get_available_instances("oci")
 
+        # Test existing instances
         assert "VM.Standard.E4.Flex_2_16" in instances
         assert instances["VM.Standard.E4.Flex_2_16"]["hourly_cost_usd"] == 0.049
         assert instances["VM.Standard.E4.Flex_2_16"]["specs"]["memory_gb"] == 16
+
+        # Test new cheapest instances
+        assert "VM.Standard.E2.1.Micro" in instances
+        assert instances["VM.Standard.E2.1.Micro"]["hourly_cost_usd"] == 0.005
+        assert instances["VM.Standard.E2.1.Micro"]["specs"]["memory_gb"] == 1
+
+        assert "VM.Standard.A1.Flex_1_6" in instances
+        assert instances["VM.Standard.A1.Flex_1_6"]["hourly_cost_usd"] == 0.015
+        assert instances["VM.Standard.A1.Flex_1_6"]["specs"]["memory_gb"] == 6
+
+        # Test always free instances
+        assert "VM.Standard.E2.1.Micro_Free" in instances
+        assert instances["VM.Standard.E2.1.Micro_Free"]["hourly_cost_usd"] == 0.0
+        assert instances["VM.Standard.E2.1.Micro_Free"]["specs"]["memory_gb"] == 1
+
+        assert "VM.Standard.A1.Flex_Free" in instances
+        assert instances["VM.Standard.A1.Flex_Free"]["hourly_cost_usd"] == 0.0
+        assert instances["VM.Standard.A1.Flex_Free"]["specs"]["memory_gb"] == 24
 
     def test_recommend_instance_for_lambda_512mb_with_azure_oci(self):
         """Test instance recommendation for 512MB Lambda including Azure and OCI"""

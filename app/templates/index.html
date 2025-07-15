@@ -11,6 +11,13 @@
                 <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Configuration</h5>
             </div>
             <div class="card-body">
+                <!-- Quick Calculate Button at Top -->
+                <div class="d-grid gap-2 mb-4">
+                    <button type="button" class="btn btn-primary btn-lg" onclick="calculateCosts()">
+                        <i class="bi bi-calculator me-2"></i>Calculate
+                    </button>
+                </div>
+                
                 <!-- Lambda Configuration -->
                 <form id="costCalculatorForm">
                     <div class="mb-4">
@@ -189,8 +196,8 @@
                                 </label>
                             </div>
                             <select id="ec2InstanceType" class="form-select form-select-sm">
-                                <option value="t3.micro">t3.micro (1 GB, $9.79/month)</option>
-                                <option value="t3.small" selected>t3.small (2 GB, $19.58/month)</option>
+                                <option value="t3.micro" selected>t3.micro (1 GB, $9.79/month)</option>
+                                <option value="t3.small">t3.small (2 GB, $19.58/month)</option>
                                 <option value="t3.medium">t3.medium (4 GB, $39.17/month)</option>
                                 <option value="t3.large">t3.large (8 GB, $79.42/month)</option>
                                 <option value="c5.large">c5.large (4 GB, $69.12/month)</option>
@@ -224,7 +231,7 @@
                                 </label>
                             </div>
                             <select id="gcpInstanceType" class="form-select form-select-sm">
-                                <option value="e2-micro">e2-micro (0.25 vCPU, 1GB)</option>
+                                <option value="e2-micro" selected>e2-micro (0.25 vCPU, 1GB)</option>
                                 <option value="e2-small">e2-small (0.5 vCPU, 2GB)</option>
                                 <option value="e2-medium">e2-medium (1 vCPU, 4GB)</option>
                                 <option value="n2-standard-1">n2-standard-1 (1 vCPU, 4GB)</option>
@@ -242,7 +249,12 @@
                                 </label>
                             </div>
                             <select id="azureInstanceType" class="form-select form-select-sm">
+                                <option value="B1ls" selected>B1ls (1 vCPU, 0.5GB, $6.72/month)</option>
+                                <option value="B1s">B1s (1 vCPU, 1GB, $7.59/month)</option>
+                                <option value="B1ms">B1ms (1 vCPU, 2GB, $15.18/month)</option>
+                                <option value="B2s">B2s (2 vCPU, 4GB, $30.37/month)</option>
                                 <option value="B2ms">B2ms (2 vCPU, 8GB, $60.74/month)</option>
+                                <option value="A1_Basic">A1 Basic (1 vCPU, 1.75GB, $11.68/month)</option>
                                 <option value="D3">D3 (4 vCPU, 14GB, $224.84/month)</option>
                                 <option value="D4">D4 (8 vCPU, 28GB, $450.08/month)</option>
                             </select>
@@ -257,7 +269,13 @@
                                 </label>
                             </div>
                             <select id="ociInstanceType" class="form-select form-select-sm">
-                                <option value="VM.Standard.E4.Flex_2_16">VM.Standard.E4.Flex_2_16 (2 vCPU, 16GB, $35.77/month)</option>
+                                <option value="VM.Standard.E2.1.Micro_Free">VM.Standard.E2.1.Micro (Always Free) (1 vCPU, 1GB, $0.00/month)</option>
+                                <option value="VM.Standard.A1.Flex_Free">VM.Standard.A1.Flex (Always Free) (4 vCPU, 24GB, $0.00/month)</option>
+                                <option value="VM.Standard.E2.1.Micro">VM.Standard.E2.1.Micro (1 vCPU, 1GB, $3.65/month)</option>
+                                <option value="VM.Standard.A1.Flex_1_6">VM.Standard.A1.Flex (1 vCPU, 6GB, $10.95/month)</option>
+                                <option value="VM.Standard.E4.Flex_1_8">VM.Standard.E4.Flex (1 vCPU, 8GB, $18.25/month)</option>
+                                <option value="VM.Standard.A1.Flex_2_12">VM.Standard.A1.Flex (2 vCPU, 12GB, $21.90/month)</option>
+                                <option value="VM.Standard.E4.Flex_2_16" selected>VM.Standard.E4.Flex (2 vCPU, 16GB, $35.77/month)</option>
                             </select>
                         </div>
 

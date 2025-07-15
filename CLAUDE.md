@@ -52,15 +52,26 @@ Comprehensive reference docs in `/ref/` directory:
 **Core Documentation:**
 - `ref/README.md` - Reference documentation index and navigation
 - `ref/project-overview.md` - Project architecture, goals, and current status
+- `ref/architecture-overview.md` - Detailed system architecture and design patterns
 - `ref/technical-specifications.md` - Cost calculation formulas, pricing data, and algorithms
-- `ref/implementation-guide.md` - Development roadmap, PBI structure, and TDD methodology
-- `ref/api-reference.md` - Complete REST API documentation with examples
+- `ref/pricing-data-reference.md` - Comprehensive pricing data for all cloud providers
 
-**UI and Development:**
+**Implementation & Development:**
+- `ref/feature-implementation-status.md` - Complete PBI status and Phase 1/2 roadmap
+- `ref/implementation-guide.md` - Development roadmap, PBI structure, and TDD methodology
+- `ref/api-endpoints-reference.md` - Complete REST API documentation with examples
+- `ref/development-guide.md` - Setup instructions, TDD workflow, and daily commands
+
+**Testing & Quality:**
+- `ref/testing-framework-guide.md` - Outside-In TDD, BDD approach, and comprehensive testing
+- `ref/testing-strategy.md` - Coverage requirements and test execution strategies
+
+**UI and Frontend:**
 - `ref/ui-requirements.md` - Interface specifications, UX requirements, and design system
 - `ref/frontend-architecture.md` - JavaScript, CSS, and template structure
-- `ref/development-guide.md` - Setup instructions, TDD workflow, and daily commands
-- `ref/testing-strategy.md` - Comprehensive testing approach and coverage requirements
+
+**Deployment & Operations:**
+- `ref/deployment-production-guide.md` - Production deployment strategies and operations
 
 **Quick Start:** New developers should begin with `ref/project-overview.md` and `ref/development-guide.md`
 

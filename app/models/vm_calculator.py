@@ -54,14 +54,25 @@ class VMCalculator:
 
     # Azure pricing (Japan East, USD per hour)
     AZURE_PRICING: Dict[str, Dict[str, Any]] = {
+        "B1ls": {"hourly_usd": 0.0092, "vcpu": 1, "memory_gb": 0.5},
+        "B1s": {"hourly_usd": 0.0104, "vcpu": 1, "memory_gb": 1},
+        "B1ms": {"hourly_usd": 0.0208, "vcpu": 1, "memory_gb": 2},
+        "B2s": {"hourly_usd": 0.0416, "vcpu": 2, "memory_gb": 4},
         "B2ms": {"hourly_usd": 0.0832, "vcpu": 2, "memory_gb": 8},
+        "A1_Basic": {"hourly_usd": 0.016, "vcpu": 1, "memory_gb": 1.75},
         "D3": {"hourly_usd": 0.308, "vcpu": 4, "memory_gb": 14},
         "D4": {"hourly_usd": 0.616, "vcpu": 8, "memory_gb": 28},
     }
 
     # OCI pricing (Tokyo, USD per hour)
     OCI_PRICING: Dict[str, Dict[str, Any]] = {
+        "VM.Standard.E2.1.Micro": {"hourly_usd": 0.005, "vcpu": 1, "memory_gb": 1},
+        "VM.Standard.A1.Flex_1_6": {"hourly_usd": 0.015, "vcpu": 1, "memory_gb": 6},
+        "VM.Standard.A1.Flex_2_12": {"hourly_usd": 0.030, "vcpu": 2, "memory_gb": 12},
+        "VM.Standard.E4.Flex_1_8": {"hourly_usd": 0.025, "vcpu": 1, "memory_gb": 8},
         "VM.Standard.E4.Flex_2_16": {"hourly_usd": 0.049, "vcpu": 2, "memory_gb": 16},
+        "VM.Standard.E2.1.Micro_Free": {"hourly_usd": 0.0, "vcpu": 1, "memory_gb": 1},
+        "VM.Standard.A1.Flex_Free": {"hourly_usd": 0.0, "vcpu": 4, "memory_gb": 24},
     }
 
     # Hours per month (average)
