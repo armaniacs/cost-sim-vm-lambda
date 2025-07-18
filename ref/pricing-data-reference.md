@@ -121,11 +121,11 @@ This document provides comprehensive reference for all pricing data used in the 
 
 ## Pricing Data Sources
 
-### Cloud Provider APIs (Future - PBI11)
-- **Azure Retail Prices API**: Real-time Azure pricing
-- **AWS Pricing API**: Current AWS rates with authentication
-- **Google Cloud Billing API**: GCP pricing information
-- **Exchange Rate API**: Live currency conversion rates
+### Potential Future Enhancements
+- **Real-time API Integration**: Azure, AWS, and Google Cloud pricing APIs
+- **Live Exchange Rates**: Dynamic currency conversion
+- **Automated Updates**: Scheduled pricing data refresh
+- **Multi-region Support**: Expanded geographical coverage
 
 ### Current Data Management
 - **Static Configuration**: Pricing data stored in calculator classes

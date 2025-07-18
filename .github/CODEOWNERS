@@ -1,0 +1,45 @@
+# Code ownership for enterprise repository
+
+# Default owners for everything in the repo
+* @enterprise-team @security-team
+
+# Core application code
+/app/ @backend-team @security-team
+
+# Authentication and security
+/app/auth/ @security-team @backend-team
+
+# API endpoints
+/app/api/ @api-team @backend-team
+
+# Database and models
+/app/models/ @data-team @backend-team
+
+# Frontend and templates
+/app/templates/ @frontend-team
+/app/static/ @frontend-team
+
+# Tests
+/tests/ @qa-team @backend-team
+
+# CI/CD and infrastructure
+/.github/ @devops-team @security-team
+/Dockerfile @devops-team
+/docker-compose*.yml @devops-team
+
+# Documentation
+/docs/ @tech-writing-team
+/README*.md @tech-writing-team
+/CLAUDE.md @enterprise-team
+
+# Security and compliance
+/requirements*.txt @security-team
+/.pre-commit-config.yaml @security-team
+
+# Configuration
+/app/config.py @devops-team @security-team
+/.mise.toml @devops-team
+/pyproject.toml @backend-team
+
+# Reference documentation
+/ref/ @tech-writing-team @enterprise-team

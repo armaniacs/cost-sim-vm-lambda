@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Monitoring Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .alert-critical { background-color: #fee2e2; border-color: #fecaca; }
+        .alert-high { background-color: #fef3c7; border-color: #fed7aa; }
+        .alert-medium { background-color: #dbeafe; border-color: #bfdbfe; }
+        .alert-low { background-color: #d1fae5; border-color: #a7f3d0; }
+        .status-healthy { color: #10b981; }
+        .status-degraded { color: #f59e0b; }
+        .status-unhealthy { color: #ef4444; }
+        .refresh-button {
+            transition: transform 0.2s;
+        }
+        .refresh-button:hover {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Enterprise Monitoring Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <button id="refreshBtn" class="refresh-button bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Refresh
+                </button>
+                <span id="lastUpdate" class="text-gray-600 text-sm">Last updated: Never</span>
+            </div>
+        </div>
+
+        <!-- System Health Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="metric-card text-white p-6 rounded-lg shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Overall Health</p>
+                        <p id="overallHealth" class="text-2xl font-bold">Loading...</p>
+                    </div>
+                    <div class="text-3xl opacity-80">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card text-white p-6 rounded-lg shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Active Alerts</p>
+                        <p id="activeAlerts" class="text-2xl font-bold">Loading...</p>
+                    </div>
+                    <div class="text-3xl opacity-80">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card text-white p-6 rounded-lg shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Avg Response Time</p>
+                        <p id="avgResponseTime" class="text-2xl font-bold">Loading...</p>
+                    </div>
+                    <div class="text-3xl opacity-80">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metric-card text-white p-6 rounded-lg shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm opacity-90">Error Rate</p>
+                        <p id="errorRate" class="text-2xl font-bold">Loading...</p>
+                    </div>
+                    <div class="text-3xl opacity-80">
+                        <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Response Time Chart -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">Response Time Trends</h3>
+                <canvas id="responseTimeChart"></canvas>
+            </div>
+
+            <!-- System Resources Chart -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">System Resources</h3>
+                <canvas id="systemResourcesChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Alerts and Logs Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Active Alerts -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">Active Alerts</h3>
+                <div id="alertsList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-8">Loading alerts...</div>
+                </div>
+            </div>
+
+            <!-- Recent Logs -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">Recent Logs</h3>
+                <div id="logsList" class="space-y-2 max-h-96 overflow-y-auto">
+                    <div class="text-center text-gray-500 py-8">Loading logs...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Health and Dependencies -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Service Health -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">Service Health</h3>
+                <div id="serviceHealthList" class="space-y-3">
+                    <div class="text-center text-gray-500 py-8">Loading service health...</div>
+                </div>
+            </div>
+
+            <!-- APM Traces -->
+            <div class="bg-white p-6 rounded-lg shadow-lg">
+                <h3 class="text-lg font-semibold mb-4">Recent Traces</h3>
+                <div id="tracesList" class="space-y-2 max-h-96 overflow-y-auto">
+                    <div class="text-center text-gray-500 py-8">Loading traces...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLA Metrics -->
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-lg font-semibold mb-4">SLA Metrics</h3>
+            <div id="slaMetrics" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="text-center text-gray-500 py-8">Loading SLA metrics...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let responseTimeChart;
+        let systemResourcesChart;
+        let dashboardData = {};
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadDashboard();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(loadDashboard, 30000);
+            
+            // Manual refresh button
+            document.getElementById('refreshBtn').addEventListener('click', loadDashboard);
+        });
+
+        // Initialize charts
+        function initializeCharts() {
+            // Response Time Chart
+            const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+            responseTimeChart = new Chart(responseTimeCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Response Time (ms)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Time (ms)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // System Resources Chart
+            const systemResourcesCtx = document.getElementById('systemResourcesChart').getContext('2d');
+            systemResourcesChart = new Chart(systemResourcesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['CPU Usage', 'Memory Usage', 'Disk Usage'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: [
+                            'rgb(255, 99, 132)',
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 205, 86)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                const response = await fetch('/api/v1/monitoring/dashboard');
+                const data = await response.json();
+                dashboardData = data;
+                
+                updateMetrics(data);
+                updateCharts(data);
+                updateAlerts(data);
+                updateLogs(data);
+                updateServiceHealth(data);
+                updateTraces(data);
+                updateSLA(data);
+                
+                document.getElementById('lastUpdate').textContent = 
+                    `Last updated: ${new Date().toLocaleTimeString()}`;
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+            }
+        }
+
+        // Update metrics cards
+        function updateMetrics(data) {
+            const summary = data.summary || {};
+            
+            document.getElementById('overallHealth').textContent = 
+                summary.overall_health || 'Unknown';
+            document.getElementById('activeAlerts').textContent = 
+                summary.active_alerts || '0';
+            document.getElementById('avgResponseTime').textContent = 
+                `${(summary.average_response_time || 0).toFixed(2)}ms`;
+            document.getElementById('errorRate').textContent = 
+                `${((summary.error_rate || 0) * 100).toFixed(2)}%`;
+        }
+
+        // Update charts
+        function updateCharts(data) {
+            // Update response time chart
+            const performanceData = data.services?.performance?.performance || {};
+            const responseTime = performanceData.average_response_time || 0;
+            
+            responseTimeChart.data.labels.push(new Date().toLocaleTimeString());
+            responseTimeChart.data.datasets[0].data.push(responseTime * 1000); // Convert to ms
+            
+            // Keep only last 20 data points
+            if (responseTimeChart.data.labels.length > 20) {
+                responseTimeChart.data.labels.shift();
+                responseTimeChart.data.datasets[0].data.shift();
+            }
+            
+            responseTimeChart.update();
+
+            // Update system resources chart
+            const systemData = data.services?.performance?.system || {};
+            systemResourcesChart.data.datasets[0].data = [
+                systemData.cpu_usage || 0,
+                systemData.memory_usage?.percentage || 0,
+                systemData.disk_usage?.percentage || 0
+            ];
+            systemResourcesChart.update();
+        }
+
+        // Update alerts
+        function updateAlerts(data) {
+            const alertsData = data.services?.alerting || {};
+            const activeAlerts = alertsData.active_alerts || [];
+            const alertsList = document.getElementById('alertsList');
+            
+            if (activeAlerts.length === 0) {
+                alertsList.innerHTML = '<div class="text-center text-gray-500 py-8">No active alerts</div>';
+                return;
+            }
+            
+            alertsList.innerHTML = activeAlerts.map(alert => `
+                <div class="alert-${alert.severity} border-l-4 p-4 rounded">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-semibold">${alert.name}</h4>
+                            <p class="text-sm text-gray-600">${alert.description}</p>
+                            <p class="text-xs text-gray-500">
+                                ${alert.value} ${alert.condition} ${alert.threshold}
+                            </p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="acknowledgeAlert('${alert.id}')" 
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm">
+                                Acknowledge
+                            </button>
+                            <button onclick="suppressAlert('${alert.id}')" 
+                                    class="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm">
+                                Suppress
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update logs
+        function updateLogs(data) {
+            const logsData = data.services?.logging || {};
+            const recentLogs = logsData.recent_logs || [];
+            const logsList = document.getElementById('logsList');
+            
+            if (recentLogs.length === 0) {
+                logsList.innerHTML = '<div class="text-center text-gray-500 py-8">No recent logs</div>';
+                return;
+            }
+            
+            logsList.innerHTML = recentLogs.slice(-10).map(log => `
+                <div class="border-b pb-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <span class="inline-block px-2 py-1 rounded text-xs font-medium ${getLogLevelClass(log.level)}">
+                                ${log.level}
+                            </span>
+                            <span class="text-sm text-gray-600 ml-2">${log.logger}</span>
+                        </div>
+                        <span class="text-xs text-gray-500">
+                            ${new Date(log.timestamp).toLocaleTimeString()}
+                        </span>
+                    </div>
+                    <p class="text-sm mt-1">${log.message}</p>
+                </div>
+            `).join('');
+        }
+
+        // Update service health
+        function updateServiceHealth(data) {
+            const healthData = data.services?.observability?.health || {};
+            const serviceHealth = healthData.service_health || {};
+            const healthList = document.getElementById('serviceHealthList');
+            
+            const services = Object.keys(serviceHealth);
+            if (services.length === 0) {
+                healthList.innerHTML = '<div class="text-center text-gray-500 py-8">No service health data</div>';
+                return;
+            }
+            
+            healthList.innerHTML = services.map(serviceName => {
+                const service = serviceHealth[serviceName];
+                return `
+                    <div class="flex justify-between items-center p-3 border rounded">
+                        <div>
+                            <h4 class="font-medium">${serviceName}</h4>
+                            <p class="text-sm text-gray-600">
+                                Response: ${service.response_time?.toFixed(2)}ms
+                            </p>
+                        </div>
+                        <span class="status-${service.status} font-medium">
+                            ${service.status?.toUpperCase()}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update traces
+        function updateTraces(data) {
+            const tracesData = data.services?.apm?.traces || {};
+            const recentTraces = tracesData.recent || [];
+            const tracesList = document.getElementById('tracesList');
+            
+            if (recentTraces.length === 0) {
+                tracesList.innerHTML = '<div class="text-center text-gray-500 py-8">No recent traces</div>';
+                return;
+            }
+            
+            tracesList.innerHTML = recentTraces.slice(-10).map(trace => `
+                <div class="border-b pb-2">
+                    <div class="flex justify-between items-start">
+                        <div class="flex-1">
+                            <span class="font-medium text-sm">${trace.trace_id?.substring(0, 8)}...</span>
+                            <span class="text-sm text-gray-600 ml-2">${trace.spans?.length || 0} spans</span>
+                        </div>
+                        <span class="text-xs text-gray-500">
+                            ${(trace.duration || 0).toFixed(2)}ms
+                        </span>
+                    </div>
+                    <p class="text-sm mt-1 text-gray-600">${trace.spans?.[0]?.operation_name || 'Unknown operation'}</p>
+                </div>
+            `).join('');
+        }
+
+        // Update SLA metrics
+        function updateSLA(data) {
+            const slaData = data.services?.observability?.sla || {};
+            const slaMetrics = document.getElementById('slaMetrics');
+            
+            const slaKeys = Object.keys(slaData);
+            if (slaKeys.length === 0) {
+                slaMetrics.innerHTML = '<div class="text-center text-gray-500 py-8">No SLA data</div>';
+                return;
+            }
+            
+            slaMetrics.innerHTML = slaKeys.map(key => {
+                const sla = slaData[key];
+                if (sla.error) return '';
+                
+                const compliance = sla.compliance || 0;
+                const statusClass = compliance >= sla.target ? 'text-green-600' : 'text-red-600';
+                
+                return `
+                    <div class="text-center p-4 border rounded">
+                        <h4 class="font-medium mb-2">${key.replace(/_/g, ' ').toUpperCase()}</h4>
+                        <div class="text-2xl font-bold ${statusClass}">
+                            ${compliance.toFixed(1)}%
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            Target: ${sla.target}%
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            ${sla.data_points} data points
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Utility functions
+        function getLogLevelClass(level) {
+            switch(level) {
+                case 'ERROR': return 'bg-red-100 text-red-800';
+                case 'WARNING': return 'bg-yellow-100 text-yellow-800';
+                case 'INFO': return 'bg-blue-100 text-blue-800';
+                case 'DEBUG': return 'bg-gray-100 text-gray-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        // Alert actions
+        async function acknowledgeAlert(alertId) {
+            try {
+                const response = await fetch(`/api/v1/monitoring/alerts/${alertId}/acknowledge`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_id: 'dashboard_user'
+                    })
+                });
+                
+                if (response.ok) {
+                    loadDashboard(); // Refresh dashboard
+                }
+            } catch (error) {
+                console.error('Error acknowledging alert:', error);
+            }
+        }
+
+        async function suppressAlert(alertId) {
+            try {
+                const response = await fetch(`/api/v1/monitoring/alerts/${alertId}/suppress`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        duration_minutes: 60
+                    })
+                });
+                
+                if (response.ok) {
+                    loadDashboard(); // Refresh dashboard
+                }
+            } catch (error) {
+                console.error('Error suppressing alert:', error);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+name: Security Scanning
+
+on:
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety pip-audit
+
+    - name: Run Safety check
+      run: |
+        safety check --json --output safety-report.json
+      continue-on-error: true
+
+    - name: Run pip-audit
+      run: |
+        pip-audit --format=json --output=pip-audit-report.json
+      continue-on-error: true
+
+    - name: Upload vulnerability reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: dependency-scan-reports
+        path: |
+          safety-report.json
+          pip-audit-report.json
+
+  secret-scan:
+    name: Secret Detection
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run TruffleHog
+      uses: trufflesecurity/trufflehog@main
+      with:
+        path: ./
+        base: main
+        head: HEAD
+        extra_args: --debug --only-verified
+
+  code-analysis:
+    name: Static Code Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install analysis tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install bandit semgrep
+
+    - name: Run Bandit security linter
+      run: |
+        bandit -r app/ -f json -o bandit-security-report.json
+
+    - name: Run Semgrep
+      run: |
+        semgrep --config=auto app/ --json --output=semgrep-security-report.json
+
+    - name: Upload security analysis reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-analysis-reports
+        path: |
+          bandit-security-report.json
+          semgrep-security-report.json
+
+  container-scan:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        load: true
+        tags: cost-simulator:security-scan
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: 'cost-simulator:security-scan'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'

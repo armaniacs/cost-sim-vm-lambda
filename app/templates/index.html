@@ -38,8 +38,8 @@
                         <div class="mb-3">
                             <label for="executionTime" class="form-label">Execution Time</label>
                             <select id="executionTime" class="form-select" required>
-                                <option value="1">1 second</option>
-                                <option value="10" selected>10 seconds</option>
+                                <option value="1" selected>1 second</option>
+                                <option value="10">10 seconds</option>
                                 <option value="30">30 seconds</option>
                                 <option value="60">60 seconds</option>
                             </select>
@@ -164,7 +164,7 @@
 
                         <!-- Egress Free Tier Toggle -->
                         <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="includeEgressFreeTier" checked>
+                            <input class="form-check-input" type="checkbox" id="includeEgressFreeTier">
                             <label class="form-check-label" for="includeEgressFreeTier">
                                 <i class="bi bi-cloud-arrow-up me-1"></i>Include free egress tier (AWS, Google Cloud, Azure, OCI)
                             </label>
@@ -214,9 +214,9 @@
                                 </label>
                             </div>
                             <select id="sakuraInstanceType" class="form-select form-select-sm">
-                                <option value="1core_1gb">1 core/1 GB (¥1,595/month)</option>
+                                <option value="1core_1gb" selected>1 core/1 GB (¥1,595/month)</option>
                                 <option value="2core_2gb">2 core/2 GB (¥3,190/month)</option>
-                                <option value="2core_4gb" selected>2 core/4 GB (¥4,180/month)</option>
+                                <option value="2core_4gb">2 core/4 GB (¥4,180/month)</option>
                                 <option value="4core_8gb">4 core/8 GB (¥7,370/month)</option>
                                 <option value="6core_12gb">6 core/12 GB (¥11,560/month)</option>
                             </select>

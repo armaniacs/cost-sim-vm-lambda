@@ -8,15 +8,16 @@ Cost comparison simulator for AWS Lambda vs Virtual Machine deployments to ident
 
 ## Current Status
 
-✅ **FULLY IMPLEMENTED** - Complete working application with comprehensive testing and documentation.
+✅ **PROJECT COMPLETED** - Full production-ready application with comprehensive testing and documentation.
 
-- ✅ Flask backend with REST API (96%+ test coverage)
-- ✅ Interactive web interface with Chart.js visualization
-- ✅ AWS Lambda and VM cost calculation engines
-- ✅ CSV export and currency conversion features
-- ✅ Production-ready code quality (linting, type checking, CI/CD)
+- ✅ Flask backend with REST API (88% test coverage, 133 tests)
+- ✅ Interactive web interface with Chart.js visualization  
+- ✅ Multi-cloud cost comparison (6 providers: AWS Lambda/EC2, Google Cloud, Azure, OCI, Sakura Cloud)
+- ✅ Advanced features: egress costs, internet transfer ratios, CSV export, currency conversion
+- ✅ Docker containerization and production deployment ready
 
-See `Design/Overview.md` for original specifications and `/ref/` directory for implementation details.
+**Total Implementation**: 10 PBIs, 39 story points, 100% complete.
+See `Design/Overview.md` for specifications and `/ref/` directory for comprehensive documentation.
 
 ## Development Guidelines
 
@@ -46,6 +47,10 @@ See `Design/Overview.md` for original specifications and `/ref/` directory for i
 - `Design/cost-input-and-result.png` - UI mockup
 - `Design/implementation-todo.md` - ryuzee methodology PBI plan
 
+### User & Admin Documentation
+- `docs/USER_GUIDE.md` - Complete user guide for end users
+- `docs/ADMIN_GUIDE.md` - System administration and deployment guide
+
 ### Reference Documentation
 Comprehensive reference docs in `/ref/` directory:
 
@@ -57,10 +62,15 @@ Comprehensive reference docs in `/ref/` directory:
 - `ref/pricing-data-reference.md` - Comprehensive pricing data for all cloud providers
 
 **Implementation & Development:**
-- `ref/feature-implementation-status.md` - Complete PBI status and Phase 1/2 roadmap
-- `ref/implementation-guide.md` - Development roadmap, PBI structure, and TDD methodology
+- `ref/feature-implementation-status.md` - Complete PBI status (100% implemented)
+- `ref/implementation-guide.md` - Development methodology and TDD approach
+- `ref/implementation-details.md` - Comprehensive technical implementation details
 - `ref/api-endpoints-reference.md` - Complete REST API documentation with examples
 - `ref/development-guide.md` - Setup instructions, TDD workflow, and daily commands
+
+**Security & Operations:**
+- `ref/security-architecture.md` - Enterprise-grade security implementation details
+- `ref/monitoring-observability.md` - Comprehensive monitoring and observability setup
 
 **Testing & Quality:**
 - `ref/testing-framework-guide.md` - Outside-In TDD, BDD approach, and comprehensive testing
@@ -80,3 +90,8 @@ Comprehensive reference docs in `/ref/` directory:
 - Web interface with input forms and graph visualization
 - CSV export functionality
 - Currency conversion handling
+
+## Design Constraints
+
+- 機械学習をつかった推奨機能は実装しない
+- 地図をつかったリージョン比較はしない

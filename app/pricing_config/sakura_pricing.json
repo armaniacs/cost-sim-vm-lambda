@@ -11,7 +11,8 @@
         "memory_gb": 1,
         "storage_gb": 20,
         "storage_type": "SSD"
-      }
+      },
+      "recommended": true
     },
     "2core_2gb": {
       "monthly_price": 3190,
@@ -29,8 +30,7 @@
         "memory_gb": 4,
         "storage_gb": 20,
         "storage_type": "SSD"
-      },
-      "recommended": true
+      }
     },
     "4core_8gb": {
       "monthly_price": 7370,
