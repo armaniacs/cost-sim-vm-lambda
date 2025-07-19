@@ -94,7 +94,7 @@ PORT=8000 make dev
 
 ## ライセンス
 
-MIT License
+Apache License 2.0
 
 ---
 

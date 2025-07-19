@@ -25,7 +25,7 @@
     "break-even"
   ],
   "author": "Cost Simulator Team",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/armaniacs/cost-sim-vm-lambda/issues"
   },
