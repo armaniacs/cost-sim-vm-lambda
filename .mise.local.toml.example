@@ -1,0 +1,25 @@
+# ローカル開発環境設定のサンプル
+# このファイルを .mise.local.toml にコピーして使用してください
+
+[env]
+# Security Environment Variables (Required for SEC-01)
+# 以下のコマンドで安全なキーを生成してください:
+# openssl rand -hex 32
+
+SECRET_KEY = "generate-your-own-secure-secret-key-here-minimum-32-chars"
+CSRF_SECRET_KEY = "generate-your-own-secure-csrf-key-here-minimum-32-chars"
+JWT_SECRET_KEY = "generate-your-own-secure-jwt-key-here-minimum-32-chars"
+
+# セットアップ手順:
+# 1. このファイルを .mise.local.toml にコピー:
+#    cp .mise.local.toml.example .mise.local.toml
+#
+# 2. セキュアなキーを生成して設定:
+#    export SECRET_KEY=$(openssl rand -hex 32)
+#    export CSRF_SECRET_KEY=$(openssl rand -hex 32)
+#    export JWT_SECRET_KEY=$(openssl rand -hex 32)
+#    
+# 3. .mise.local.toml ファイルを編集して上記の値を設定
+#
+# 4. 開発サーバー起動:
+#    make dev

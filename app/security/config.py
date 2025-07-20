@@ -141,7 +141,7 @@ class SecurityConfig:
             },
             "csrf": {
                 "enabled": True,
-                "secret_key": os.environ.get("CSRF_SECRET_KEY", "csrf-secret-key-change-in-production"),
+                "secret_key": os.environ.get("CSRF_SECRET_KEY"),
                 "token_lifetime": 3600,  # 1 hour
                 "cookie_name": "csrf_token",
                 "header_name": "X-CSRFToken",

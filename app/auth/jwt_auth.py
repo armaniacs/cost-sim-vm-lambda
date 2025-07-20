@@ -2,6 +2,7 @@
 JWT Authentication implementation for enterprise security
 """
 import datetime
+import os
 import jwt
 from functools import wraps
 from typing import Any, Dict, Optional, List
@@ -22,7 +23,10 @@ class JWTAuth:
     
     def init_app(self, app):
         """Initialize Flask app with JWT configuration"""
-        app.config.setdefault('JWT_SECRET_KEY', 'your-secret-key-change-in-production')
+        jwt_secret = os.environ.get('JWT_SECRET_KEY')
+        if not jwt_secret:
+            raise ValueError("JWT_SECRET_KEY environment variable is required")
+        app.config['JWT_SECRET_KEY'] = jwt_secret
         app.config.setdefault('JWT_ACCESS_TOKEN_EXPIRES', datetime.timedelta(hours=1))
         app.config.setdefault('JWT_REFRESH_TOKEN_EXPIRES', datetime.timedelta(days=30))
         app.config.setdefault('JWT_ALGORITHM', 'HS256')

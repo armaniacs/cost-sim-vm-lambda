@@ -7,6 +7,9 @@ FLASK_ENV = "development"
 FLASK_DEBUG = "1"
 PYTHONPATH = "."
 
+# Security Environment Variables are managed in .mise.local.toml (Git ignored)
+# See .mise.local.toml.example for setup instructions
+
 [tasks.install]
 description = "Install Python dependencies"
 run = "pip install -r requirements.txt"

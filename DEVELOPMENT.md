@@ -31,25 +31,37 @@ make dev
 
 ## 🛠️ 環境変数設定方法
 
-### 方法1: .mise.toml (推奨)
-**すでに設定済み** - `make dev` で自動的に読み込まれます。
-
-### 方法2: 手動設定
+### 方法1: .mise.local.toml (推奨)
 ```bash
-export SECRET_KEY="your-secret-key"
-export CSRF_SECRET_KEY="your-csrf-key"
-export JWT_SECRET_KEY="your-jwt-key"
+# サンプルファイルをコピー
+cp .mise.local.toml.example .mise.local.toml
+
+# セキュアなキーを生成
+export SECRET_KEY=$(openssl rand -hex 32)
+export CSRF_SECRET_KEY=$(openssl rand -hex 32)  
+export JWT_SECRET_KEY=$(openssl rand -hex 32)
+
+# .mise.local.toml ファイルを編集して上記のキーを設定
+# その後、開発サーバー起動
 make dev
 ```
 
-### 方法3: .env ファイル
+### 方法2: 手動環境変数設定
 ```bash
-# .env.development ファイルをコピー
-cp .env.development .env.local
+# セキュアなキーを生成
+export SECRET_KEY=$(openssl rand -hex 32)
+export CSRF_SECRET_KEY=$(openssl rand -hex 32)
+export JWT_SECRET_KEY=$(openssl rand -hex 32)
+make dev
+```
 
-# .env.local を編集
-# その後
-source .env.local
+### 方法3: .env.development ファイル
+```bash
+# サンプルファイルをコピー
+cp .env.development.example .env.development
+
+# .env.development ファイルを編集してセキュアなキーに変更
+source .env.development
 make dev
 ```
 
@@ -92,14 +104,25 @@ make docker-exec
 **原因**: セキュリティ環境変数が設定されていない
 
 **解決方法**:
-1. `.mise.toml` の環境変数設定を確認
-2. 手動で環境変数をエクスポート:
+1. **推奨**: セキュアなキーを生成:
    ```bash
-   export SECRET_KEY=dev-secret-key
-   export CSRF_SECRET_KEY=dev-csrf-key
-   export JWT_SECRET_KEY=dev-jwt-key
+   # セキュアなキーを生成
+   export SECRET_KEY=$(openssl rand -hex 32)
+   export CSRF_SECRET_KEY=$(openssl rand -hex 32)
+   export JWT_SECRET_KEY=$(openssl rand -hex 32)
+   
+   # アプリケーション起動
    make dev
    ```
+
+2. **または**: .mise.local.toml を使用:
+   ```bash
+   cp .mise.local.toml.example .mise.local.toml
+   # .mise.local.toml を編集してセキュアなキーに変更
+   make dev
+   ```
+
+**重要**: 本番環境では必ずセキュアなランダムキーを使用してください。
 
 ### Redis接続エラー (WARNING)
 ```

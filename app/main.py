@@ -7,6 +7,7 @@ from flask import Flask
 from flask_cors import CORS  # type: ignore
 
 from app.config import config
+from app.security.env_validator import validate_environment_or_exit
 
 
 def create_app(config_name: str = "default") -> Flask:
@@ -19,6 +20,9 @@ def create_app(config_name: str = "default") -> Flask:
     Returns:
         Configured Flask application instance
     """
+    # Validate security environment before creating app
+    validate_environment_or_exit()
+    
     app = Flask(__name__)
 
     # Determine configuration
@@ -78,6 +82,9 @@ def create_app(config_name: str = "default") -> Flask:
 
 
 if __name__ == "__main__":
+    # Validate security environment before starting
+    validate_environment_or_exit()
+    
     # Determine configuration based on environment
     env = os.environ.get("FLASK_ENV", "development")
     app = create_app(env)

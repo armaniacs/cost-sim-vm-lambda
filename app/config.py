@@ -8,7 +8,7 @@ from typing import Type
 class Config:
     """Base configuration"""
 
-    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-secret-key-change-in-production"
+    SECRET_KEY = os.environ.get("SECRET_KEY")
     TESTING = False
     DEBUG = False
 

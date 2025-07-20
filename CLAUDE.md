@@ -33,6 +33,7 @@ See `Design/Overview.md` for specifications and `/ref/` directory for comprehens
 - Use `make setup` for complete initial setup (recommended)
 - Use `mise install` for Python environment setup
 - Use `mise run install` for dependency installation
+- **Security Setup**: Create `.mise.local.toml` from `.mise.local.toml.example` with secure keys
 
 ### Daily Development Commands:
 - Use `make test` (or `make t`) for running tests with coverage
