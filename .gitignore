@@ -100,6 +100,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.development
 .venv
 env/
 venv/
@@ -153,3 +154,4 @@ safety-report.json
 
 # Temporary files
 temp/
+cookies.*
