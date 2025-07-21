@@ -815,7 +815,7 @@ async function calculateCosts(event) {
             vm_configs: getVMConfigs(formData),
             execution_range: {
                 min: 1000000,  // 1M (1,000,000)
-                max: 6000000,  // 6M (6 million)
+                max: Math.max(parseInt(formData.executionFrequency) * 3.0, 8000000),  // Extend data generation to cover full X-axis display
                 steps: 50
             },
             custom_egress_rates: window.getEgressRates(),
