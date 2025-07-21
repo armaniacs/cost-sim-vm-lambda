@@ -8,6 +8,7 @@ from flask_cors import CORS  # type: ignore
 
 from app.config import config
 from app.security.env_validator import validate_environment_or_exit
+from app.auth.jwt_auth import JWTAuth
 
 
 def create_app(config_name: str = "default") -> Flask:
@@ -29,13 +30,21 @@ def create_app(config_name: str = "default") -> Flask:
     config_name_to_use = os.environ.get("FLASK_ENV") or config_name
     app.config.from_object(config.get(config_name_to_use, config["default"]))
 
-    # Enable CORS for frontend integration
-    CORS(app)
+    # Initialize JWT authentication system
+    jwt_auth = JWTAuth()
+    jwt_auth.init_app(app)
+
+    # Enable secure CORS for frontend integration
+    allowed_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:5001,http://127.0.0.1:5001').split(',')
+    allowed_origins = [origin.strip() for origin in allowed_origins if origin.strip()]
+    CORS(app, origins=allowed_origins, supports_credentials=True)
 
     # Register blueprints
     from app.api.calculator_api import calculator_bp
+    from app.api.auth_api import auth_bp
 
     app.register_blueprint(calculator_bp, url_prefix="/api/v1/calculator")
+    app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
 
     # Frontend routes
     @app.route("/")
@@ -77,6 +86,27 @@ def create_app(config_name: str = "default") -> Flask:
     @app.route("/apple-touch-icon-precomposed.png")
     def apple_touch_icon() -> tuple[str, int]:
         return "", 204
+
+    # Authentication error handlers
+    @app.errorhandler(401)
+    def unauthorized_handler(error):
+        """Handle authentication failures"""
+        from flask import jsonify
+        return jsonify({
+            "success": False,
+            "error": "Unauthorized",
+            "message": "Authentication required. Please provide valid credentials."
+        }), 401
+
+    @app.errorhandler(403)
+    def forbidden_handler(error):
+        """Handle authorization failures"""
+        from flask import jsonify
+        return jsonify({
+            "success": False,
+            "error": "Forbidden", 
+            "message": "Insufficient permissions to access this resource."
+        }), 403
 
     return app
 

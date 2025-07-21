@@ -1,12 +1,14 @@
 """
 Authentication API endpoints for enterprise security
 """
+import datetime
 from typing import Dict, Any
 from flask import Blueprint, request, jsonify, current_app, g
 from marshmallow import Schema, fields, ValidationError
 
 from app.auth.service import AuthService
 from app.auth.jwt_auth import requires_auth, requires_permission
+from app.auth.models import User, Role, Permission
 
 
 # Create Blueprint
@@ -335,7 +337,7 @@ def list_users():
     """List all users (admin only)"""
     try:
         auth_service = AuthService()
-        users = auth_service.db_session.query(auth_service.db_session.query(User).all())
+        users = auth_service.db_session.query(User).all()
         
         return jsonify({
             "success": True,
