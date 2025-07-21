@@ -62,15 +62,15 @@
                             <label for="executionFrequency" class="form-label">Execution Frequency</label>
                             <div class="input-group">
                                 <select id="executionFrequencyPreset" class="form-select">
-                                    <option value="1000000" selected>1M/month</option>
-                                    <option value="2592000">1/second (~2.59M/month)</option>
+                                    <option value="1000000">1M/month</option>
+                                    <option value="2592000" selected>1/second (~2.59M/month)</option>
                                     <option value="25920000">10/second (~25.9M/month)</option>
                                     <option value="259200000">100/second (~259M/month)</option>
                                     <option value="custom">Custom</option>
                                 </select>
                                 <input type="number" id="executionFrequencyCustom" class="form-control" 
                                        placeholder="Enter executions" min="1" max="1000000000" step="1" 
-                                       value="1000000" required>
+                                       value="2592000" required>
                                 <span class="input-group-text">per month</span>
                             </div>
                             <div class="form-text">
@@ -655,7 +655,7 @@ function initializeExecutionFrequencyInput() {
     window.getExecutionFrequencyValue = function() {
         // Always use the value from the custom input field
         const value = parseInt(executionFrequencyCustom.value);
-        return isNaN(value) ? 1000000 : Math.max(1, Math.min(1000000000, value)); // Default to 1M, range 1-1B
+        return isNaN(value) ? 2592000 : Math.max(1, Math.min(1000000000, value)); // Default to 1/second (~2.59M), range 1-1B
     };
 }
 
