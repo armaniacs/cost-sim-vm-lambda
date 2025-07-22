@@ -162,6 +162,84 @@ execution_time_seconds: parseFloat(formData.executionTime), // 小数点対応
 
 ---
 
+## 追加セッション - 2025年7月21日 (継続)
+
+### 🎯 Execution Frequency デフォルト変更 (`b26f5d6`)
+
+**変更内容:**
+- デフォルト選択: `1M/month` → `1/second (~2.59M/month)`
+- カスタム入力デフォルト値: `1,000,000` → `2,592,000`
+- JavaScriptフォールバック値更新: `getExecutionFrequencyValue()`
+
+**理由:** より現実的な高頻度実行シナリオをデフォルト設定し、Lambda vs VM のコスト比較を実用的にするため
+
+### 🎯 Lambda Memory Size 直接入力対応 (`1f9759c`)
+
+**UI実装:**
+```html
+<!-- 変更前: プリセットのみ -->
+<select id="lambdaMemory" class="form-select" required>
+    <option value="128">128 MB</option>
+    <option value="512" selected>512 MB</option>
+    <option value="1024">1024 MB</option>
+    <option value="2048">2048 MB</option>
+</select>
+
+<!-- 変更後: プリセット+カスタム入力 -->
+<div class="input-group">
+    <select id="lambdaMemoryPreset" class="form-select">
+        <option value="128">128 MB</option>
+        <option value="512" selected>512 MB</option>
+        <option value="1024">1024 MB</option>
+        <option value="2048">2048 MB</option>
+        <option value="custom">Custom</option>
+    </select>
+    <input type="number" id="lambdaMemoryCustom" 
+           min="128" max="10240" step="1" value="512" required>
+    <span class="input-group-text">MB</span>
+</div>
+```
+
+**JavaScript機能:**
+- `initializeLambdaMemoryInput()`: 初期化・バリデーション
+- `getLambdaMemoryValue()`: 統一値取得関数
+- VM推奨機能との統合 (`updateVMRecommendations()`)
+
+**機能仕様:**
+- **範囲**: 128MB ～ 10,240MB (AWS Lambda最大メモリ)
+- **ステップ**: 1MB単位の精密入力
+- **デフォルト**: 512MB (後方互換性維持)
+- **バリデーション**: リアルタイム範囲チェック
+
+## 📋 現在の実装状況
+
+### ✅ **完了済み - UI柔軟性向上**
+- **Lambda Memory Size**: 128-10240MB の直接入力 (NEW ✨)
+- **Execution Time**: 0.1-900秒の直接入力 
+- **Execution Frequency**: 1-10億回/月の直接入力 (デフォルト: 1/second)
+- **Egress Transfer per Request**: 0.1KB単位の直接入力
+
+### ✅ **完了済み - セキュリティ実装**
+- **SEC-01**: ハードコードシークレット除去
+- **SEC-02**: API認証システム統合  
+- **SEC-03**: CORS設定強化
+- **SEC-04**: CSRF保護初期化
+
+### ✅ **完了済み - その他改善**
+- **OCI デフォルトVM**: E4.Flex → E2.1.Micro に変更
+
+### 📊 **統計情報**
+- **総コミット**: 3回 (メイン機能2回 + デフォルト変更1回)
+- **変更ファイル**: `app/templates/index.html` (主要)
+- **コード追加**: 150+ 行 (JavaScript関数、HTML構造)
+- **UI一貫性**: すべてのパラメータが同一パターンで統一
+
+**実装者**: Claude Code AI Assistant  
+**記録日**: 2025年7月21日  
+**セッション状態**: SEC-02完了、全パラメータ直接入力対応完了
+
+---
+
 # 開発環境セットアップガイド
 
 ## 🔐 セキュリティ要件
