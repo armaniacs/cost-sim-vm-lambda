@@ -1,0 +1,143 @@
+{
+  "app": {
+    "title": "AWS Lambda vs VM Cost Simulator",
+    "language_switcher": {
+      "english": "English",
+      "japanese": "日本語"
+    }
+  },
+  "ui": {
+    "buttons": {
+      "calculate": "Calculate",
+      "reset": "Reset",
+      "export_csv": "Export CSV",
+      "reset_default": "Reset to Default"
+    },
+    "loading": {
+      "calculating": "Calculating...",
+      "loading": "Loading..."
+    },
+    "messages": {
+      "no_data": "No data available",
+      "calculate_prompt": "Calculate to see break-even points",
+      "select_lambda": "Select Lambda memory to see recommendations",
+      "api_check": "Checking API connectivity..."
+    }
+  },
+  "sections": {
+    "configuration": "Configuration",
+    "quick_results": "Quick Results",
+    "cost_comparison_graph": "Cost Comparison Graph",
+    "detailed_data": "Detailed Data",
+    "breakeven_analysis": "Break-even Analysis"
+  },
+  "lambda": {
+    "section_title": "AWS Lambda Configuration",
+    "memory_size": "Memory Size",
+    "execution_time": "Execution Time",
+    "execution_frequency": "Execution Frequency",
+    "memory_description": "Lambda memory allocation (128MB to 10,240MB)",
+    "execution_time_description": "Lambda execution time (max 15 minutes = 900 seconds)",
+    "execution_frequency_description": "Monthly execution count (1 to 1 billion)",
+    "placeholders": {
+      "memory_mb": "Enter MB",
+      "execution_seconds": "Enter seconds", 
+      "execution_count": "Enter executions"
+    }
+  },
+  "egress": {
+    "title": "Egress Transfer per Request",
+    "description": "Amount of data transferred from Lambda/VM to internet per request",
+    "placeholder": "Enter KB"
+  },
+  "transfer_ratio": {
+    "title": "Internet Transfer Ratio",
+    "description": "Percentage of traffic that goes to the internet. 0% = fully private network, 100% = all traffic to internet",
+    "placeholder": "Custom"
+  },
+  "egress_rates": {
+    "title": "Egress Rates (USD/GB)",
+    "labels": {
+      "aws": "AWS Lambda/EC2",
+      "gcp": "Google Cloud",
+      "azure": "Azure", 
+      "oci": "OCI",
+      "sakura": "Sakura Cloud (JPY/GB)"
+    }
+  },
+  "vm_comparison": {
+    "title": "VM Instance Comparison",
+    "subtitle": "Select cloud providers to compare",
+    "providers": {
+      "aws_ec2": "AWS EC2",
+      "sakura_cloud": "Sakura Cloud",
+      "google_cloud": "Google Cloud", 
+      "azure": "Azure",
+      "oci": "Oracle Cloud Infrastructure (OCI)"
+    },
+    "lambda_recommendations": "Lambda Equivalent Recommendations:"
+  },
+  "currency": {
+    "title": "Currency Settings",
+    "exchange_rate": "Exchange Rate (JPY/USD)",
+    "exchange_rate_description": "Exchange rate for JPY/USD conversion (100-300 range)",
+    "placeholder": "Enter rate"
+  },
+  "table": {
+    "headers": {
+      "executions_month": "Executions/Month",
+      "lambda_cost": "Lambda Cost",
+      "ec2_cost": "EC2 Cost", 
+      "sakura_cost": "Sakura Cost",
+      "gcp_cost": "Google Cloud Cost",
+      "azure_cost": "Azure Cost",
+      "oci_cost": "OCI Cost",
+      "breakeven": "Break-even"
+    }
+  },
+  "chart": {
+    "title": "Cost Comparison Chart",
+    "x_axis": "Monthly Executions",
+    "y_axis": "Monthly Cost (USD)",
+    "legend": {
+      "aws_lambda": "AWS Lambda",
+      "aws_ec2": "AWS EC2",
+      "sakura_cloud": "Sakura Cloud",
+      "google_cloud": "Google Cloud",
+      "azure": "Azure",
+      "oci": "OCI"
+    },
+    "tooltip": {
+      "executions": "Executions",
+      "cost": "Cost"
+    }
+  },
+  "validation": {
+    "memory_range": "Memory size must be between 128 and 10,240 MB",
+    "execution_time_range": "Execution time must be between 0.1 and 900 seconds",
+    "execution_frequency_range": "Execution frequency must be between 1 and 1,000,000,000 per month",
+    "transfer_positive": "Transfer amount must be 0 or positive",
+    "transfer_ratio_range": "Transfer ratio must be between 0-100%",
+    "exchange_rate_range": "Exchange rate must be between 100-300"
+  },
+  "csv": {
+    "title": "AWS Lambda vs VM Cost Comparison Report",
+    "generated_date": "Generated Date",
+    "exchange_rate": "Exchange Rate",
+    "lambda_config": "Lambda Configuration",
+    "memory_mb": "Memory (MB)",
+    "execution_time": "Execution Time (sec)",
+    "monthly_executions": "Monthly Executions",
+    "cost_comparison": "Cost Comparison",
+    "breakeven_points": "Break-even Points",
+    "service": "Service",
+    "executions_second": "Executions/Second"
+  },
+  "errors": {
+    "calculation_failed": "Calculation failed. Please try again.",
+    "api_connection": "Failed to connect to server. Please check your network connection.",
+    "invalid_input": "Please check your input values.",
+    "server_error": "Server error occurred. Please try again later.",
+    "no_data_export": "No data to export. Please calculate first."
+  }
+}

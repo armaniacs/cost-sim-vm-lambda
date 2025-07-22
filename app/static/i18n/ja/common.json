@@ -1,0 +1,143 @@
+{
+  "app": {
+    "title": "Lambda vs VM コスト比較シミュレーター",
+    "language_switcher": {
+      "english": "English",
+      "japanese": "日本語"
+    }
+  },
+  "ui": {
+    "buttons": {
+      "calculate": "計算実行",
+      "reset": "リセット",
+      "export_csv": "CSVダウンロード",
+      "reset_default": "デフォルトに戻す"
+    },
+    "loading": {
+      "calculating": "計算中...",
+      "loading": "読み込み中..."
+    },
+    "messages": {
+      "no_data": "データがありません",
+      "calculate_prompt": "計算を実行して損益分岐点を確認してください",
+      "select_lambda": "Lambdaメモリを選択して推奨事項を確認してください",
+      "api_check": "API接続を確認中..."
+    }
+  },
+  "sections": {
+    "configuration": "設定",
+    "quick_results": "計算結果",
+    "cost_comparison_graph": "コスト比較グラフ",
+    "detailed_data": "詳細データ",
+    "breakeven_analysis": "損益分岐点分析"
+  },
+  "lambda": {
+    "section_title": "AWS Lambda 設定",
+    "memory_size": "メモリサイズ",
+    "execution_time": "実行時間",
+    "execution_frequency": "実行頻度",
+    "memory_description": "Lambdaメモリ割り当て（128MB～10,240MB）",
+    "execution_time_description": "Lambda実行時間（最大15分 = 900秒）",
+    "execution_frequency_description": "月間実行回数（1回～10億回）",
+    "placeholders": {
+      "memory_mb": "MBを入力",
+      "execution_seconds": "秒を入力",
+      "execution_count": "実行回数を入力"
+    }
+  },
+  "egress": {
+    "title": "リクエスト毎のEgress転送量",
+    "description": "Lambda/VMからインターネットへの1リクエスト当たりの転送データ量",
+    "placeholder": "KBを入力"
+  },
+  "transfer_ratio": {
+    "title": "インターネット転送比率",
+    "description": "インターネットへのトラフィック割合。0% = 完全プライベートネットワーク、100% = 全トラフィックがインターネット",
+    "placeholder": "カスタム"
+  },
+  "egress_rates": {
+    "title": "Egress料金（USD/GB）",
+    "labels": {
+      "aws": "AWS Lambda/EC2",
+      "gcp": "Google Cloud",
+      "azure": "Azure",
+      "oci": "OCI",
+      "sakura": "Sakura Cloud（円/GB）"
+    }
+  },
+  "vm_comparison": {
+    "title": "VMインスタンス比較",
+    "subtitle": "比較するクラウドプロバイダーを選択",
+    "providers": {
+      "aws_ec2": "AWS EC2",
+      "sakura_cloud": "Sakura Cloud",
+      "google_cloud": "Google Cloud",
+      "azure": "Azure",
+      "oci": "Oracle Cloud Infrastructure (OCI)"
+    },
+    "lambda_recommendations": "Lambda相当の推奨インスタンス:"
+  },
+  "currency": {
+    "title": "通貨設定",
+    "exchange_rate": "為替レート（円/ドル）",
+    "exchange_rate_description": "円/ドル為替レート（100-300円の範囲）",
+    "placeholder": "レートを入力"
+  },
+  "table": {
+    "headers": {
+      "executions_month": "月間実行回数",
+      "lambda_cost": "Lambda コスト",
+      "ec2_cost": "EC2 コスト",
+      "sakura_cost": "Sakura コスト",
+      "gcp_cost": "Google Cloud コスト",
+      "azure_cost": "Azure コスト",
+      "oci_cost": "OCI コスト",
+      "breakeven": "損益分岐点"
+    }
+  },
+  "chart": {
+    "title": "コスト比較グラフ",
+    "x_axis": "月間実行回数",
+    "y_axis": "月間コスト（円）",
+    "legend": {
+      "aws_lambda": "AWS Lambda",
+      "aws_ec2": "AWS EC2",
+      "sakura_cloud": "Sakura Cloud",
+      "google_cloud": "Google Cloud",
+      "azure": "Azure",
+      "oci": "OCI"
+    },
+    "tooltip": {
+      "executions": "実行回数",
+      "cost": "コスト"
+    }
+  },
+  "validation": {
+    "memory_range": "メモリサイズは128-10,240MBの範囲で入力してください",
+    "execution_time_range": "実行時間は0.1-900秒の範囲で入力してください",
+    "execution_frequency_range": "実行頻度は1-10億回/月の範囲で入力してください",
+    "transfer_positive": "転送量は0以上で入力してください",
+    "transfer_ratio_range": "転送比率は0-100%の範囲で入力してください",
+    "exchange_rate_range": "為替レートは100-300の範囲で入力してください"
+  },
+  "csv": {
+    "title": "Lambda vs VM コスト比較レポート",
+    "generated_date": "生成日時",
+    "exchange_rate": "為替レート",
+    "lambda_config": "Lambda設定",
+    "memory_mb": "メモリ（MB）",
+    "execution_time": "実行時間（秒）",
+    "monthly_executions": "月間実行回数",
+    "cost_comparison": "コスト比較",
+    "breakeven_points": "損益分岐点",
+    "service": "サービス",
+    "executions_second": "実行回数/秒"
+  },
+  "errors": {
+    "calculation_failed": "計算に失敗しました。再度お試しください。",
+    "api_connection": "サーバーとの接続に失敗しました。ネットワーク接続を確認してください。",
+    "invalid_input": "入力値を確認してください。",
+    "server_error": "サーバーエラーが発生しました。しばらくしてから再度お試しください。",
+    "no_data_export": "エクスポートするデータがありません。まず計算を実行してください。"
+  }
+}

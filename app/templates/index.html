@@ -8,13 +8,13 @@
     <div class="col-lg-4">
         <div class="card shadow-sm">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Configuration</h5>
+                <h5 class="mb-0"><i class="bi bi-gear me-2"></i><span data-i18n="sections.configuration">Configuration</span></h5>
             </div>
             <div class="card-body">
                 <!-- Quick Calculate Button at Top -->
                 <div class="d-grid gap-2 mb-4">
                     <button type="button" class="btn btn-primary btn-lg" onclick="calculateCosts()">
-                        <i class="bi bi-calculator me-2"></i>Calculate
+                        <i class="bi bi-calculator me-2"></i><span data-i18n="ui.buttons.calculate">Calculate</span>
                     </button>
                 </div>
                 
@@ -22,11 +22,11 @@
                 <form id="costCalculatorForm">
                     <div class="mb-4">
                         <h6 class="fw-bold text-primary mb-3">
-                            <i class="bi bi-cloud me-2"></i>AWS Lambda Configuration
+                            <i class="bi bi-cloud me-2"></i><span data-i18n="lambda.section_title">AWS Lambda Configuration</span>
                         </h6>
                         
                         <div class="mb-3">
-                            <label for="lambdaMemory" class="form-label">Memory Size</label>
+                            <label for="lambdaMemory" class="form-label" data-i18n="lambda.memory_size">Memory Size</label>
                             <div class="input-group">
                                 <select id="lambdaMemoryPreset" class="form-select">
                                     <option value="128">128 MB</option>
@@ -36,20 +36,20 @@
                                     <option value="custom">Custom</option>
                                 </select>
                                 <input type="number" id="lambdaMemoryCustom" class="form-control" 
-                                       placeholder="Enter MB" min="128" max="10240" step="1" 
-                                       value="512" required>
+                                       data-i18n-placeholder="lambda.placeholders.memory_mb" placeholder="Enter MB" 
+                                       min="128" max="10240" step="1" value="512" required>
                                 <span class="input-group-text">MB</span>
                             </div>
-                            <div class="form-text">
+                            <div class="form-text" data-i18n="lambda.memory_description">
                                 Lambda memory allocation (128MB to 10,240MB)
                             </div>
-                            <div id="lambdaMemoryError" class="invalid-feedback" style="display: none;">
+                            <div id="lambdaMemoryError" class="invalid-feedback" style="display: none;" data-i18n="validation.memory_range">
                                 Memory size must be between 128 and 10,240 MB
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="executionTime" class="form-label">Execution Time</label>
+                            <label for="executionTime" class="form-label" data-i18n="lambda.execution_time">Execution Time</label>
                             <div class="input-group">
                                 <select id="executionTimePreset" class="form-select">
                                     <option value="1" selected>1 second</option>
@@ -59,20 +59,20 @@
                                     <option value="custom">Custom</option>
                                 </select>
                                 <input type="number" id="executionTimeCustom" class="form-control" 
-                                       placeholder="Enter seconds" min="0.1" max="900" step="0.1" 
-                                       value="1" required>
+                                       data-i18n-placeholder="lambda.placeholders.execution_seconds" placeholder="Enter seconds" 
+                                       min="0.1" max="900" step="0.1" value="1" required>
                                 <span class="input-group-text">seconds</span>
                             </div>
-                            <div class="form-text">
+                            <div class="form-text" data-i18n="lambda.execution_time_description">
                                 Lambda execution time (max 15 minutes = 900 seconds)
                             </div>
-                            <div id="executionTimeError" class="invalid-feedback" style="display: none;">
+                            <div id="executionTimeError" class="invalid-feedback" style="display: none;" data-i18n="validation.execution_time_range">
                                 Execution time must be between 0.1 and 900 seconds
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="executionFrequency" class="form-label">Execution Frequency</label>
+                            <label for="executionFrequency" class="form-label" data-i18n="lambda.execution_frequency">Execution Frequency</label>
                             <div class="input-group">
                                 <select id="executionFrequencyPreset" class="form-select">
                                     <option value="1000000">1M/month</option>
@@ -82,21 +82,21 @@
                                     <option value="custom">Custom</option>
                                 </select>
                                 <input type="number" id="executionFrequencyCustom" class="form-control" 
-                                       placeholder="Enter executions" min="1" max="1000000000" step="1" 
-                                       value="2592000" required>
+                                       data-i18n-placeholder="lambda.placeholders.execution_count" placeholder="Enter executions" 
+                                       min="1" max="1000000000" step="1" value="2592000" required>
                                 <span class="input-group-text">per month</span>
                             </div>
-                            <div class="form-text">
+                            <div class="form-text" data-i18n="lambda.execution_frequency_description">
                                 Monthly execution count (1 to 1 billion)
                             </div>
-                            <div id="executionFrequencyError" class="invalid-feedback" style="display: none;">
+                            <div id="executionFrequencyError" class="invalid-feedback" style="display: none;" data-i18n="validation.execution_frequency_range">
                                 Execution frequency must be between 1 and 1,000,000,000 per month
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="egressTransfer" class="form-label">
-                                <i class="bi bi-cloud-arrow-up me-1"></i>Egress Transfer per Request
+                                <i class="bi bi-cloud-arrow-up me-1"></i><span data-i18n="egress.title">Egress Transfer per Request</span>
                             </label>
                             <div class="input-group">
                                 <select id="egressPreset" class="form-select">
@@ -106,14 +106,14 @@
                                     <option value="custom">Custom</option>
                                 </select>
                                 <input type="number" id="egressCustom" class="form-control" 
-                                       placeholder="Enter KB" min="0" max="10000000" step="0.1" 
-                                       value="100">
+                                       data-i18n-placeholder="egress.placeholder" placeholder="Enter KB" 
+                                       min="0" max="10000000" step="0.1" value="100">
                                 <span class="input-group-text">KB</span>
                             </div>
-                            <div class="form-text">
+                            <div class="form-text" data-i18n="egress.description">
                                 Amount of data transferred from Lambda/VM to internet per request
                             </div>
-                            <div id="egressError" class="invalid-feedback" style="display: none;">
+                            <div id="egressError" class="invalid-feedback" style="display: none;" data-i18n="validation.transfer_positive">
                                 Transfer amount must be 0 or positive
                             </div>
                         </div>
@@ -121,7 +121,7 @@
                         <!-- Internet Transfer Ratio Configuration (PBI10) -->
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-globe me-1"></i>Internet Transfer Ratio
+                                <i class="bi bi-globe me-1"></i><span data-i18n="transfer_ratio.title">Internet Transfer Ratio</span>
                             </label>
                             <div class="row g-2 align-items-center">
                                 <div class="col-8">
@@ -142,15 +142,16 @@
                                 <div class="col-4">
                                     <div class="input-group input-group-sm">
                                         <input type="number" id="transferRatioCustom" class="form-control" 
-                                               placeholder="Custom" min="0" max="100" step="0.1">
+                                               data-i18n-placeholder="transfer_ratio.placeholder" placeholder="Custom" 
+                                               min="0" max="100" step="0.1">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-text">
+                            <div class="form-text" data-i18n="transfer_ratio.description">
                                 Percentage of traffic that goes to the internet. 0% = fully private network, 100% = all traffic to internet
                             </div>
-                            <div id="transferRatioError" class="invalid-feedback" style="display: none;">
+                            <div id="transferRatioError" class="invalid-feedback" style="display: none;" data-i18n="validation.transfer_ratio_range">
                                 Transfer ratio must be between 0-100%
                             </div>
                         </div>
@@ -158,41 +159,41 @@
                         <!-- Egress Rate Customization -->
                         <div class="mb-3">
                             <label class="form-label">
-                                <i class="bi bi-gear me-1"></i>Egress Rates (USD/GB)
+                                <i class="bi bi-gear me-1"></i><span data-i18n="egress_rates.title">Egress Rates (USD/GB)</span>
                             </label>
                             <div class="row g-2">
                                 <div class="col-md-6">
-                                    <label for="awsEgressRate" class="form-label text-muted small">AWS Lambda/EC2</label>
+                                    <label for="awsEgressRate" class="form-label text-muted small" data-i18n="egress_rates.labels.aws">AWS Lambda/EC2</label>
                                     <input type="number" id="awsEgressRate" class="form-control form-control-sm" 
                                            value="0.114" min="0" step="0.001" placeholder="0.114">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="gcpEgressRate" class="form-label text-muted small">Google Cloud</label>
+                                    <label for="gcpEgressRate" class="form-label text-muted small" data-i18n="egress_rates.labels.gcp">Google Cloud</label>
                                     <input type="number" id="gcpEgressRate" class="form-control form-control-sm" 
                                            value="0.12" min="0" step="0.001" placeholder="0.12">
                                 </div>
                             </div>
                             <div class="row g-2 mt-1">
                                 <div class="col-md-6">
-                                    <label for="azureEgressRate" class="form-label text-muted small">Azure</label>
+                                    <label for="azureEgressRate" class="form-label text-muted small" data-i18n="egress_rates.labels.azure">Azure</label>
                                     <input type="number" id="azureEgressRate" class="form-control form-control-sm" 
                                            value="0.12" min="0" step="0.001" placeholder="0.12">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="ociEgressRate" class="form-label text-muted small">OCI</label>
+                                    <label for="ociEgressRate" class="form-label text-muted small" data-i18n="egress_rates.labels.oci">OCI</label>
                                     <input type="number" id="ociEgressRate" class="form-control form-control-sm" 
                                            value="0.025" min="0" step="0.001" placeholder="0.025">
                                 </div>
                             </div>
                             <div class="row g-2 mt-1">
                                 <div class="col-md-6">
-                                    <label for="sakuraEgressRate" class="form-label text-muted small">Sakura Cloud (JPY/GB)</label>
+                                    <label for="sakuraEgressRate" class="form-label text-muted small" data-i18n="egress_rates.labels.sakura">Sakura Cloud (JPY/GB)</label>
                                     <input type="number" id="sakuraEgressRate" class="form-control form-control-sm" 
                                            value="0.0" min="0" step="0.001" placeholder="0.0">
                                 </div>
                                 <div class="col-md-6 d-flex align-items-end">
                                     <button type="button" id="resetEgressRates" class="btn btn-outline-secondary btn-sm">
-                                        <i class="bi bi-arrow-clockwise me-1"></i>Reset to Default
+                                        <i class="bi bi-arrow-clockwise me-1"></i><span data-i18n="ui.buttons.reset_default">Reset to Default</span>
                                     </button>
                                 </div>
                             </div>
@@ -223,14 +224,14 @@
                     <!-- VM Configuration -->
                     <div class="mb-4">
                         <h6 class="fw-bold text-success mb-3">
-                            <i class="bi bi-server me-2"></i>VM Comparison
+                            <i class="bi bi-server me-2"></i><span data-i18n="vm_comparison.title">VM Comparison</span>
                         </h6>
                         
                         <!-- EC2 Configuration -->
                         <div class="mb-3">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="compareEC2" checked>
-                                <label class="form-check-label" for="compareEC2">
+                                <label class="form-check-label" for="compareEC2" data-i18n="vm_comparison.providers.aws_ec2">
                                     AWS EC2
                                 </label>
                             </div>
@@ -248,7 +249,7 @@
                         <div class="mb-3">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="compareSakura" checked>
-                                <label class="form-check-label" for="compareSakura">
+                                <label class="form-check-label" for="compareSakura" data-i18n="vm_comparison.providers.sakura_cloud">
                                     Sakura Cloud
                                 </label>
                             </div>
@@ -265,7 +266,7 @@
                         <div class="mb-3">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="compareGCP" checked>
-                                <label class="form-check-label" for="compareGCP">
+                                <label class="form-check-label" for="compareGCP" data-i18n="vm_comparison.providers.google_cloud">
                                     Google Cloud
                                 </label>
                             </div>
@@ -283,7 +284,7 @@
                         <div class="mb-3">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="compareAzure" checked>
-                                <label class="form-check-label" for="compareAzure">
+                                <label class="form-check-label" for="compareAzure" data-i18n="vm_comparison.providers.azure">
                                     Azure
                                 </label>
                             </div>
@@ -303,7 +304,7 @@
                         <div class="mb-3">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" id="compareOCI" checked>
-                                <label class="form-check-label" for="compareOCI">
+                                <label class="form-check-label" for="compareOCI" data-i18n="vm_comparison.providers.oci">
                                     Oracle Cloud Infrastructure (OCI)
                                 </label>
                             </div>
@@ -320,19 +321,19 @@
 
                         <!-- Lambda Equivalent Recommendation -->
                         <div class="alert alert-info py-2 px-3 mb-0">
-                            <small class="d-block mb-1"><i class="bi bi-info-circle me-1"></i>Lambda Equivalent Recommendations:</small>
-                            <small id="vmRecommendations" class="text-muted">Select Lambda memory to see recommendations</small>
+                            <small class="d-block mb-1"><i class="bi bi-info-circle me-1"></i><span data-i18n="vm_comparison.lambda_recommendations">Lambda Equivalent Recommendations:</span></small>
+                            <small id="vmRecommendations" class="text-muted" data-i18n="ui.messages.select_lambda">Select Lambda memory to see recommendations</small>
                         </div>
                     </div>
 
                     <!-- Currency Settings -->
                     <div class="mb-4">
                         <h6 class="fw-bold text-warning mb-3">
-                            <i class="bi bi-currency-yen me-2"></i>Currency Settings
+                            <i class="bi bi-currency-yen me-2"></i><span data-i18n="currency.title">Currency Settings</span>
                         </h6>
                         
                         <div class="mb-3">
-                            <label for="exchangeRate" class="form-label">Exchange Rate (JPY/USD)</label>
+                            <label for="exchangeRate" class="form-label" data-i18n="currency.exchange_rate">Exchange Rate (JPY/USD)</label>
                             <div class="input-group">
                                 <select id="exchangeRatePreset" class="form-select">
                                     <option value="140">140 JPY/USD</option>
@@ -341,14 +342,14 @@
                                     <option value="custom">Custom</option>
                                 </select>
                                 <input type="number" id="exchangeRateCustom" class="form-control" 
-                                       placeholder="Enter rate" min="100" max="300" step="0.1" 
-                                       value="150" required>
+                                       data-i18n-placeholder="currency.placeholder" placeholder="Enter rate" 
+                                       min="100" max="300" step="0.1" value="150" required>
                                 <span class="input-group-text">JPY/USD</span>
                             </div>
-                            <div class="form-text">
+                            <div class="form-text" data-i18n="currency.exchange_rate_description">
                                 Exchange rate for JPY/USD conversion (100-300 range)
                             </div>
-                            <div id="exchangeRateError" class="invalid-feedback" style="display: none;">
+                            <div id="exchangeRateError" class="invalid-feedback" style="display: none;" data-i18n="validation.exchange_rate_range">
                                 Exchange rate must be between 100 and 300 JPY/USD
                             </div>
                         </div>
@@ -362,7 +363,7 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-calculator me-2"></i>Calculate
+                        <i class="bi bi-calculator me-2"></i><span data-i18n="ui.buttons.calculate">Calculate</span>
                     </button>
                 </form>
             </div>
@@ -371,11 +372,11 @@
         <!-- Quick Results -->
         <div class="card shadow-sm mt-3">
             <div class="card-header bg-info text-white">
-                <h6 class="mb-0"><i class="bi bi-speedometer me-2"></i>Quick Results</h6>
+                <h6 class="mb-0"><i class="bi bi-speedometer me-2"></i><span data-i18n="sections.quick_results">Quick Results</span></h6>
             </div>
             <div class="card-body">
                 <div id="quickResults">
-                    <p class="text-muted mb-0">Configure and calculate to see results</p>
+                    <p class="text-muted mb-0" data-i18n="ui.messages.calculate_prompt">Configure and calculate to see results</p>
                 </div>
             </div>
         </div>
@@ -386,7 +387,7 @@
         <!-- Graph -->
         <div class="card shadow-sm">
             <div class="card-header bg-success text-white">
-                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Cost Comparison Graph</h5>
+                <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i><span data-i18n="sections.cost_comparison_graph">Cost Comparison Graph</span></h5>
             </div>
             <div class="card-body">
                 <div style="position: relative; height: 400px;">
@@ -399,9 +400,9 @@
         <div class="card shadow-sm mt-3">
             <div class="card-header bg-secondary text-white">
                 <h6 class="mb-0">
-                    <i class="bi bi-table me-2"></i>Detailed Data
+                    <i class="bi bi-table me-2"></i><span data-i18n="sections.detailed_data">Detailed Data</span>
                     <button class="btn btn-sm btn-outline-light float-end" id="exportCSV">
-                        <i class="bi bi-download me-1"></i>Export CSV
+                        <i class="bi bi-download me-1"></i><span data-i18n="ui.buttons.export_csv">Export CSV</span>
                     </button>
                 </h6>
             </div>
@@ -410,19 +411,19 @@
                     <table class="table table-striped table-sm" id="dataTable">
                         <thead>
                             <tr>
-                                <th>Executions/Month</th>
-                                <th>Lambda Cost</th>
-                                <th>EC2 Cost</th>
-                                <th>Sakura Cost</th>
-                                <th>Google Cloud Cost</th>
-                                <th>Azure Cost</th>
-                                <th>OCI Cost</th>
-                                <th>Break-even</th>
+                                <th data-i18n="table.headers.executions_month">Executions/Month</th>
+                                <th data-i18n="table.headers.lambda_cost">Lambda Cost</th>
+                                <th data-i18n="table.headers.ec2_cost">EC2 Cost</th>
+                                <th data-i18n="table.headers.sakura_cost">Sakura Cost</th>
+                                <th data-i18n="table.headers.gcp_cost">Google Cloud Cost</th>
+                                <th data-i18n="table.headers.azure_cost">Azure Cost</th>
+                                <th data-i18n="table.headers.oci_cost">OCI Cost</th>
+                                <th data-i18n="table.headers.breakeven">Break-even</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="8" class="text-center text-muted">No data available</td>
+                                <td colspan="8" class="text-center text-muted" data-i18n="ui.messages.no_data">No data available</td>
                             </tr>
                         </tbody>
                     </table>
@@ -433,10 +434,10 @@
         <!-- Break-even Points -->
         <div class="card shadow-sm mt-3">
             <div class="card-header bg-warning text-dark">
-                <h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i>Break-even Analysis</h6>
+                <h6 class="mb-0"><i class="bi bi-bar-chart me-2"></i><span data-i18n="sections.breakeven_analysis">Break-even Analysis</span></h6>
             </div>
             <div class="card-body" id="breakEvenAnalysis">
-                <p class="text-muted mb-0">Calculate to see break-even points</p>
+                <p class="text-muted mb-0" data-i18n="ui.messages.calculate_prompt">Calculate to see break-even points</p>
             </div>
         </div>
     </div>
@@ -927,9 +928,45 @@ function initializeEgressInput() {
     };
 }
 
-// Initialize Chart.js
+// Initialize Chart.js with i18n support
 function initializeCostChart() {
     const ctx = document.getElementById('costChart').getContext('2d');
+    
+    // Get chart labels from i18n if available, otherwise use defaults
+    const getChartLabels = () => {
+        if (window.i18n && window.i18n.getCurrentLanguage) {
+            return {
+                title: window.i18n.t('chart.title'),
+                xAxis: window.i18n.t('chart.x_axis'),
+                yAxis: window.i18n.t('chart.y_axis'),
+                legends: {
+                    aws_lambda: window.i18n.t('chart.legend.aws_lambda'),
+                    aws_ec2: window.i18n.t('chart.legend.aws_ec2'),
+                    sakura_cloud: window.i18n.t('chart.legend.sakura_cloud'),
+                    google_cloud: window.i18n.t('chart.legend.google_cloud'),
+                    azure: window.i18n.t('chart.legend.azure'),
+                    oci: window.i18n.t('chart.legend.oci')
+                }
+            };
+        } else {
+            // Fallback to English
+            return {
+                title: 'Cost Comparison Chart',
+                xAxis: 'Monthly Executions',
+                yAxis: 'Monthly Cost (USD)',
+                legends: {
+                    aws_lambda: 'AWS Lambda',
+                    aws_ec2: 'AWS EC2',
+                    sakura_cloud: 'Sakura Cloud',
+                    google_cloud: 'Google Cloud',
+                    azure: 'Azure',
+                    oci: 'OCI'
+                }
+            };
+        }
+    };
+    
+    const chartLabels = getChartLabels();
     
     costChart = new Chart(ctx, {
         type: 'line',
@@ -937,42 +974,42 @@ function initializeCostChart() {
             labels: [],
             datasets: [
                 {
-                    label: 'AWS Lambda',
+                    label: chartLabels.legends.aws_lambda,
                     data: [],
                     borderColor: '#007bff',
                     backgroundColor: 'rgba(0, 123, 255, 0.1)',
                     tension: 0.1
                 },
                 {
-                    label: 'AWS EC2 (t3.small)',
+                    label: chartLabels.legends.aws_ec2 + ' (t3.small)',
                     data: [],
                     borderColor: '#28a745',
                     backgroundColor: 'rgba(40, 167, 69, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
-                    label: 'Sakura Cloud (2core/4GB)',
+                    label: chartLabels.legends.sakura_cloud + ' (2core/4GB)',
                     data: [],
                     borderColor: '#fd7e14',
                     backgroundColor: 'rgba(253, 126, 20, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
-                    label: 'Google Cloud (e2-micro)',
+                    label: chartLabels.legends.google_cloud + ' (e2-micro)',
                     data: [],
                     borderColor: '#FFC107',
                     backgroundColor: 'rgba(255, 193, 7, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
-                    label: 'Azure (B2ms)',
+                    label: chartLabels.legends.azure + ' (B2ms)',
                     data: [],
                     borderColor: '#0078D4',
                     backgroundColor: 'rgba(0, 120, 212, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
-                    label: 'OCI (VM.Standard.E4.Flex_2_16)',
+                    label: chartLabels.legends.oci + ' (VM.Standard.E4.Flex_2_16)',
                     data: [],
                     borderColor: '#F80000',
                     backgroundColor: 'rgba(248, 0, 0, 0.1)',
@@ -992,18 +1029,22 @@ function initializeCostChart() {
                     type: 'logarithmic',
                     title: {
                         display: true,
-                        text: 'Monthly Executions'
+                        text: chartLabels.xAxis
                     }
                 },
                 y: {
                     title: {
                         display: true,
-                        text: 'Monthly Cost ($)'
+                        text: chartLabels.yAxis
                     },
                     beginAtZero: true
                 }
             },
             plugins: {
+                title: {
+                    display: true,
+                    text: chartLabels.title
+                },
                 legend: {
                     position: 'top'
                 },
@@ -1218,14 +1259,44 @@ function updateChart(data) {
     const azureData = data.comparison_data.map(d => convertCurrency(d.vm_costs[azureKey] || 0));
     const ociData = data.comparison_data.map(d => convertCurrency(d.vm_costs[ociKey] || 0));
     
-    // Update chart labels and Y-axis
+    // Update chart labels and Y-axis with i18n support
     const currencySymbol = displayInJPY ? '¥' : '$';
-    costChart.data.datasets[1].label = `AWS EC2 (${formData.ec2InstanceType})`;
-    costChart.data.datasets[2].label = `Sakura Cloud (${formData.sakuraInstanceType})`;
-    costChart.data.datasets[3].label = `Google Cloud (${formData.gcpInstanceType})`;
-    costChart.data.datasets[4].label = `Azure (${formData.azureInstanceType})`;
-    costChart.data.datasets[5].label = `OCI (${formData.ociInstanceType})`;
-    costChart.options.scales.y.title.text = `Monthly Cost (${currencySymbol})`;
+    const currencyLabel = displayInJPY ? '円' : 'USD';
+    
+    // Get chart legend labels from i18n if available
+    const getChartLegends = () => {
+        if (window.i18n && window.i18n.getCurrentLanguage) {
+            return {
+                aws_lambda: window.i18n.t('chart.legend.aws_lambda'),
+                aws_ec2: window.i18n.t('chart.legend.aws_ec2'),
+                sakura_cloud: window.i18n.t('chart.legend.sakura_cloud'),
+                google_cloud: window.i18n.t('chart.legend.google_cloud'),
+                azure: window.i18n.t('chart.legend.azure'),
+                oci: window.i18n.t('chart.legend.oci'),
+                y_axis: window.i18n.t('chart.y_axis')
+            };
+        } else {
+            return {
+                aws_lambda: 'AWS Lambda',
+                aws_ec2: 'AWS EC2',
+                sakura_cloud: 'Sakura Cloud',
+                google_cloud: 'Google Cloud',
+                azure: 'Azure',
+                oci: 'OCI',
+                y_axis: 'Monthly Cost'
+            };
+        }
+    };
+    
+    const chartLegends = getChartLegends();
+    
+    costChart.data.datasets[0].label = chartLegends.aws_lambda;
+    costChart.data.datasets[1].label = `${chartLegends.aws_ec2} (${formData.ec2InstanceType})`;
+    costChart.data.datasets[2].label = `${chartLegends.sakura_cloud} (${formData.sakuraInstanceType})`;
+    costChart.data.datasets[3].label = `${chartLegends.google_cloud} (${formData.gcpInstanceType})`;
+    costChart.data.datasets[4].label = `${chartLegends.azure} (${formData.azureInstanceType})`;
+    costChart.data.datasets[5].label = `${chartLegends.oci} (${formData.ociInstanceType})`;
+    costChart.options.scales.y.title.text = `${chartLegends.y_axis} (${currencySymbol})`;
     
     costChart.data.labels = labels;
     costChart.data.datasets[0].data = lambdaData;
@@ -1418,10 +1489,11 @@ function updateBreakEvenAnalysis(breakEvenPoints) {
     document.getElementById('breakEvenAnalysis').innerHTML = html;
 }
 
-// Export to CSV
+// Export to CSV with i18n support
 function exportToCSV() {
     if (comparisonData.length === 0) {
-        showError('No data to export. Please calculate first.');
+        const errorMsg = window.i18n ? window.i18n.t('errors.no_data_export') : 'No data to export. Please calculate first.';
+        showError(errorMsg);
         return;
     }
     
@@ -1435,27 +1507,69 @@ function exportToCSV() {
     const exchangeRate = parseFloat(formData.exchangeRate);
     const displayInJPY = formData.displayCurrency;
     const currencySymbol = displayInJPY ? 'JPY' : 'USD';
+    const currentLang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
     
     const formatCurrency = (usdValue) => {
         const value = displayInJPY ? usdValue * exchangeRate : usdValue;
         return displayInJPY ? Math.round(value) : value.toFixed(2);
     };
     
+    // Get CSV labels from i18n
+    const getCSVLabels = () => {
+        if (window.i18n) {
+            return {
+                title: window.i18n.t('csv.title') || 'AWS Lambda vs VM Cost Comparison Report',
+                generated_date: window.i18n.t('csv.generated_date') || 'Generated Date',
+                exchange_rate: window.i18n.t('csv.exchange_rate') || 'Exchange Rate',
+                lambda_config: window.i18n.t('csv.lambda_config') || 'Lambda Configuration',
+                memory_mb: window.i18n.t('csv.memory_mb') || 'Memory (MB)',
+                execution_time: window.i18n.t('csv.execution_time') || 'Execution Time (sec)',
+                monthly_executions: window.i18n.t('csv.monthly_executions') || 'Monthly Executions',
+                cost_comparison: window.i18n.t('csv.cost_comparison') || 'Cost Comparison',
+                executions_month: window.i18n.t('table.headers.executions_month') || 'Executions/Month',
+                lambda_cost: window.i18n.t('table.headers.lambda_cost') || 'Lambda Cost',
+                breakeven_points: window.i18n.t('csv.breakeven_points') || 'Break-even Points',
+                service: window.i18n.t('csv.service') || 'Service',
+                executions_second: window.i18n.t('csv.executions_second') || 'Executions/Second'
+            };
+        } else {
+            return {
+                title: 'AWS Lambda vs VM Cost Comparison Report',
+                generated_date: 'Generated Date',
+                exchange_rate: 'Exchange Rate',
+                lambda_config: 'Lambda Configuration',
+                memory_mb: 'Memory (MB)',
+                execution_time: 'Execution Time (sec)',
+                monthly_executions: 'Monthly Executions',
+                cost_comparison: 'Cost Comparison',
+                executions_month: 'Executions/Month',
+                lambda_cost: 'Lambda Cost',
+                breakeven_points: 'Break-even Points',
+                service: 'Service',
+                executions_second: 'Executions/Second'
+            };
+        }
+    };
+    
+    const csvLabels = getCSVLabels();
     const now = new Date();
-    const timestamp = now.toLocaleString('ja-JP');
     
-    // CSV with metadata as per PBI #5 specification
-    let csv = '\ufeff'; // UTF-8 BOM for Excel Japanese support
-    csv += '"AWS Lambda vs VM Cost Comparison Report"\n';
-    csv += `"Generated Date","${timestamp}"\n`;
-    csv += `"Exchange Rate","${exchangeRate} JPY/USD"\n\n`;
+    // Use appropriate locale for timestamp
+    const locale = currentLang === 'ja' ? 'ja-JP' : 'en-US';
+    const timestamp = now.toLocaleString(locale);
     
-    csv += '"Lambda Configuration"\n';
-    csv += '"Memory (MB)","Execution Time (sec)","Monthly Executions"\n';
+    // CSV with metadata and i18n support
+    let csv = '\ufeff'; // UTF-8 BOM for Excel support
+    csv += `"${csvLabels.title}"\n`;
+    csv += `"${csvLabels.generated_date}","${timestamp}"\n`;
+    csv += `"${csvLabels.exchange_rate}","${exchangeRate} JPY/USD"\n\n`;
+    
+    csv += `"${csvLabels.lambda_config}"\n`;
+    csv += `"${csvLabels.memory_mb}","${csvLabels.execution_time}","${csvLabels.monthly_executions}"\n`;
     csv += `"${formData.lambdaMemory}","${formData.executionTime}","${formData.executionFrequency}"\n\n`;
     
-    csv += '"Cost Comparison"\n';
-    csv += `"Executions/Month","Lambda Cost (${currencySymbol})"`;
+    csv += `"${csvLabels.cost_comparison}"\n`;
+    csv += `"${csvLabels.executions_month}","${csvLabels.lambda_cost} (${currencySymbol})"`;
     if (formData.compareEC2) csv += `,"EC2 ${formData.ec2InstanceType} (${currencySymbol})"`;
     if (formData.compareSakura) csv += `,"Sakura ${formData.sakuraInstanceType} (${currencySymbol})"`;
     if (formData.compareGCP) csv += `,"Google Cloud ${formData.gcpInstanceType} (${currencySymbol})"`;
@@ -1475,8 +1589,8 @@ function exportToCSV() {
     
     // Add break-even points if available
     if (lastBreakEvenData && lastBreakEvenData.length > 0) {
-        csv += '\n"Break-even Points"\n';
-        csv += '"Service","Executions/Month","Executions/Second"\n';
+        csv += `\n"${csvLabels.breakeven_points}"\n`;
+        csv += `"${csvLabels.service}","${csvLabels.executions_month}","${csvLabels.executions_second}"\n`;
         lastBreakEvenData.forEach(point => {
             const providerMap = {
                 'aws_ec2': 'EC2',
@@ -1490,11 +1604,23 @@ function exportToCSV() {
         });
     }
     
+    // Generate filename based on language
+    const getFilename = () => {
+        const dateString = now.toISOString().split('T')[0].replace(/-/g, '');
+        const timeString = now.toTimeString().slice(0,8).replace(/:/g, '');
+        
+        if (currentLang === 'ja') {
+            return `コスト比較結果_${dateString}_${timeString}.csv`;
+        } else {
+            return `cost_comparison_${dateString}_${timeString}.csv`;
+        }
+    };
+    
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cost_comparison_${now.toISOString().split('T')[0].replace(/-/g, '')}_${now.toTimeString().slice(0,8).replace(/:/g, '')}.csv`;
+    a.download = getFilename();
     a.click();
     window.URL.revokeObjectURL(url);
 }

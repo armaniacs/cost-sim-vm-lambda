@@ -25,13 +25,13 @@
         <div class="container">
             <a class="navbar-brand" href="/">
                 <i class="bi bi-calculator me-2"></i>
-                AWS Lambda vs VM Cost Simulator
+                <span data-i18n="app.title">AWS Lambda vs VM Cost Simulator</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/">Home</a>
                     </li>
@@ -39,6 +39,10 @@
                         <a class="nav-link" href="/api/v1/calculator" target="_blank">API</a>
                     </li>
                 </ul>
+                <!-- Language Switcher -->
+                <div id="languageSwitcher" class="navbar-nav ms-auto">
+                    <!-- Language switcher will be inserted here by i18n.js -->
+                </div>
             </div>
         </div>
     </nav>
@@ -60,6 +64,9 @@
     
     <!-- Font Awesome replaced with Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- i18n Library -->
+    <script src="{{ url_for('static', filename='js/i18n.js') }}"></script>
     
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
