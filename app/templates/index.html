@@ -27,12 +27,25 @@
                         
                         <div class="mb-3">
                             <label for="lambdaMemory" class="form-label">Memory Size</label>
-                            <select id="lambdaMemory" class="form-select" required>
-                                <option value="128">128 MB</option>
-                                <option value="512" selected>512 MB</option>
-                                <option value="1024">1024 MB</option>
-                                <option value="2048">2048 MB</option>
-                            </select>
+                            <div class="input-group">
+                                <select id="lambdaMemoryPreset" class="form-select">
+                                    <option value="128">128 MB</option>
+                                    <option value="512" selected>512 MB</option>
+                                    <option value="1024">1024 MB</option>
+                                    <option value="2048">2048 MB</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                                <input type="number" id="lambdaMemoryCustom" class="form-control" 
+                                       placeholder="Enter MB" min="128" max="10240" step="1" 
+                                       value="512" required>
+                                <span class="input-group-text">MB</span>
+                            </div>
+                            <div class="form-text">
+                                Lambda memory allocation (128MB to 10,240MB)
+                            </div>
+                            <div id="lambdaMemoryError" class="invalid-feedback" style="display: none;">
+                                Memory size must be between 128 and 10,240 MB
+                            </div>
                         </div>
 
                         <div class="mb-3">
@@ -446,6 +459,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Page loaded - initializing cost calculator...');
     console.log('🕐 Current timestamp:', {{ timestamp|default(0) }});
     initializeCostChart();
+    initializeLambdaMemoryInput();
     initializeExecutionTimeInput();
     initializeExecutionFrequencyInput();
     initializeEgressInput();
@@ -464,7 +478,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners
     document.getElementById('costCalculatorForm').addEventListener('submit', calculateCosts);
     document.getElementById('exportCSV').addEventListener('click', exportToCSV);
-    document.getElementById('lambdaMemory').addEventListener('change', updateVMRecommendations);
+    // Lambda memory change handler will be set up in initializeLambdaMemoryInput
     
     // Enable/disable instance type dropdowns based on checkbox state
     document.getElementById('compareEC2').addEventListener('change', function() {
@@ -562,6 +576,58 @@ const executionRateLinesPlugin = {
 
 // Register the plugin
 Chart.register(executionRateLinesPlugin);
+
+// Initialize lambda memory input handling
+function initializeLambdaMemoryInput() {
+    const lambdaMemoryPreset = document.getElementById('lambdaMemoryPreset');
+    const lambdaMemoryCustom = document.getElementById('lambdaMemoryCustom');
+    const lambdaMemoryError = document.getElementById('lambdaMemoryError');
+    
+    // Handle preset/custom toggle
+    lambdaMemoryPreset.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            // Custom option selected - keep input visible and focused
+            lambdaMemoryCustom.focus();
+        } else {
+            // Preset option selected - update custom input value
+            lambdaMemoryCustom.value = this.value;
+            validateLambdaMemoryInput();
+        }
+    });
+    
+    // Validate custom lambda memory input
+    lambdaMemoryCustom.addEventListener('input', validateLambdaMemoryInput);
+    lambdaMemoryCustom.addEventListener('blur', validateLambdaMemoryInput);
+    
+    // Add change handler for VM recommendations
+    lambdaMemoryPreset.addEventListener('change', updateVMRecommendations);
+    lambdaMemoryCustom.addEventListener('input', updateVMRecommendations);
+    
+    function validateLambdaMemoryInput() {
+        const value = parseInt(lambdaMemoryCustom.value);
+        const isValid = !isNaN(value) && value >= 128 && value <= 10240;
+        
+        if (!isValid) {
+            lambdaMemoryError.style.display = 'block';
+            lambdaMemoryCustom.classList.add('is-invalid');
+        } else {
+            lambdaMemoryError.style.display = 'none';
+            lambdaMemoryCustom.classList.remove('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    // Expose validation function globally
+    window.validateLambdaMemoryInput = validateLambdaMemoryInput;
+    
+    // Get current lambda memory value function
+    window.getLambdaMemoryValue = function() {
+        // Always use the value from the custom input field
+        const value = parseInt(lambdaMemoryCustom.value);
+        return isNaN(value) ? 512 : Math.max(128, Math.min(10240, value)); // Default to 512MB, range 128-10240MB
+    };
+}
 
 // Initialize execution time input handling
 function initializeExecutionTimeInput() {
@@ -986,7 +1052,7 @@ async function calculateCosts(event) {
 // Get form data
 function getFormData() {
     const data = {
-        lambdaMemory: document.getElementById('lambdaMemory').value,
+        lambdaMemory: window.getLambdaMemoryValue(),
         executionTime: window.getExecutionTimeValue(),
         executionFrequency: window.getExecutionFrequencyValue(),
         includeFreeTier: document.getElementById('includeFreeTier').checked,
@@ -1404,7 +1470,7 @@ async function loadAvailableInstances() {
 
 // Update VM recommendations based on Lambda memory
 async function updateVMRecommendations() {
-    const lambdaMemory = parseInt(document.getElementById('lambdaMemory').value);
+    const lambdaMemory = window.getLambdaMemoryValue();
     
     try {
         const response = await fetch('/api/v1/calculator/recommend', {
