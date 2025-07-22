@@ -333,7 +333,24 @@
                         
                         <div class="mb-3">
                             <label for="exchangeRate" class="form-label">Exchange Rate (JPY/USD)</label>
-                            <input type="number" id="exchangeRate" class="form-control" value="150" min="50" max="300" step="1" onchange="handleCurrencyChange()">
+                            <div class="input-group">
+                                <select id="exchangeRatePreset" class="form-select">
+                                    <option value="140">140 JPY/USD</option>
+                                    <option value="150" selected>150 JPY/USD</option>
+                                    <option value="160">160 JPY/USD</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                                <input type="number" id="exchangeRateCustom" class="form-control" 
+                                       placeholder="Enter rate" min="100" max="300" step="0.1" 
+                                       value="150" required>
+                                <span class="input-group-text">JPY/USD</span>
+                            </div>
+                            <div class="form-text">
+                                Exchange rate for JPY/USD conversion (100-300 range)
+                            </div>
+                            <div id="exchangeRateError" class="invalid-feedback" style="display: none;">
+                                Exchange rate must be between 100 and 300 JPY/USD
+                            </div>
                         </div>
 
                         <div class="form-check form-switch">
@@ -463,6 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeExecutionTimeInput();
     initializeExecutionFrequencyInput();
     initializeEgressInput();
+    initializeExchangeRateInput();
     
     // Test calculation functionality
     window.testCalculation = function() {
@@ -722,6 +740,58 @@ function initializeExecutionFrequencyInput() {
         // Always use the value from the custom input field
         const value = parseInt(executionFrequencyCustom.value);
         return isNaN(value) ? 2592000 : Math.max(1, Math.min(1000000000, value)); // Default to 1/second (~2.59M), range 1-1B
+    };
+}
+
+// Initialize exchange rate input handling
+function initializeExchangeRateInput() {
+    const exchangeRatePreset = document.getElementById('exchangeRatePreset');
+    const exchangeRateCustom = document.getElementById('exchangeRateCustom');
+    const exchangeRateError = document.getElementById('exchangeRateError');
+    
+    // Handle preset/custom toggle
+    exchangeRatePreset.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            // Custom option selected - keep input visible and focused
+            exchangeRateCustom.focus();
+        } else {
+            // Preset option selected - update custom input value
+            exchangeRateCustom.value = this.value;
+            validateExchangeRateInput();
+            handleCurrencyChange(); // Trigger currency change handler
+        }
+    });
+    
+    // Validate custom exchange rate input
+    exchangeRateCustom.addEventListener('input', function() {
+        validateExchangeRateInput();
+        handleCurrencyChange(); // Trigger currency change handler
+    });
+    exchangeRateCustom.addEventListener('blur', validateExchangeRateInput);
+    
+    function validateExchangeRateInput() {
+        const value = parseFloat(exchangeRateCustom.value);
+        const isValid = !isNaN(value) && value >= 100 && value <= 300;
+        
+        if (!isValid) {
+            exchangeRateError.style.display = 'block';
+            exchangeRateCustom.classList.add('is-invalid');
+        } else {
+            exchangeRateError.style.display = 'none';
+            exchangeRateCustom.classList.remove('is-invalid');
+        }
+        
+        return isValid;
+    }
+    
+    // Expose validation function globally
+    window.validateExchangeRateInput = validateExchangeRateInput;
+    
+    // Get current exchange rate value function
+    window.getExchangeRateValue = function() {
+        // Always use the value from the custom input field
+        const value = parseFloat(exchangeRateCustom.value);
+        return isNaN(value) ? 150 : Math.max(100, Math.min(300, value)); // Default to 150, range 100-300
     };
 }
 
@@ -1067,7 +1137,7 @@ function getFormData() {
         gcpInstanceType: document.getElementById('gcpInstanceType').value,
         azureInstanceType: document.getElementById('azureInstanceType').value,
         ociInstanceType: document.getElementById('ociInstanceType').value,
-        exchangeRate: parseFloat(document.getElementById('exchangeRate').value),
+        exchangeRate: window.getExchangeRateValue(),
         displayCurrency: document.getElementById('displayCurrency').checked,
         internetTransferRatio: window.getInternetTransferRatio()  // PBI10
     };
