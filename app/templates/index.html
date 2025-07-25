@@ -221,11 +221,148 @@
                         </div>
                     </div>
 
+                    <!-- Serverless Provider Selection (Progressive Disclosure) -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-info mb-3">
+                            <i class="bi bi-cloud-lightning me-2"></i><span data-i18n="serverless.section_title">Serverless Provider</span>
+                        </h6>
+                        
+                        <div class="mb-3">
+                            <label class="form-label" data-i18n="serverless.provider_selection">Select Serverless Provider</label>
+                            <div class="row g-2">
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="compareAWSLambda" checked>
+                                        <label class="form-check-label" for="compareAWSLambda">
+                                            <i class="bi bi-amazon text-warning me-1"></i>AWS Lambda
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="compareGCPFunctions">
+                                        <label class="form-check-label" for="compareGCPFunctions">
+                                            <i class="bi bi-google text-primary me-1"></i>GCP Functions
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="compareServerlessAll">
+                                        <label class="form-check-label" for="compareServerlessAll">
+                                            <i class="bi bi-check-all text-success me-1"></i><small>Compare All</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-text" data-i18n="serverless.provider_description">
+                                Select serverless platforms to compare. Multiple selections will show cost comparison.
+                            </div>
+                        </div>
+
+                        <!-- Progressive Disclosure: GCP Functions Specific Options -->
+                        <div id="gcpFunctionsOptions" class="border rounded p-3 bg-light" style="display: none;">
+                            <h6 class="text-primary mb-2">
+                                <i class="bi bi-google me-1"></i>Google Cloud Functions Configuration
+                            </h6>
+                            <div class="alert alert-info py-2 px-3 mb-3">
+                                <small><i class="bi bi-info-circle me-1"></i>
+                                    <strong>2M requests/month free tier</strong> - More generous than AWS Lambda (1M requests)
+                                </small>
+                            </div>
+                            
+                            <!-- GCP Functions Free Tier Option -->
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="includeGCPFreeTier" checked>
+                                    <label class="form-check-label" for="includeGCPFreeTier">
+                                        <strong>Include GCP Free Tier</strong>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <!-- Notice: GCP Functions uses same parameters as Lambda for fair comparison -->
+                            <div class="alert alert-success py-2 px-3 mb-3">
+                                <small><i class="bi bi-check-circle me-1"></i>
+                                    <strong>Fair Comparison:</strong> GCP Functions uses the same Memory, Execution Time, and Monthly Executions as Lambda for accurate cost comparison.
+                                </small>
+                            </div>
+                            
+                            <!-- GCP Functions specific options only -->
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label small" data-i18n="serverless.gcp.generation">Generation</label>
+                                    <select id="gcpGeneration" class="form-select form-select-sm">
+                                        <option value="2nd" selected>2nd Gen (Recommended)</option>
+                                        <option value="1st">1st Gen</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small" data-i18n="serverless.gcp.runtime">Runtime</label>
+                                    <select id="gcpRuntime" class="form-select form-select-sm">
+                                        <option value="python39" selected>Python 3.9</option>
+                                        <option value="nodejs18">Node.js 18</option>
+                                        <option value="go119">Go 1.19</option>
+                                        <option value="java11">Java 11</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-lightbulb me-1"></i>
+                                    <strong>Benefits:</strong> Lower cold start, better price/performance, larger free tier
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- AWS Lambda Options (Default) -->
+                        <div id="awsLambdaOptions" class="border rounded p-3 bg-light">
+                            <h6 class="text-warning mb-2">
+                                <i class="bi bi-amazon me-1"></i>AWS Lambda Configuration
+                            </h6>
+                            <div class="alert alert-warning py-2 px-3 mb-3">
+                                <small><i class="bi bi-info-circle me-1"></i>
+                                    <strong>1M requests + 400K GB-seconds/month free tier</strong>
+                                </small>
+                            </div>
+                            
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label small" data-i18n="serverless.aws.architecture">Architecture</label>
+                                    <select id="awsArchitecture" class="form-select form-select-sm">
+                                        <option value="x86_64" selected>x86_64</option>
+                                        <option value="arm64">ARM64 (Graviton2)</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label small" data-i18n="serverless.aws.runtime">Runtime</label>
+                                    <select id="awsRuntime" class="form-select form-select-sm">
+                                        <option value="python3.9" selected>Python 3.9</option>
+                                        <option value="nodejs18.x">Node.js 18.x</option>
+                                        <option value="go1.x">Go 1.x</option>
+                                        <option value="java11">Java 11</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- VM Configuration -->
                     <div class="mb-4">
-                        <h6 class="fw-bold text-success mb-3">
-                            <i class="bi bi-server me-2"></i><span data-i18n="vm_comparison.title">VM Comparison</span>
-                        </h6>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="fw-bold text-success mb-0">
+                                <i class="bi bi-server me-2"></i><span data-i18n="vm_comparison.title">VM Comparison</span>
+                            </h6>
+                            <div class="btn-group" role="group" aria-label="VM Selection Controls">
+                                <button type="button" id="selectAllVMs" class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-check-all me-1"></i>Select All
+                                </button>
+                                <button type="button" id="deselectAllVMs" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-x-square me-1"></i>Deselect All
+                                </button>
+                            </div>
+                        </div>
                         
                         <!-- EC2 Configuration -->
                         <div class="mb-3">
@@ -412,7 +549,7 @@
                         <thead>
                             <tr>
                                 <th data-i18n="table.headers.executions_month">Executions/Month</th>
-                                <th data-i18n="table.headers.lambda_cost">Lambda Cost</th>
+                                <th data-i18n="table.headers.serverless_cost">Serverless Cost</th>
                                 <th data-i18n="table.headers.ec2_cost">EC2 Cost</th>
                                 <th data-i18n="table.headers.sakura_cost">Sakura Cost</th>
                                 <th data-i18n="table.headers.gcp_cost">Google Cloud Cost</th>
@@ -482,6 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeExecutionFrequencyInput();
     initializeEgressInput();
     initializeExchangeRateInput();
+    initializeServerlessProviderSelection();
     
     // Test calculation functionality
     window.testCalculation = function() {
@@ -514,6 +652,14 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('compareOCI').addEventListener('change', function() {
         document.getElementById('ociInstanceType').disabled = !this.checked;
+    });
+    
+    // VM selection control event listeners
+    document.getElementById('selectAllVMs').addEventListener('click', function() {
+        selectAllVMs();
+    });
+    document.getElementById('deselectAllVMs').addEventListener('click', function() {
+        deselectAllVMs();
     });
     
     // Load available instances
@@ -928,6 +1074,103 @@ function initializeEgressInput() {
     };
 }
 
+// Initialize serverless provider selection with multi-selection support
+function initializeServerlessProviderSelection() {
+    const awsLambdaCheckbox = document.getElementById('compareAWSLambda');
+    const gcpFunctionsCheckbox = document.getElementById('compareGCPFunctions');
+    const compareAllCheckbox = document.getElementById('compareServerlessAll');
+    const awsLambdaOptions = document.getElementById('awsLambdaOptions');
+    const gcpFunctionsOptions = document.getElementById('gcpFunctionsOptions');
+    
+    // Progressive disclosure: Show/hide options based on provider selection
+    function toggleProviderOptions() {
+        const awsSelected = awsLambdaCheckbox.checked;
+        const gcpSelected = gcpFunctionsCheckbox.checked;
+        
+        // Show AWS Lambda options if selected
+        awsLambdaOptions.style.display = awsSelected ? 'block' : 'none';
+        
+        // Show GCP Functions options if selected
+        gcpFunctionsOptions.style.display = gcpSelected ? 'block' : 'none';
+        
+        console.log(`🔄 Serverless providers selected: AWS=${awsSelected}, GCP=${gcpSelected}`);
+        
+        // Update compare all checkbox state
+        compareAllCheckbox.checked = awsSelected && gcpSelected;
+    }
+    
+    // Handle "Compare All" checkbox
+    function handleCompareAll() {
+        if (compareAllCheckbox.checked) {
+            awsLambdaCheckbox.checked = true;
+            gcpFunctionsCheckbox.checked = true;
+            console.log('🔄 Compare All selected - enabling both providers');
+        } else {
+            // Keep at least one provider selected
+            if (!awsLambdaCheckbox.checked && !gcpFunctionsCheckbox.checked) {
+                awsLambdaCheckbox.checked = true;
+            }
+        }
+        toggleProviderOptions();
+    }
+    
+    // Ensure at least one provider is always selected
+    function ensureAtLeastOneProvider() {
+        if (!awsLambdaCheckbox.checked && !gcpFunctionsCheckbox.checked) {
+            awsLambdaCheckbox.checked = true;
+            console.log('🔄 Auto-selecting AWS Lambda (at least one required)');
+        }
+        toggleProviderOptions();
+    }
+    
+    // Add event listeners
+    awsLambdaCheckbox.addEventListener('change', ensureAtLeastOneProvider);
+    gcpFunctionsCheckbox.addEventListener('change', ensureAtLeastOneProvider);
+    compareAllCheckbox.addEventListener('change', handleCompareAll);
+    
+    // Initialize with AWS Lambda selected by default
+    toggleProviderOptions();
+    
+    // Expose function to get selected providers (returns array)
+    window.getSelectedServerlessProviders = function() {
+        const providers = [];
+        
+        if (awsLambdaCheckbox.checked) {
+            providers.push({
+                provider: 'aws_lambda',
+                config: {
+                    architecture: document.getElementById('awsArchitecture').value,
+                    runtime: document.getElementById('awsRuntime').value
+                }
+            });
+        }
+        
+        if (gcpFunctionsCheckbox.checked) {
+            providers.push({
+                provider: 'gcp_functions',
+                config: {
+                    generation: document.getElementById('gcpGeneration').value,
+                    runtime: document.getElementById('gcpRuntime').value
+                }
+            });
+        }
+        
+        return providers;
+    };
+    
+    // Backward compatibility - return primary provider
+    window.getSelectedServerlessProvider = function() {
+        const providers = window.getSelectedServerlessProviders();
+        return providers.length > 0 ? providers[0] : {
+            provider: 'aws_lambda',
+            config: {
+                architecture: 'x86_64',
+                runtime: 'python3.9'
+            }
+        };
+    };
+}
+
 // Initialize Chart.js with i18n support
 function initializeCostChart() {
     const ctx = document.getElementById('costChart').getContext('2d');
@@ -976,43 +1219,43 @@ function initializeCostChart() {
                 {
                     label: chartLabels.legends.aws_lambda,
                     data: [],
-                    borderColor: '#007bff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    borderColor: '#FF9900',  // AWS Orange
+                    backgroundColor: 'rgba(255, 153, 0, 0.1)',
                     tension: 0.1
                 },
                 {
                     label: chartLabels.legends.aws_ec2 + ' (t3.small)',
                     data: [],
-                    borderColor: '#28a745',
-                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderColor: '#FF9900',  // AWS Orange
+                    backgroundColor: 'rgba(255, 153, 0, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
                     label: chartLabels.legends.sakura_cloud + ' (2core/4GB)',
                     data: [],
-                    borderColor: '#fd7e14',
-                    backgroundColor: 'rgba(253, 126, 20, 0.1)',
+                    borderColor: '#FF69B4',  // Sakura Pink
+                    backgroundColor: 'rgba(255, 105, 180, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
                     label: chartLabels.legends.google_cloud + ' (e2-micro)',
                     data: [],
-                    borderColor: '#FFC107',
-                    backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                    borderColor: '#34A853',  // Google Green
+                    backgroundColor: 'rgba(52, 168, 83, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
                     label: chartLabels.legends.azure + ' (B2ms)',
                     data: [],
-                    borderColor: '#0078D4',
+                    borderColor: '#0078D4',  // Azure Blue
                     backgroundColor: 'rgba(0, 120, 212, 0.1)',
                     borderDash: [5, 5]
                 },
                 {
                     label: chartLabels.legends.oci + ' (VM.Standard.E4.Flex_2_16)',
                     data: [],
-                    borderColor: '#F80000',
-                    backgroundColor: 'rgba(248, 0, 0, 0.1)',
+                    borderColor: '#DC143C',  // OCI Red
+                    backgroundColor: 'rgba(220, 20, 60, 0.1)',
                     borderDash: [5, 5]
                 }
             ]
@@ -1099,7 +1342,11 @@ async function calculateCosts(event) {
             return;
         }
 
-        // Call comparison API
+        // Get selected serverless providers
+        const serverlessProviders = window.getSelectedServerlessProviders();
+        console.log('🔄 Selected serverless providers:', serverlessProviders.map(p => p.provider));
+        
+        // Always use comparison API for VM data
         const requestData = {
             lambda_config: {
                 memory_mb: parseInt(formData.lambdaMemory),
@@ -1117,11 +1364,12 @@ async function calculateCosts(event) {
             custom_egress_rates: window.getEgressRates(),
             include_egress_free_tier: formData.includeEgressFreeTier
         };
+        const apiEndpoint = '/api/v1/calculator/comparison';
         
-        console.log('🚀 Starting API request...');
+        console.log('🚀 Starting API request to:', apiEndpoint);
         const startTime = Date.now();
         
-        const response = await fetch('/api/v1/calculator/comparison', {
+        const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1141,12 +1389,9 @@ async function calculateCosts(event) {
         if (result.success) {
             console.log('✅ API SUCCESS - Updating UI');
             
-            comparisonData = result.data.comparison_data;
-            lastBreakEvenData = result.data.break_even_points;
-            updateChart(result.data);
-            updateQuickResults(formData);
-            updateDataTable(result.data);
-            updateBreakEvenAnalysis(result.data.break_even_points);
+            // Handle multi-serverless provider comparison
+            console.log('📊 Processing multi-serverless comparison');
+            handleMultiServerlessComparison(result.data, formData, serverlessProviders);
         } else {
             showError(result.error || 'Calculation failed');
         }
@@ -1158,6 +1403,947 @@ async function calculateCosts(event) {
         // Always hide loading indicator
         hideCalculating();
     }
+}
+
+// Handle multi-serverless provider comparison
+async function handleMultiServerlessComparison(comparisonData, formData, serverlessProviders) {
+    console.log('🔄 Processing multi-serverless comparison with VM data');
+    
+    try {
+        const serverlessCosts = {};
+        
+        // Fetch costs for each selected serverless provider
+        for (const provider of serverlessProviders) {
+            if (provider.provider === 'aws_lambda') {
+                // AWS Lambda cost is already in comparison data
+                console.log('✅ Using AWS Lambda data from comparison API');
+                serverlessCosts['aws_lambda'] = 'from_comparison';
+            } else if (provider.provider === 'gcp_functions') {
+                // Fetch GCP Functions cost via serverless API using GCP-specific parameters
+                console.log('🚀 Fetching GCP Functions cost...');
+                const gcpRequestData = {
+                    provider: provider.provider,
+                    memory_mb: parseInt(formData.lambdaMemory),
+                    execution_time_seconds: parseFloat(formData.executionTime),
+                    monthly_executions: parseInt(formData.executionFrequency),
+                    include_free_tier: formData.includeGCPFreeTier,
+                    egress_per_request_kb: window.getEgressValue(),
+                    internet_transfer_ratio: formData.internetTransferRatio,
+                    exchange_rate: parseFloat(formData.exchangeRate),
+                    include_ecosystem_benefits: false,
+                    include_egress_free_tier: formData.includeEgressFreeTier
+                };
+                
+                const gcpResponse = await fetch('/api/v1/calculator/serverless', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(gcpRequestData)
+                });
+                
+                if (gcpResponse.ok) {
+                    const gcpResult = await gcpResponse.json();
+                    if (gcpResult.success) {
+                        console.log('✅ GCP Functions cost calculated');
+                        serverlessCosts['gcp_functions'] = gcpResult.data;
+                    } else {
+                        throw new Error(gcpResult.error || 'GCP Functions calculation failed');
+                    }
+                } else {
+                    throw new Error(`GCP Functions API failed: ${gcpResponse.status}`);
+                }
+            }
+        }
+        
+        // Create adapted comparison data with multiple serverless providers
+        const adaptedComparisonData = comparisonData.comparison_data.map(point => {
+            const adaptedPoint = {
+                ...point,
+                serverless_costs: {}
+            };
+            
+            // Add AWS Lambda cost if selected
+            if (serverlessCosts['aws_lambda']) {
+                adaptedPoint.serverless_costs['aws_lambda'] = point.lambda_cost_usd;
+            }
+            
+            // Add GCP Functions cost if selected
+            if (serverlessCosts['gcp_functions']) {
+                const executionRatio = point.executions_per_month / parseInt(formData.executionFrequency);
+                adaptedPoint.serverless_costs['gcp_functions'] = serverlessCosts['gcp_functions'].total_cost_usd * executionRatio;
+            }
+            
+            return adaptedPoint;
+        });
+        
+        // Store the adapted data
+        window.comparisonData = adaptedComparisonData;
+        window.lastBreakEvenData = comparisonData.break_even_points;
+        window.serverlessCosts = serverlessCosts;
+        
+        // Update UI with multi-serverless + VM comparison
+        const adaptedData = {
+            ...comparisonData,
+            comparison_data: adaptedComparisonData
+        };
+        
+        updateMultiServerlessChart(adaptedData, formData, serverlessProviders, serverlessCosts);
+        updateMultiServerlessQuickResults(formData, serverlessProviders, serverlessCosts);
+        updateMultiServerlessDataTable(adaptedData, formData, serverlessProviders);
+        updateBreakEvenAnalysis(comparisonData.break_even_points);
+        
+    } catch (error) {
+        console.error('Failed to get serverless costs:', error);
+        // Fallback to showing comparison data as-is
+        showError('Failed to calculate some serverless costs. Showing available data.');
+        comparisonData = comparisonData.comparison_data;
+        lastBreakEvenData = comparisonData.break_even_points;
+        updateChart(comparisonData);
+        updateQuickResults(formData);
+        updateDataTable(comparisonData);
+        updateBreakEvenAnalysis(comparisonData.break_even_points);
+    }
+}
+
+// Update chart for multi-serverless comparison
+function updateMultiServerlessChart(data, formData, serverlessProviders, serverlessCosts) {
+    const labels = data.comparison_data.map(d => d.executions_per_month);
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    
+    // Convert to JPY if needed
+    const convertCurrency = (usdValue) => displayInJPY ? usdValue * exchangeRate : usdValue;
+    
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    
+    // Update chart data
+    costChart.data.labels = labels;
+    
+    // Dataset 0: AWS Lambda (if selected)
+    if (serverlessCosts['aws_lambda']) {
+        const awsLambdaData = data.comparison_data.map(d => convertCurrency(d.serverless_costs['aws_lambda'] || 0));
+        costChart.data.datasets[0].label = 'AWS Lambda';
+        costChart.data.datasets[0].data = awsLambdaData;
+        costChart.data.datasets[0].borderColor = '#FF9900';  // AWS Orange
+        costChart.data.datasets[0].backgroundColor = 'rgba(255, 153, 0, 0.1)';
+        costChart.data.datasets[0].borderDash = [];  // Solid line
+    } else {
+        costChart.data.datasets[0].data = [];
+    }
+    
+    // Add GCP Functions as a new dataset if selected
+    if (serverlessCosts['gcp_functions']) {
+        const gcpFunctionsData = data.comparison_data.map(d => convertCurrency(d.serverless_costs['gcp_functions'] || 0));
+        
+        // Use the first VM dataset slot for GCP Functions if AWS Lambda is not selected
+        const datasetIndex = serverlessCosts['aws_lambda'] ? 6 : 0; // Use slot after VMs or primary slot
+        
+        // Ensure we have enough datasets
+        while (costChart.data.datasets.length <= datasetIndex) {
+            costChart.data.datasets.push({
+                label: '',
+                data: [],
+                borderColor: '',
+                backgroundColor: '',
+                borderDash: []
+            });
+        }
+        
+        costChart.data.datasets[datasetIndex].label = 'Google Cloud Functions';
+        costChart.data.datasets[datasetIndex].data = gcpFunctionsData;
+        costChart.data.datasets[datasetIndex].borderColor = '#34A853';  // Google Green
+        costChart.data.datasets[datasetIndex].backgroundColor = 'rgba(52, 168, 83, 0.1)';
+        costChart.data.datasets[datasetIndex].borderDash = [];  // Solid line
+    }
+    
+    // Update VM datasets (1-5) with consistent vendor colors
+    const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
+    const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+    const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+    const azureKey = `azure_${formData.azureInstanceType}`;
+    const ociKey = `oci_${formData.ociInstanceType}`;
+    
+    const ec2Data = data.comparison_data.map(d => convertCurrency(d.vm_costs[ec2Key] || 0));
+    const sakuraData = data.comparison_data.map(d => convertCurrency(d.vm_costs[sakuraKey] || 0));
+    const gcpVMData = data.comparison_data.map(d => convertCurrency(d.vm_costs[gcpKey] || 0));
+    const azureData = data.comparison_data.map(d => convertCurrency(d.vm_costs[azureKey] || 0));
+    const ociData = data.comparison_data.map(d => convertCurrency(d.vm_costs[ociKey] || 0));
+    
+    // Check VM comparison checkbox states and show/hide datasets accordingly
+    const vmSelections = {
+        ec2: document.getElementById('compareEC2').checked,
+        sakura: document.getElementById('compareSakura').checked,
+        gcp: document.getElementById('compareGCP').checked,
+        azure: document.getElementById('compareAzure').checked,
+        oci: document.getElementById('compareOCI').checked
+    };
+
+    // AWS EC2 dataset (index 1) - completely hide when unselected
+    if (vmSelections.ec2) {
+        costChart.data.datasets[1].label = `AWS EC2 (${formData.ec2InstanceType})`;
+        costChart.data.datasets[1].data = ec2Data;
+        costChart.data.datasets[1].borderColor = '#FF9900';  // AWS Orange
+        costChart.data.datasets[1].backgroundColor = 'rgba(255, 153, 0, 0.1)';
+        costChart.data.datasets[1].hidden = false;
+    } else {
+        costChart.data.datasets[1].data = [];
+        costChart.data.datasets[1].label = '';
+        costChart.data.datasets[1].borderColor = 'transparent';
+        costChart.data.datasets[1].backgroundColor = 'transparent';
+        costChart.data.datasets[1].hidden = true;
+    }
+    
+    // Sakura Cloud dataset (index 2) - completely hide when unselected
+    if (vmSelections.sakura) {
+        costChart.data.datasets[2].label = `Sakura Cloud (${formData.sakuraInstanceType})`;
+        costChart.data.datasets[2].data = sakuraData;
+        costChart.data.datasets[2].borderColor = '#FF69B4';  // Sakura Pink
+        costChart.data.datasets[2].backgroundColor = 'rgba(255, 105, 180, 0.1)';
+        costChart.data.datasets[2].hidden = false;
+    } else {
+        costChart.data.datasets[2].data = [];
+        costChart.data.datasets[2].label = '';
+        costChart.data.datasets[2].borderColor = 'transparent';
+        costChart.data.datasets[2].backgroundColor = 'transparent';
+        costChart.data.datasets[2].hidden = true;
+    }
+    
+    // Google Cloud VM dataset (index 3) - completely hide when unselected
+    if (vmSelections.gcp) {
+        costChart.data.datasets[3].label = `Google Cloud VM (${formData.gcpInstanceType})`;
+        costChart.data.datasets[3].data = gcpVMData;
+        costChart.data.datasets[3].borderColor = '#34A853';  // Google Green
+        costChart.data.datasets[3].backgroundColor = 'rgba(52, 168, 83, 0.1)';
+        costChart.data.datasets[3].hidden = false;
+    } else {
+        costChart.data.datasets[3].data = [];
+        costChart.data.datasets[3].label = '';
+        costChart.data.datasets[3].borderColor = 'transparent';
+        costChart.data.datasets[3].backgroundColor = 'transparent';
+        costChart.data.datasets[3].hidden = true;
+    }
+    
+    // Azure dataset (index 4) - completely hide when unselected
+    if (vmSelections.azure) {
+        costChart.data.datasets[4].label = `Azure (${formData.azureInstanceType})`;
+        costChart.data.datasets[4].data = azureData;
+        costChart.data.datasets[4].borderColor = '#0078D4';  // Azure Blue
+        costChart.data.datasets[4].backgroundColor = 'rgba(0, 120, 212, 0.1)';
+        costChart.data.datasets[4].hidden = false;
+    } else {
+        costChart.data.datasets[4].data = [];
+        costChart.data.datasets[4].label = '';
+        costChart.data.datasets[4].borderColor = 'transparent';
+        costChart.data.datasets[4].backgroundColor = 'transparent';
+        costChart.data.datasets[4].hidden = true;
+    }
+    
+    // OCI dataset (index 5) - completely hide when unselected
+    if (vmSelections.oci) {
+        costChart.data.datasets[5].label = `OCI (${formData.ociInstanceType})`;
+        costChart.data.datasets[5].data = ociData;
+        costChart.data.datasets[5].borderColor = '#DC143C';  // OCI Red
+        costChart.data.datasets[5].backgroundColor = 'rgba(220, 20, 60, 0.1)';
+        costChart.data.datasets[5].hidden = false;
+    } else {
+        costChart.data.datasets[5].data = [];
+        costChart.data.datasets[5].label = '';
+        costChart.data.datasets[5].borderColor = 'transparent';
+        costChart.data.datasets[5].backgroundColor = 'transparent';
+        costChart.data.datasets[5].hidden = true;
+    }
+    
+    costChart.options.scales.y.title.text = `Monthly Cost (${currencySymbol})`;
+    costChart.update();
+}
+
+// Update quick results for multi-serverless comparison
+function updateMultiServerlessQuickResults(formData, serverlessProviders, serverlessCosts) {
+    const executions = parseInt(formData.executionFrequency);
+    const relevantVMData = window.comparisonData.find(d => d.executions_per_month >= executions);
+    
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    
+    const formatCurrency = (usdValue) => {
+        const value = displayInJPY ? usdValue * exchangeRate : usdValue;
+        return displayInJPY ? value.toLocaleString('ja-JP', {maximumFractionDigits: 0}) : value.toFixed(2);
+    };
+    
+    let html = `
+        <div class="row g-2">
+            <div class="col-12">
+                <small class="text-muted">Monthly cost for ${executions.toLocaleString()} executions:</small>
+            </div>
+    `;
+    
+    // Show AWS Lambda cost if selected
+    if (serverlessCosts['aws_lambda'] && relevantVMData) {
+        const awsCost = relevantVMData.serverless_costs['aws_lambda'];
+        html += `
+            <div class="col-12">
+                <div class="text-warning fw-bold">AWS Lambda: ${currencySymbol}${formatCurrency(awsCost)}</div>
+            </div>
+        `;
+    }
+    
+    // Show GCP Functions cost if selected
+    if (serverlessCosts['gcp_functions']) {
+        const gcpCost = displayInJPY ? serverlessCosts['gcp_functions'].total_cost_jpy : serverlessCosts['gcp_functions'].total_cost_usd;
+        const gcpFormattedCost = displayInJPY ? Math.round(gcpCost).toLocaleString('ja-JP') : gcpCost.toFixed(2);
+        html += `
+            <div class="col-12">
+                <div class="text-primary fw-bold">Google Cloud Functions: ${currencySymbol}${gcpFormattedCost}</div>
+            </div>
+        `;
+    }
+    
+    // Add VM costs
+    if (relevantVMData) {
+        const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
+        const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+        const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+        const azureKey = `azure_${formData.azureInstanceType}`;
+        const ociKey = `oci_${formData.ociInstanceType}`;
+        
+        if (formData.compareEC2) {
+            html += `
+                <div class="col-12">
+                    <div class="text-success fw-bold">EC2: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[ec2Key] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareSakura) {
+            html += `
+                <div class="col-12">
+                    <div class="text-warning fw-bold">Sakura: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[sakuraKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareGCP) {
+            html += `
+                <div class="col-12">
+                    <div class="text-info fw-bold">Google Cloud VM: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[gcpKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareAzure) {
+            html += `
+                <div class="col-12">
+                    <div class="text-azure fw-bold">Azure: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[azureKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareOCI) {
+            html += `
+                <div class="col-12">
+                    <div class="text-oci fw-bold">OCI: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[ociKey] || 0)}</div>
+                </div>
+            `;
+        }
+    }
+    
+    html += '</div>';
+    document.getElementById('quickResults').innerHTML = html;
+}
+
+// Update data table for multi-serverless comparison
+function updateMultiServerlessDataTable(data, formData, serverlessProviders) {
+    const tbody = document.querySelector('#dataTable tbody');
+    tbody.innerHTML = '';
+    
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    
+    const formatCurrency = (usdValue) => {
+        const value = displayInJPY ? usdValue * exchangeRate : usdValue;
+        return displayInJPY ? Math.round(value).toLocaleString('ja-JP') : value.toFixed(2);
+    };
+    
+    // Show every 5th data point to avoid clutter
+    const filteredData = data.comparison_data.filter((_, index) => index % 5 === 0);
+    
+    filteredData.forEach(row => {
+        const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
+        const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+        const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+        const azureKey = `azure_${formData.azureInstanceType}`;
+        const ociKey = `oci_${formData.ociInstanceType}`;
+        
+        const awsLambdaCost = row.serverless_costs?.['aws_lambda'] || 0;
+        const gcpFunctionsCost = row.serverless_costs?.['gcp_functions'] || 0;
+        
+        // Show AWS Lambda or GCP Functions cost (or both)
+        let serverlessColumnContent = '';
+        if (awsLambdaCost > 0 && gcpFunctionsCost > 0) {
+            serverlessColumnContent = `AWS: ${currencySymbol}${formatCurrency(awsLambdaCost)}<br>GCP: ${currencySymbol}${formatCurrency(gcpFunctionsCost)}`;
+        } else if (awsLambdaCost > 0) {
+            serverlessColumnContent = `${currencySymbol}${formatCurrency(awsLambdaCost)}`;
+        } else if (gcpFunctionsCost > 0) {
+            serverlessColumnContent = `${currencySymbol}${formatCurrency(gcpFunctionsCost)}`;
+        } else {
+            serverlessColumnContent = 'N/A';
+        }
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.executions_per_month.toLocaleString()}</td>
+            <td>${serverlessColumnContent}</td>
+            <td>${formData.compareEC2 ? currencySymbol + formatCurrency(row.vm_costs[ec2Key] || 0) : 'N/A'}</td>
+            <td>${formData.compareSakura ? currencySymbol + formatCurrency(row.vm_costs[sakuraKey] || 0) : 'N/A'}</td>
+            <td>${formData.compareGCP ? currencySymbol + formatCurrency(row.vm_costs[gcpKey] || 0) : 'N/A'}</td>
+            <td>${formData.compareAzure ? currencySymbol + formatCurrency(row.vm_costs[azureKey] || 0) : 'N/A'}</td>
+            <td>${formData.compareOCI ? currencySymbol + formatCurrency(row.vm_costs[ociKey] || 0) : 'N/A'}</td>
+            <td>🔍</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Handle GCP Functions with VM comparison data
+async function handleGCPFunctionsWithVMComparison(comparisonData, formData, serverlessProvider) {
+    console.log('🔄 Processing GCP Functions with VM comparison data');
+    
+    try {
+        // Get GCP Functions cost via serverless API using GCP-specific parameters
+        const gcpRequestData = {
+            provider: serverlessProvider.provider,
+            memory_mb: parseInt(formData.lambdaMemory),
+            execution_time_seconds: parseFloat(formData.executionTime),
+            monthly_executions: parseInt(formData.executionFrequency),
+            include_free_tier: formData.includeGCPFreeTier,
+            egress_per_request_kb: window.getEgressValue(),
+            internet_transfer_ratio: formData.internetTransferRatio,
+            exchange_rate: parseFloat(formData.exchangeRate),
+            include_ecosystem_benefits: false
+        };
+        
+        console.log('🚀 Fetching GCP Functions cost...');
+        const gcpResponse = await fetch('/api/v1/calculator/serverless', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(gcpRequestData)
+        });
+        
+        if (!gcpResponse.ok) {
+            throw new Error(`GCP Functions API failed: ${gcpResponse.status}`);
+        }
+        
+        const gcpResult = await gcpResponse.json();
+        
+        if (gcpResult.success) {
+            console.log('✅ GCP Functions cost calculated');
+            
+            // Replace Lambda data with GCP Functions data in comparison
+            const adaptedComparisonData = comparisonData.comparison_data.map(point => {
+                // Scale GCP Functions cost proportionally based on Lambda execution count
+                const executionRatio = point.executions_per_month / parseInt(formData.executionFrequency);
+                const scaledGCPCostUSD = gcpResult.data.total_cost_usd * executionRatio;
+                
+                return {
+                    ...point,
+                    lambda_cost_usd: scaledGCPCostUSD  // Replace with GCP Functions cost
+                };
+            });
+            
+            // Store the adapted data
+            window.comparisonData = adaptedComparisonData;
+            window.lastBreakEvenData = comparisonData.break_even_points;
+            
+            // Update UI with GCP Functions + VM comparison
+            const adaptedData = {
+                ...comparisonData,
+                comparison_data: adaptedComparisonData
+            };
+            
+            updateGCPFunctionsChart(adaptedData, formData, serverlessProvider, gcpResult.data);
+            updateGCPFunctionsQuickResults(gcpResult.data, formData, serverlessProvider);
+            updateDataTable(adaptedData);
+            updateBreakEvenAnalysis(comparisonData.break_even_points);
+            
+        } else {
+            throw new Error(gcpResult.error || 'GCP Functions calculation failed');
+        }
+        
+    } catch (error) {
+        console.error('Failed to get GCP Functions cost:', error);
+        // Fallback to showing only VM data with error message
+        showError('Failed to calculate GCP Functions cost. Showing VM data only.');
+        updateChart(comparisonData);
+        updateQuickResults(formData);
+        updateDataTable(comparisonData);
+        updateBreakEvenAnalysis(comparisonData.break_even_points);
+    }
+}
+
+// Update chart for GCP Functions with VM comparison
+function updateGCPFunctionsChart(data, formData, serverlessProvider, gcpFunctionsData) {
+    const labels = data.comparison_data.map(d => d.executions_per_month);
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    
+    // Convert to JPY if needed
+    const convertCurrency = (usdValue) => displayInJPY ? usdValue * exchangeRate : usdValue;
+    
+    const gcpFunctionsData_chart = data.comparison_data.map(d => convertCurrency(d.lambda_cost_usd));
+    
+    // Get selected VM instance types
+    const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
+    const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+    const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+    const azureKey = `azure_${formData.azureInstanceType}`;
+    const ociKey = `oci_${formData.ociInstanceType}`;
+    
+    const ec2Data = data.comparison_data.map(d => convertCurrency(d.vm_costs[ec2Key] || 0));
+    const sakuraData = data.comparison_data.map(d => convertCurrency(d.vm_costs[sakuraKey] || 0));
+    const gcpVMData = data.comparison_data.map(d => convertCurrency(d.vm_costs[gcpKey] || 0));
+    const azureData = data.comparison_data.map(d => convertCurrency(d.vm_costs[azureKey] || 0));
+    const ociData = data.comparison_data.map(d => convertCurrency(d.vm_costs[ociKey] || 0));
+    
+    // Update chart labels
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    
+    // Update chart data - show GCP Functions instead of Lambda
+    costChart.data.labels = labels;
+    costChart.data.datasets[0].label = 'Google Cloud Functions';
+    costChart.data.datasets[0].data = gcpFunctionsData_chart;
+    costChart.data.datasets[0].borderColor = '#34A853';  // Google Green
+    costChart.data.datasets[0].backgroundColor = 'rgba(52, 168, 83, 0.1)';
+    
+    // Update VM datasets based on checkbox selections
+    const vmSelections = {
+        ec2: document.getElementById('compareEC2').checked,
+        sakura: document.getElementById('compareSakura').checked,
+        gcp: document.getElementById('compareGCP').checked,
+        azure: document.getElementById('compareAzure').checked,
+        oci: document.getElementById('compareOCI').checked
+    };
+
+    // AWS EC2 dataset (index 1) - completely hide when unselected
+    if (vmSelections.ec2) {
+        costChart.data.datasets[1].label = `AWS EC2 (${formData.ec2InstanceType})`;
+        costChart.data.datasets[1].data = ec2Data;
+        costChart.data.datasets[1].borderColor = '#FF9900';
+        costChart.data.datasets[1].backgroundColor = 'rgba(255, 153, 0, 0.1)';
+        costChart.data.datasets[1].hidden = false;
+    } else {
+        costChart.data.datasets[1].data = [];
+        costChart.data.datasets[1].label = '';
+        costChart.data.datasets[1].borderColor = 'transparent';
+        costChart.data.datasets[1].backgroundColor = 'transparent';
+        costChart.data.datasets[1].hidden = true;
+    }
+    
+    // Sakura Cloud dataset (index 2) - completely hide when unselected
+    if (vmSelections.sakura) {
+        costChart.data.datasets[2].label = `Sakura Cloud (${formData.sakuraInstanceType})`;
+        costChart.data.datasets[2].data = sakuraData;
+        costChart.data.datasets[2].borderColor = '#FF69B4';
+        costChart.data.datasets[2].backgroundColor = 'rgba(255, 105, 180, 0.1)';
+        costChart.data.datasets[2].hidden = false;
+    } else {
+        costChart.data.datasets[2].data = [];
+        costChart.data.datasets[2].label = '';
+        costChart.data.datasets[2].borderColor = 'transparent';
+        costChart.data.datasets[2].backgroundColor = 'transparent';
+        costChart.data.datasets[2].hidden = true;
+    }
+    
+    // Google Cloud VM dataset (index 3) - completely hide when unselected
+    if (vmSelections.gcp) {
+        costChart.data.datasets[3].label = `Google Cloud VM (${formData.gcpInstanceType})`;
+        costChart.data.datasets[3].data = gcpVMData;
+        costChart.data.datasets[3].borderColor = '#34A853';
+        costChart.data.datasets[3].backgroundColor = 'rgba(52, 168, 83, 0.1)';
+        costChart.data.datasets[3].hidden = false;
+    } else {
+        costChart.data.datasets[3].data = [];
+        costChart.data.datasets[3].label = '';
+        costChart.data.datasets[3].borderColor = 'transparent';
+        costChart.data.datasets[3].backgroundColor = 'transparent';
+        costChart.data.datasets[3].hidden = true;
+    }
+    
+    // Azure dataset (index 4) - completely hide when unselected
+    if (vmSelections.azure) {
+        costChart.data.datasets[4].label = `Azure (${formData.azureInstanceType})`;
+        costChart.data.datasets[4].data = azureData;
+        costChart.data.datasets[4].borderColor = '#0078D4';
+        costChart.data.datasets[4].backgroundColor = 'rgba(0, 120, 212, 0.1)';
+        costChart.data.datasets[4].hidden = false;
+    } else {
+        costChart.data.datasets[4].data = [];
+        costChart.data.datasets[4].label = '';
+        costChart.data.datasets[4].borderColor = 'transparent';
+        costChart.data.datasets[4].backgroundColor = 'transparent';
+        costChart.data.datasets[4].hidden = true;
+    }
+    
+    // OCI dataset (index 5) - completely hide when unselected
+    if (vmSelections.oci) {
+        costChart.data.datasets[5].label = `OCI (${formData.ociInstanceType})`;
+        costChart.data.datasets[5].data = ociData;
+        costChart.data.datasets[5].borderColor = '#DC143C';
+        costChart.data.datasets[5].backgroundColor = 'rgba(220, 20, 60, 0.1)';
+        costChart.data.datasets[5].hidden = false;
+    } else {
+        costChart.data.datasets[5].data = [];
+        costChart.data.datasets[5].label = '';
+        costChart.data.datasets[5].borderColor = 'transparent';
+        costChart.data.datasets[5].backgroundColor = 'transparent';
+        costChart.data.datasets[5].hidden = true;
+    }
+    
+    costChart.options.scales.y.title.text = `Monthly Cost (${currencySymbol})`;
+    costChart.update();
+}
+
+// Update quick results for GCP Functions with comparison
+function updateGCPFunctionsQuickResults(gcpFunctionsData, formData, serverlessProvider) {
+    const executions = parseInt(formData.executionFrequency);
+    const relevantVMData = window.comparisonData.find(d => d.executions_per_month >= executions);
+    
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    
+    const formatCurrency = (usdValue) => {
+        const value = displayInJPY ? usdValue * exchangeRate : usdValue;
+        return displayInJPY ? value.toLocaleString('ja-JP', {maximumFractionDigits: 0}) : value.toFixed(2);
+    };
+    
+    const gcpCost = displayInJPY ? gcpFunctionsData.total_cost_jpy : gcpFunctionsData.total_cost_usd;
+    const gcpFormattedCost = displayInJPY ? Math.round(gcpCost).toLocaleString('ja-JP') : gcpCost.toFixed(2);
+    
+    let html = `
+        <div class="row g-2">
+            <div class="col-12">
+                <small class="text-muted">Monthly cost for ${executions.toLocaleString()} executions:</small>
+            </div>
+            <div class="col-12">
+                <div class="text-primary fw-bold">Google Cloud Functions: ${currencySymbol}${gcpFormattedCost}</div>
+            </div>
+    `;
+    
+    if (relevantVMData) {
+        const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
+        const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+        const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+        const azureKey = `azure_${formData.azureInstanceType}`;
+        const ociKey = `oci_${formData.ociInstanceType}`;
+        
+        if (formData.compareEC2) {
+            html += `
+                <div class="col-12">
+                    <div class="text-success fw-bold">EC2: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[ec2Key] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareSakura) {
+            html += `
+                <div class="col-12">
+                    <div class="text-warning fw-bold">Sakura: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[sakuraKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareGCP) {
+            html += `
+                <div class="col-12">
+                    <div class="text-info fw-bold">Google Cloud VM: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[gcpKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareAzure) {
+            html += `
+                <div class="col-12">
+                    <div class="text-azure fw-bold">Azure: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[azureKey] || 0)}</div>
+                </div>
+            `;
+        }
+        
+        if (formData.compareOCI) {
+            html += `
+                <div class="col-12">
+                    <div class="text-oci fw-bold">OCI: ${currencySymbol}${formatCurrency(relevantVMData.vm_costs[ociKey] || 0)}</div>
+                </div>
+            `;
+        }
+    }
+    
+    html += '</div>';
+    document.getElementById('quickResults').innerHTML = html;
+}
+
+// Handle serverless API result for GCP Functions
+function handleServerlessResult(serverlessData, formData, serverlessProvider) {
+    console.log('🔄 Adapting GCP Functions result for existing UI components');
+    
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    
+    // Use Lambda execution count for consistent scaling across all providers
+    const currentExecutions = parseInt(formData.executionFrequency);
+    
+    // Convert serverless result to comparison data format for consistency
+    const adaptedComparisonData = [];
+    
+    // Generate data points for chart (similar to existing comparison API)
+    const executionPoints = [];
+    const minExecutions = 1000000; // 1M
+    const maxExecutions = Math.max(currentExecutions * 3.0, 8000000); // 8M
+    const steps = 50;
+    
+    for (let i = 0; i < steps; i++) {
+        const executions = Math.round(minExecutions + (i / (steps - 1)) * (maxExecutions - minExecutions));
+        executionPoints.push(executions);
+    }
+    
+    // Calculate costs for each execution point
+    executionPoints.forEach(executions => {
+        // Scale the cost proportionally based on executions
+        const executionRatio = executions / currentExecutions;
+        const scaledCostUSD = serverlessData.total_cost_usd * executionRatio;
+        
+        adaptedComparisonData.push({
+            executions_per_month: executions,
+            lambda_cost_usd: scaledCostUSD, // Use lambda_cost_usd for compatibility
+            vm_costs: {} // Empty for serverless-only view
+        });
+    });
+    
+    // Store the adapted data
+    comparisonData = adaptedComparisonData;
+    lastBreakEvenData = []; // No VM comparison for serverless-only view
+    
+    // Update UI components
+    updateServerlessChart(adaptedComparisonData, formData, serverlessProvider, serverlessData);
+    updateServerlessQuickResults(serverlessData, formData, serverlessProvider);
+    updateServerlessDataTable(adaptedComparisonData, formData, serverlessProvider);
+    updateServerlessBreakEvenAnalysis(serverlessData, serverlessProvider);
+}
+
+// Update chart for serverless providers
+function updateServerlessChart(comparisonData, formData, serverlessProvider, serverlessData) {
+    const labels = comparisonData.map(d => d.executions_per_month);
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    
+    // Convert to JPY if needed
+    const convertCurrency = (usdValue) => displayInJPY ? usdValue * exchangeRate : usdValue;
+    
+    const serverlessData_adapted = comparisonData.map(d => convertCurrency(d.lambda_cost_usd));
+    
+    // Update chart labels
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    const currencyLabel = displayInJPY ? '円' : 'USD';
+    
+    // Get provider display name
+    const providerDisplayName = serverlessProvider.provider === 'gcp_functions' ? 'Google Cloud Functions' : 'AWS Lambda';
+    
+    // Update chart data - show only the selected serverless provider
+    costChart.data.labels = labels;
+    costChart.data.datasets[0].label = providerDisplayName;
+    costChart.data.datasets[0].data = serverlessData_adapted;
+    costChart.data.datasets[0].borderColor = serverlessProvider.provider === 'gcp_functions' ? '#34A853' : '#FF9900';  // Google Green or AWS Orange
+    
+    // Get VM comparison selections
+    const vmSelections = {
+        ec2: document.getElementById('compareEC2').checked,
+        sakura: document.getElementById('compareSakura').checked,
+        gcp: document.getElementById('compareGCP').checked,
+        azure: document.getElementById('compareAzure').checked,
+        oci: document.getElementById('compareOCI').checked
+    };
+
+    // Handle VM datasets based on user selection
+    if (vmSelections.ec2 || vmSelections.sakura || vmSelections.gcp || vmSelections.azure || vmSelections.oci) {
+        // Show selected VM datasets alongside serverless data
+        const ec2Key = `aws_ec2_${formData.ec2InstanceType}`;
+        const sakuraKey = `sakura_cloud_${formData.sakuraInstanceType}`;
+        const gcpKey = `google_cloud_${formData.gcpInstanceType}`;
+        const azureKey = `azure_${formData.azureInstanceType}`;
+        const ociKey = `oci_${formData.ociInstanceType}`;
+        
+        const ec2Data = comparisonData.map(d => convertCurrency(d.vm_costs[ec2Key] || 0));
+        const sakuraData = comparisonData.map(d => convertCurrency(d.vm_costs[sakuraKey] || 0));
+        const gcpData = comparisonData.map(d => convertCurrency(d.vm_costs[gcpKey] || 0));
+        const azureData = comparisonData.map(d => convertCurrency(d.vm_costs[azureKey] || 0));
+        const ociData = comparisonData.map(d => convertCurrency(d.vm_costs[ociKey] || 0));
+
+        // Update VM datasets with selection state - completely hide unselected datasets
+        if (vmSelections.ec2) {
+            costChart.data.datasets[1].data = ec2Data;
+            costChart.data.datasets[1].hidden = false;
+            costChart.data.datasets[1].label = `AWS EC2 (${formData.ec2InstanceType})`;
+            costChart.data.datasets[1].borderColor = '#FF9900';
+            costChart.data.datasets[1].backgroundColor = 'rgba(255, 153, 0, 0.1)';
+        } else {
+            costChart.data.datasets[1].data = [];
+            costChart.data.datasets[1].hidden = true;
+            costChart.data.datasets[1].label = '';
+            costChart.data.datasets[1].borderColor = 'transparent';
+            costChart.data.datasets[1].backgroundColor = 'transparent';
+        }
+        
+        if (vmSelections.sakura) {
+            costChart.data.datasets[2].data = sakuraData;
+            costChart.data.datasets[2].hidden = false;
+            costChart.data.datasets[2].label = `Sakura Cloud (${formData.sakuraInstanceType})`;
+            costChart.data.datasets[2].borderColor = '#FF69B4';
+            costChart.data.datasets[2].backgroundColor = 'rgba(255, 105, 180, 0.1)';
+        } else {
+            costChart.data.datasets[2].data = [];
+            costChart.data.datasets[2].hidden = true;
+            costChart.data.datasets[2].label = '';
+            costChart.data.datasets[2].borderColor = 'transparent';
+            costChart.data.datasets[2].backgroundColor = 'transparent';
+        }
+        
+        if (vmSelections.gcp) {
+            costChart.data.datasets[3].data = gcpData;
+            costChart.data.datasets[3].hidden = false;
+            costChart.data.datasets[3].label = `Google Cloud (${formData.gcpInstanceType})`;
+            costChart.data.datasets[3].borderColor = '#34A853';
+            costChart.data.datasets[3].backgroundColor = 'rgba(52, 168, 83, 0.1)';
+        } else {
+            costChart.data.datasets[3].data = [];
+            costChart.data.datasets[3].hidden = true;
+            costChart.data.datasets[3].label = '';
+            costChart.data.datasets[3].borderColor = 'transparent';
+            costChart.data.datasets[3].backgroundColor = 'transparent';
+        }
+        
+        if (vmSelections.azure) {
+            costChart.data.datasets[4].data = azureData;
+            costChart.data.datasets[4].hidden = false;
+            costChart.data.datasets[4].label = `Azure (${formData.azureInstanceType})`;
+            costChart.data.datasets[4].borderColor = '#0078D4';
+            costChart.data.datasets[4].backgroundColor = 'rgba(0, 120, 212, 0.1)';
+        } else {
+            costChart.data.datasets[4].data = [];
+            costChart.data.datasets[4].hidden = true;
+            costChart.data.datasets[4].label = '';
+            costChart.data.datasets[4].borderColor = 'transparent';
+            costChart.data.datasets[4].backgroundColor = 'transparent';
+        }
+        
+        if (vmSelections.oci) {
+            costChart.data.datasets[5].data = ociData;
+            costChart.data.datasets[5].hidden = false;
+            costChart.data.datasets[5].label = `OCI (${formData.ociInstanceType})`;
+            costChart.data.datasets[5].borderColor = '#DC143C';
+            costChart.data.datasets[5].backgroundColor = 'rgba(220, 20, 60, 0.1)';
+        } else {
+            costChart.data.datasets[5].data = [];
+            costChart.data.datasets[5].hidden = true;
+            costChart.data.datasets[5].label = '';
+            costChart.data.datasets[5].borderColor = 'transparent';
+            costChart.data.datasets[5].backgroundColor = 'transparent';
+        }
+    } else {
+        // Hide all VM datasets when none are selected
+        for (let i = 1; i < costChart.data.datasets.length; i++) {
+            costChart.data.datasets[i].data = [];
+            costChart.data.datasets[i].hidden = true;
+            costChart.data.datasets[i].label = '';
+            costChart.data.datasets[i].borderColor = 'transparent';
+            costChart.data.datasets[i].backgroundColor = 'transparent';
+        }
+    }
+    
+    costChart.options.scales.y.title.text = `Monthly Cost (${currencySymbol})`;
+    costChart.update();
+}
+
+// Update quick results for serverless
+function updateServerlessQuickResults(serverlessData, formData, serverlessProvider) {
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    const executions = parseInt(formData.executionFrequency);
+    
+    const cost = displayInJPY ? serverlessData.total_cost_jpy : serverlessData.total_cost_usd;
+    const formattedCost = displayInJPY ? Math.round(cost).toLocaleString('ja-JP') : cost.toFixed(2);
+    
+    const providerDisplayName = serverlessProvider.provider === 'gcp_functions' ? 'Google Cloud Functions' : 'AWS Lambda';
+    
+    const html = `
+        <div class="row g-2">
+            <div class="col-12">
+                <small class="text-muted">Monthly cost for ${executions.toLocaleString()} executions:</small>
+            </div>
+            <div class="col-12">
+                <div class="text-primary fw-bold">${providerDisplayName}: ${currencySymbol}${formattedCost}</div>
+            </div>
+            <div class="col-12">
+                <small class="text-success">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Free tier savings: ${currencySymbol}${displayInJPY ? Math.round(serverlessData.free_tier_savings.request_savings * exchangeRate + serverlessData.free_tier_savings.compute_savings * exchangeRate).toLocaleString('ja-JP') : (serverlessData.free_tier_savings.request_savings + serverlessData.free_tier_savings.compute_savings).toFixed(2)}
+                </small>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('quickResults').innerHTML = html;
+}
+
+// Update data table for serverless
+function updateServerlessDataTable(comparisonData, formData, serverlessProvider) {
+    const tbody = document.querySelector('#dataTable tbody');
+    tbody.innerHTML = '';
+    
+    const exchangeRate = parseFloat(formData.exchangeRate);
+    const displayInJPY = formData.displayCurrency;
+    const currencySymbol = displayInJPY ? '¥' : '$';
+    
+    const formatCurrency = (usdValue) => {
+        const value = displayInJPY ? usdValue * exchangeRate : usdValue;
+        return displayInJPY ? Math.round(value).toLocaleString('ja-JP') : value.toFixed(2);
+    };
+    
+    const providerDisplayName = serverlessProvider.provider === 'gcp_functions' ? 'GCP Functions' : 'AWS Lambda';
+    
+    // Show every 5th data point to avoid clutter
+    const filteredData = comparisonData.filter((_, index) => index % 5 === 0);
+    
+    filteredData.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${row.executions_per_month.toLocaleString()}</td>
+            <td>${currencySymbol}${formatCurrency(row.lambda_cost_usd)}</td>
+            <td colspan="5" class="text-muted text-center">Select AWS Lambda to compare with VMs</td>
+            <td>-</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Update break-even analysis for serverless
+function updateServerlessBreakEvenAnalysis(serverlessData, serverlessProvider) {
+    const providerDisplayName = serverlessProvider.provider === 'gcp_functions' ? 'Google Cloud Functions' : 'AWS Lambda';
+    
+    const html = `
+        <div class="alert alert-info">
+            <h6><i class="bi bi-info-circle me-2"></i>Serverless-Only View</h6>
+            <p class="mb-2">Currently showing <strong>${providerDisplayName}</strong> costs only.</p>
+            <p class="mb-0">
+                <small>Switch to AWS Lambda to see VM comparison and break-even analysis.</small>
+            </p>
+        </div>
+    `;
+    
+    document.getElementById('breakEvenAnalysis').innerHTML = html;
 }
 
 // Get form data
@@ -1180,7 +2366,11 @@ function getFormData() {
         ociInstanceType: document.getElementById('ociInstanceType').value,
         exchangeRate: window.getExchangeRateValue(),
         displayCurrency: document.getElementById('displayCurrency').checked,
-        internetTransferRatio: window.getInternetTransferRatio()  // PBI10
+        internetTransferRatio: window.getInternetTransferRatio(),  // PBI10
+        // GCP Functions specific parameters (uses Lambda params for fair comparison)
+        includeGCPFreeTier: document.getElementById('includeGCPFreeTier')?.checked ?? true,
+        gcpGeneration: document.getElementById('gcpGeneration')?.value || '2nd',
+        gcpRuntime: document.getElementById('gcpRuntime')?.value || 'python39'
     };
     
     // Validate required fields
@@ -1300,11 +2490,82 @@ function updateChart(data) {
     
     costChart.data.labels = labels;
     costChart.data.datasets[0].data = lambdaData;
-    costChart.data.datasets[1].data = ec2Data;
-    costChart.data.datasets[2].data = sakuraData;
-    costChart.data.datasets[3].data = gcpData;
-    costChart.data.datasets[4].data = azureData;
-    costChart.data.datasets[5].data = ociData;
+    costChart.data.datasets[0].borderColor = '#FF9900';  // AWS Orange
+    costChart.data.datasets[0].backgroundColor = 'rgba(255, 153, 0, 0.1)';
+    
+    // Check VM comparison checkbox states and hide/show datasets accordingly
+    const vmSelections = {
+        ec2: document.getElementById('compareEC2').checked,
+        sakura: document.getElementById('compareSakura').checked,
+        gcp: document.getElementById('compareGCP').checked,
+        azure: document.getElementById('compareAzure').checked,
+        oci: document.getElementById('compareOCI').checked
+    };
+
+    // AWS EC2 dataset (index 1) - completely hide when unselected
+    if (vmSelections.ec2) {
+        costChart.data.datasets[1].data = ec2Data;
+        costChart.data.datasets[1].borderColor = '#FF9900';  // AWS Orange
+        costChart.data.datasets[1].backgroundColor = 'rgba(255, 153, 0, 0.1)';
+        costChart.data.datasets[1].hidden = false;
+    } else {
+        costChart.data.datasets[1].data = [];
+        costChart.data.datasets[1].borderColor = 'transparent';
+        costChart.data.datasets[1].backgroundColor = 'transparent';
+        costChart.data.datasets[1].hidden = true;
+    }
+    
+    // Sakura Cloud dataset (index 2) - completely hide when unselected
+    if (vmSelections.sakura) {
+        costChart.data.datasets[2].data = sakuraData;
+        costChart.data.datasets[2].borderColor = '#FF69B4';  // Sakura Pink
+        costChart.data.datasets[2].backgroundColor = 'rgba(255, 105, 180, 0.1)';
+        costChart.data.datasets[2].hidden = false;
+    } else {
+        costChart.data.datasets[2].data = [];
+        costChart.data.datasets[2].borderColor = 'transparent';
+        costChart.data.datasets[2].backgroundColor = 'transparent';
+        costChart.data.datasets[2].hidden = true;
+    }
+    
+    // Google Cloud dataset (index 3) - completely hide when unselected
+    if (vmSelections.gcp) {
+        costChart.data.datasets[3].data = gcpData;
+        costChart.data.datasets[3].borderColor = '#34A853';  // Google Green
+        costChart.data.datasets[3].backgroundColor = 'rgba(52, 168, 83, 0.1)';
+        costChart.data.datasets[3].hidden = false;
+    } else {
+        costChart.data.datasets[3].data = [];
+        costChart.data.datasets[3].borderColor = 'transparent';
+        costChart.data.datasets[3].backgroundColor = 'transparent';
+        costChart.data.datasets[3].hidden = true;
+    }
+    
+    // Azure dataset (index 4) - completely hide when unselected
+    if (vmSelections.azure) {
+        costChart.data.datasets[4].data = azureData;
+        costChart.data.datasets[4].borderColor = '#0078D4';  // Azure Blue
+        costChart.data.datasets[4].backgroundColor = 'rgba(0, 120, 212, 0.1)';
+        costChart.data.datasets[4].hidden = false;
+    } else {
+        costChart.data.datasets[4].data = [];
+        costChart.data.datasets[4].borderColor = 'transparent';
+        costChart.data.datasets[4].backgroundColor = 'transparent';
+        costChart.data.datasets[4].hidden = true;
+    }
+    
+    // OCI dataset (index 5) - completely hide when unselected
+    if (vmSelections.oci) {
+        costChart.data.datasets[5].data = ociData;
+        costChart.data.datasets[5].borderColor = '#DC143C';  // OCI Red
+        costChart.data.datasets[5].backgroundColor = 'rgba(220, 20, 60, 0.1)';
+        costChart.data.datasets[5].hidden = false;
+    } else {
+        costChart.data.datasets[5].data = [];
+        costChart.data.datasets[5].borderColor = 'transparent';
+        costChart.data.datasets[5].backgroundColor = 'transparent';
+        costChart.data.datasets[5].hidden = true;
+    }
     
     costChart.update();
 }
@@ -1623,6 +2884,91 @@ function exportToCSV() {
     a.download = getFilename();
     a.click();
     window.URL.revokeObjectURL(url);
+}
+
+// VM Selection Control Functions
+function selectAllVMs() {
+    const vmCheckboxes = [
+        'compareEC2',
+        'compareSakura', 
+        'compareGCP',
+        'compareAzure',
+        'compareOCI'
+    ];
+    
+    vmCheckboxes.forEach(checkboxId => {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+            checkbox.checked = true;
+            // Enable corresponding dropdown
+            let dropdownId;
+            switch(checkboxId) {
+                case 'compareEC2':
+                    dropdownId = 'ec2InstanceType';
+                    break;
+                case 'compareSakura':
+                    dropdownId = 'sakuraInstanceType';
+                    break;
+                case 'compareGCP':
+                    dropdownId = 'gcpInstanceType';
+                    break;
+                case 'compareAzure':
+                    dropdownId = 'azureInstanceType';
+                    break;
+                case 'compareOCI':
+                    dropdownId = 'ociInstanceType';
+                    break;
+            }
+            const instanceDropdown = document.getElementById(dropdownId);
+            if (instanceDropdown) {
+                instanceDropdown.disabled = false;
+            }
+        }
+    });
+    
+    console.log('✅ All VM providers selected');
+}
+
+function deselectAllVMs() {
+    const vmCheckboxes = [
+        'compareEC2',
+        'compareSakura', 
+        'compareGCP',
+        'compareAzure',
+        'compareOCI'
+    ];
+    
+    vmCheckboxes.forEach(checkboxId => {
+        const checkbox = document.getElementById(checkboxId);
+        if (checkbox) {
+            checkbox.checked = false;
+            // Disable corresponding dropdown
+            let dropdownId;
+            switch(checkboxId) {
+                case 'compareEC2':
+                    dropdownId = 'ec2InstanceType';
+                    break;
+                case 'compareSakura':
+                    dropdownId = 'sakuraInstanceType';
+                    break;
+                case 'compareGCP':
+                    dropdownId = 'gcpInstanceType';
+                    break;
+                case 'compareAzure':
+                    dropdownId = 'azureInstanceType';
+                    break;
+                case 'compareOCI':
+                    dropdownId = 'ociInstanceType';
+                    break;
+            }
+            const instanceDropdown = document.getElementById(dropdownId);
+            if (instanceDropdown) {
+                instanceDropdown.disabled = true;
+            }
+        }
+    });
+    
+    console.log('✅ All VM providers deselected');
 }
 
 // Check API connectivity
