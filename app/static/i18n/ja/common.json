@@ -45,6 +45,19 @@
       "execution_count": "実行回数を入力"
     }
   },
+  "serverless": {
+    "section_title": "サーバーレスプロバイダー",
+    "provider_selection": "サーバーレスプロバイダー選択",
+    "provider_description": "サーバーレスプラットフォームを選択してください。設定は選択されたプロバイダーに適応します。",
+    "gcp": {
+      "generation": "世代",
+      "runtime": "ランタイム"
+    },
+    "aws": {
+      "architecture": "アーキテクチャ",
+      "runtime": "ランタイム"
+    }
+  },
   "egress": {
     "title": "リクエスト毎のEgress転送量",
     "description": "Lambda/VMからインターネットへの1リクエスト当たりの転送データ量",
@@ -68,6 +81,8 @@
   "vm_comparison": {
     "title": "VMインスタンス比較",
     "subtitle": "比較するクラウドプロバイダーを選択",
+    "select_all": "全選択",
+    "deselect_all": "全解除",
     "providers": {
       "aws_ec2": "AWS EC2",
       "sakura_cloud": "Sakura Cloud",
@@ -87,6 +102,7 @@
     "headers": {
       "executions_month": "月間実行回数",
       "lambda_cost": "Lambda コスト",
+      "serverless_cost": "サーバーレス コスト",
       "ec2_cost": "EC2 コスト",
       "sakura_cost": "Sakura コスト",
       "gcp_cost": "Google Cloud コスト",

@@ -65,6 +65,8 @@ Comprehensive reference docs in `/ref/` directory:
 **Implementation & Development:**
 - `ref/feature-implementation-status.md` - Complete PBI status (100% implemented)
 - `ref/implementation-guide.md` - Development methodology and TDD approach
+- `ref/implementation-architecture-reference.md` - Detailed system architecture and design patterns
+- `ref/cost-calculation-algorithms-reference.md` - Comprehensive pricing formulas and break-even analysis
 - `ref/implementation-details.md` - Comprehensive technical implementation details
 - `ref/api-endpoints-reference.md` - Complete REST API documentation with examples
 - `ref/development-guide.md` - Setup instructions, TDD workflow, and daily commands

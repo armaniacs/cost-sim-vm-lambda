@@ -13,12 +13,18 @@ This directory contains comprehensive reference documentation for the AWS Lambda
 ### 🚀 Implementation & Development
 - **[Feature Implementation Status](feature-implementation-status.md)** - Complete PBI status and roadmap
 - **[Implementation Guide](implementation-guide.md)** - Development roadmap, PBI structure, and TDD methodology
+- **[Implementation Architecture Reference](implementation-architecture-reference.md)** - Detailed system architecture and design patterns
+- **[Cost Calculation Algorithms Reference](cost-calculation-algorithms-reference.md)** - Comprehensive pricing formulas and break-even analysis
 - **[API Endpoints Reference](api-endpoints-reference.md)** - Complete REST API documentation with examples
 - **[Development Guide](development-guide.md)** - Setup instructions, TDD workflow, and daily commands
 
 ### 🧪 Testing & Quality
 - **[Testing Framework Guide](testing-framework-guide.md)** - Comprehensive testing approach with Outside-In TDD
 - **[Testing Strategy](testing-strategy.md)** - Coverage requirements and test execution strategies
+
+### 🔒 Security & Operations
+- **[Security Architecture](security-architecture.md)** - Enterprise-grade security implementation details
+- **[Monitoring & Observability](monitoring-observability.md)** - Comprehensive monitoring and observability setup
 
 ### 🎨 UI and Frontend
 - **[UI Requirements](ui-requirements.md)** - Interface specifications, UX requirements, and design system

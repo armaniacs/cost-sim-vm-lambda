@@ -8,6 +8,7 @@ from flask import Blueprint, Response, jsonify, request
 
 from app.models.lambda_calculator import LambdaCalculator, LambdaConfig
 from app.models.vm_calculator import VMCalculator, VMConfig
+from app.models.serverless_calculator import ServerlessCalculator, ServerlessConfig
 
 # Create Blueprint
 calculator_bp = Blueprint("calculator", __name__)
@@ -15,6 +16,7 @@ calculator_bp = Blueprint("calculator", __name__)
 # Initialize calculators
 lambda_calc = LambdaCalculator()
 vm_calc = VMCalculator()
+serverless_calc = ServerlessCalculator()
 
 
 @calculator_bp.route("/lambda", methods=["POST"])
@@ -703,6 +705,172 @@ def convert_currency() -> Union[Response, tuple[Response, int]]:
 
     except (ValueError, TypeError) as e:
         return jsonify({"error": f"Invalid input data: {str(e)}"}), 400
+    except Exception as e:
+        return (
+            jsonify({"error": f"Internal server error: {str(e)}"}),
+            500,
+        )
+
+
+@calculator_bp.route("/serverless", methods=["POST"])
+def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
+    """
+    Calculate serverless costs for various providers
+    
+    Expected JSON payload:
+    {
+        "provider": "gcp_functions",  // "aws_lambda", "gcp_functions", "gcp_cloudrun", "azure_functions", "oci_functions"
+        "memory_mb": 512,
+        "execution_time_seconds": 5,
+        "monthly_executions": 1000000,
+        "include_free_tier": true,
+        "cpu_count": 1.0,  // For Cloud Run only
+        "egress_per_request_kb": 10.0,
+        "internet_transfer_ratio": 80.0,
+        "exchange_rate": 150.0,
+        "include_ecosystem_benefits": false
+    }
+    """
+    try:
+        data = request.get_json(silent=True)
+        
+        if data is None:
+            return jsonify({"error": "No JSON data provided"}), 400
+        
+        # Validate required fields
+        required_fields = [
+            "provider",
+            "memory_mb", 
+            "execution_time_seconds",
+            "monthly_executions"
+        ]
+        missing_fields = [field for field in required_fields if field not in data]
+        
+        if missing_fields:
+            return (
+                jsonify({"error": f"Missing required fields: {missing_fields}"}),
+                400,
+            )
+        
+        # Validate provider
+        provider = data["provider"]
+        supported_providers = serverless_calc.get_supported_providers()
+        if provider not in supported_providers:
+            return (
+                jsonify({
+                    "error": f"Provider '{provider}' not supported. Available: {supported_providers}"
+                }),
+                400,
+            )
+        
+        # Validate numeric parameters
+        try:
+            memory_mb = int(data["memory_mb"])
+            execution_time_seconds = float(data["execution_time_seconds"])
+            monthly_executions = int(data["monthly_executions"])
+        except (ValueError, TypeError) as e:
+            return (
+                jsonify({"error": f"Invalid numeric parameters: {str(e)}"}),
+                400,
+            )
+        
+        # Validate optional parameters
+        cpu_count = data.get("cpu_count")
+        if cpu_count is not None:
+            try:
+                cpu_count = float(cpu_count)
+                if cpu_count <= 0:
+                    return jsonify({"error": "CPU count must be positive"}), 400
+            except (ValueError, TypeError):
+                return jsonify({"error": "Invalid CPU count"}), 400
+        
+        egress_per_request_kb = data.get("egress_per_request_kb", 0.0)
+        if egress_per_request_kb < 0:
+            return (
+                jsonify({"error": "Egress transfer amount must be zero or positive"}),  
+                400,
+            )
+        
+        internet_transfer_ratio = data.get("internet_transfer_ratio", 100.0)
+        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
+            return (
+                jsonify({"error": "Internet transfer ratio must be between 0 and 100"}),
+                400,
+            )
+        
+        exchange_rate = data.get("exchange_rate", 150.0)
+        if exchange_rate <= 0:
+            return jsonify({"error": "Exchange rate must be positive"}), 400
+        
+        # Create serverless configuration
+        config = ServerlessConfig(
+            provider=provider,
+            memory_mb=memory_mb,
+            execution_time_seconds=execution_time_seconds,
+            monthly_executions=monthly_executions,
+            include_free_tier=data.get("include_free_tier", True),
+            cpu_count=cpu_count,
+            egress_per_request_kb=float(egress_per_request_kb),
+            internet_transfer_ratio=float(internet_transfer_ratio),
+            exchange_rate=float(exchange_rate),
+            include_ecosystem_benefits=data.get("include_ecosystem_benefits", False)
+        )
+        
+        # Calculate cost using unified serverless calculator
+        include_egress_free_tier = data.get("include_egress_free_tier")
+        result = serverless_calc.calculate(config, include_egress_free_tier)
+        
+        # Convert ServerlessResult to API response format
+        response_data = {
+            "provider": result.provider,
+            "service_name": result.service_name,
+            "total_cost_usd": result.total_cost_usd,
+            "total_cost_jpy": result.total_cost_jpy,
+            "cost_breakdown": result.breakdown,
+            "free_tier_savings": result.free_tier_savings,
+            "resource_usage": result.resource_usage,
+            "provider_features": result.features,
+            "configuration": {
+                "memory_mb": config.memory_mb,
+                "execution_time_seconds": config.execution_time_seconds,
+                "monthly_executions": config.monthly_executions,
+                "cpu_count": config.cpu_count,
+                "include_free_tier": config.include_free_tier
+            }
+        }
+        
+        return jsonify({"success": True, "data": response_data})
+        
+    except ValueError as e:
+        # Handle validation errors from ServerlessCalculator
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return (
+            jsonify({"error": f"Internal server error: {str(e)}"}),
+            500,
+        )
+
+
+@calculator_bp.route("/serverless/providers", methods=["GET"])
+def get_serverless_providers() -> Union[Response, tuple[Response, int]]:
+    """
+    Get information about supported serverless providers
+    """
+    try:
+        providers = serverless_calc.get_supported_providers()
+        provider_info = {}
+        
+        for provider in providers:
+            provider_info[provider] = serverless_calc.get_provider_info(provider)
+        
+        return jsonify({
+            "success": True,
+            "data": {
+                "supported_providers": providers,
+                "provider_info": provider_info
+            }
+        })
+        
     except Exception as e:
         return (
             jsonify({"error": f"Internal server error: {str(e)}"}),
