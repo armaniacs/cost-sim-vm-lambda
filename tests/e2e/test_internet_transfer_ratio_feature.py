@@ -154,7 +154,7 @@ class TestInternetTransferRatioE2E:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "転送割合は0-100の範囲で入力してください" in data["error"]
+        assert "Internet transfer ratio must be between 0.0 and 100.0" in data["error"]
 
     def test_transfer_ratio_over_100_validation(self, client: FlaskClient):
         """
@@ -177,7 +177,7 @@ class TestInternetTransferRatioE2E:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "転送割合は0-100の範囲で入力してください" in data["error"]
+        assert "Internet transfer ratio must be between 0.0 and 100.0" in data["error"]
 
     def test_zero_percent_private_network_calculation(self, client: FlaskClient):
         """

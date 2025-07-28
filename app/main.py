@@ -8,7 +8,41 @@ from flask_cors import CORS  # type: ignore
 
 from app.config import config
 from app.security.env_validator import validate_environment_or_exit
-from app.auth.jwt_auth import JWTAuth
+
+
+def configure_cors(app: Flask) -> None:
+    """
+    Configure CORS with strict origin control based on environment
+    PBI-SEC-ESSENTIAL implementation
+    
+    Args:
+        app: Flask application instance
+    """
+    flask_env = app.config.get('FLASK_ENV', os.environ.get('FLASK_ENV', 'development')).lower()
+    
+    if flask_env == 'production':
+        # Production: only specific domains
+        origins_env = os.environ.get('CORS_ORIGINS', '')
+        if origins_env:
+            allowed_origins = [origin.strip() for origin in origins_env.split(',') if origin.strip()]
+        else:
+            # Default production domains (should be configured via environment)
+            allowed_origins = [
+                'https://cost-simulator.example.com',
+                'https://cost-calc.example.com'
+            ]
+    else:
+        # Development: localhost only
+        allowed_origins = [
+            'http://localhost:5001',
+            'http://127.0.0.1:5001'
+        ]
+    
+    # Configure CORS with security settings
+    CORS(app, 
+         origins=allowed_origins,
+         supports_credentials=False,  # Disable credentials for security
+         max_age=3600)  # Cache preflight for 1 hour
 
 
 def create_app(config_name: str = "default") -> Flask:
@@ -21,7 +55,7 @@ def create_app(config_name: str = "default") -> Flask:
     Returns:
         Configured Flask application instance
     """
-    # Validate security environment before creating app
+    # Validate security environment before creating app (PBI-SEC-ESSENTIAL)
     validate_environment_or_exit()
     
     app = Flask(__name__)
@@ -30,21 +64,12 @@ def create_app(config_name: str = "default") -> Flask:
     config_name_to_use = os.environ.get("FLASK_ENV") or config_name
     app.config.from_object(config.get(config_name_to_use, config["default"]))
 
-    # Initialize JWT authentication system
-    jwt_auth = JWTAuth()
-    jwt_auth.init_app(app)
-
-    # Enable secure CORS for frontend integration
-    allowed_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:5001,http://127.0.0.1:5001').split(',')
-    allowed_origins = [origin.strip() for origin in allowed_origins if origin.strip()]
-    CORS(app, origins=allowed_origins, supports_credentials=True)
+    # Configure CORS with environment-based security (PBI-SEC-ESSENTIAL)
+    configure_cors(app)
 
     # Register blueprints
     from app.api.calculator_api import calculator_bp
-    from app.api.auth_api import auth_bp
-
     app.register_blueprint(calculator_bp, url_prefix="/api/v1/calculator")
-    app.register_blueprint(auth_bp, url_prefix="/api/v1/auth")
 
     # Frontend routes
     @app.route("/")
@@ -87,34 +112,10 @@ def create_app(config_name: str = "default") -> Flask:
     def apple_touch_icon() -> tuple[str, int]:
         return "", 204
 
-    # Authentication error handlers
-    @app.errorhandler(401)
-    def unauthorized_handler(error):
-        """Handle authentication failures"""
-        from flask import jsonify
-        return jsonify({
-            "success": False,
-            "error": "Unauthorized",
-            "message": "Authentication required. Please provide valid credentials."
-        }), 401
-
-    @app.errorhandler(403)
-    def forbidden_handler(error):
-        """Handle authorization failures"""
-        from flask import jsonify
-        return jsonify({
-            "success": False,
-            "error": "Forbidden", 
-            "message": "Insufficient permissions to access this resource."
-        }), 403
-
     return app
 
 
 if __name__ == "__main__":
-    # Validate security environment before starting
-    validate_environment_or_exit()
-    
     # Determine configuration based on environment
     env = os.environ.get("FLASK_ENV", "development")
     app = create_app(env)

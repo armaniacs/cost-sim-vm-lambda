@@ -106,7 +106,7 @@ class TestServerlessAPI:
         data = json.loads(response.data)
         
         assert "error" in data
-        assert "Missing required fields" in data["error"]
+        assert "Execution time" in data["error"] or "Monthly executions" in data["error"]
 
     def test_serverless_endpoint_unsupported_provider(self, client):
         """Test API response for unsupported provider"""
@@ -189,7 +189,7 @@ class TestServerlessAPI:
         data = json.loads(response.data)
         
         assert "error" in data
-        assert "must be zero or positive" in data["error"]
+        assert "Egress per request must be between 0.0 and 1000000.0" in data["error"]
 
     def test_serverless_endpoint_invalid_transfer_ratio(self, client):
         """Test API response for invalid internet transfer ratio"""
@@ -211,7 +211,7 @@ class TestServerlessAPI:
         data = json.loads(response.data)
         
         assert "error" in data
-        assert "between 0 and 100" in data["error"]
+        assert "Internet transfer ratio must be between 0.0 and 100.0" in data["error"]
 
     def test_serverless_endpoint_no_json_data(self, client):
         """Test API response when no JSON data is provided"""

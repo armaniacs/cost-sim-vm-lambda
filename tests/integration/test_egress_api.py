@@ -225,7 +225,7 @@ class TestEgressAPIIntegration:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "Egress transfer amount must be zero or positive" in data["error"]
+        assert "Egress per request must be between 0.0 and 1000000.0" in data["error"]
 
     def test_egress_validation_missing_parameter(self, client):
         """
@@ -358,7 +358,7 @@ class TestEgressAPIIntegration:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "Egress transfer amount must be zero or positive" in data["error"]
+        assert "Egress per request must be between 0.0 and 1000000.0" in data["error"]
 
     def test_calculate_vm_cost_no_json(self, client: FlaskClient):
         """Test vm_cost with no JSON data"""
@@ -377,21 +377,26 @@ class TestEgressAPIIntegration:
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "Missing required fields" in data["error"]
+        assert "Instance type is required" in data["error"]
 
     def test_calculate_comparison_negative_egress(self, client: FlaskClient):
         """Test comparison with negative egress"""
         response = client.post(
             "/api/v1/calculator/comparison",
             json={
-                "lambda_config": {"egress_per_request_kb": -1},
+                "lambda_config": {
+                    "memory_mb": 512,
+                    "execution_time_seconds": 5,
+                    "monthly_executions": 1000000,
+                    "egress_per_request_kb": -1
+                },
                 "vm_configs": [],
             },
         )
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "Egress transfer amount must be zero or positive" in data["error"]
+        assert "Egress per request must be between 0.0 and 1000000.0" in data["error"]
 
     def test_export_csv_no_json(self, client: FlaskClient):
         """Test export_csv with no JSON data"""
@@ -405,12 +410,19 @@ class TestEgressAPIIntegration:
         """Test export_csv with negative egress"""
         response = client.post(
             "/api/v1/calculator/export_csv",
-            json={"lambda_config": {"egress_per_request_kb": -1}},
+            json={
+                "lambda_config": {
+                    "memory_mb": 512,
+                    "execution_time_seconds": 5,
+                    "monthly_executions": 1000000,
+                    "egress_per_request_kb": -1
+                }
+            },
         )
         assert response.status_code == 400
         data = response.get_json()
         assert "error" in data
-        assert "Egress transfer amount must be zero or positive" in data["error"]
+        assert "Egress per request must be between 0.0 and 1000000.0" in data["error"]
 
     def test_recommend_instances_no_json(self, client: FlaskClient):
         """Test recommend_instances with no JSON data"""

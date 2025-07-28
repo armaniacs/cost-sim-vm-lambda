@@ -9,6 +9,8 @@ from flask import Blueprint, Response, jsonify, request
 from app.models.lambda_calculator import LambdaCalculator, LambdaConfig
 from app.models.vm_calculator import VMCalculator, VMConfig
 from app.models.serverless_calculator import ServerlessCalculator, ServerlessConfig
+from app.utils.validation import ValidationError, validate_lambda_inputs, validate_vm_inputs, validate_serverless_inputs
+from app.utils.csv_sanitizer import create_safe_csv_content
 
 # Create Blueprint
 calculator_bp = Blueprint("calculator", __name__)
@@ -38,44 +40,20 @@ def calculate_lambda_cost() -> Union[Response, tuple[Response, int]]:
         if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        # Validate required fields
-        required_fields = [
-            "memory_mb",
-            "execution_time_seconds",
-            "monthly_executions",
-        ]
-        missing_fields = [field for field in required_fields if field not in data]
+        # Validate inputs with security boundaries (PBI-SEC-ESSENTIAL)
+        try:
+            validated_data = validate_lambda_inputs(data)
+        except ValidationError as e:
+            return jsonify({"error": str(e)}), 400
 
-        if missing_fields:
-            return (
-                jsonify({"error": f"Missing required fields: {missing_fields}"}),
-                400,
-            )
-
-        # Validate egress parameter
-        egress_per_request_kb = data.get("egress_per_request_kb", 0.0)
-        if egress_per_request_kb < 0:
-            return (
-                jsonify({"error": "Egress transfer amount must be zero or positive"}),
-                400,
-            )
-
-        # Validate internet transfer ratio parameter (PBI10)
-        internet_transfer_ratio = data.get("internet_transfer_ratio", 100.0)
-        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
-            return (
-                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
-                400,
-            )
-
-        # Create configuration
+        # Create configuration with validated data
         config = LambdaConfig(
-            memory_mb=int(data["memory_mb"]),
-            execution_time_seconds=int(data["execution_time_seconds"]),
-            monthly_executions=int(data["monthly_executions"]),
-            include_free_tier=data.get("include_free_tier", True),
-            egress_per_request_kb=float(egress_per_request_kb),
-            internet_transfer_ratio=float(internet_transfer_ratio),  # PBI10
+            memory_mb=validated_data["memory_mb"],
+            execution_time_seconds=validated_data["execution_time_seconds"],
+            monthly_executions=validated_data["monthly_executions"],
+            include_free_tier=validated_data["include_free_tier"],
+            egress_per_request_kb=validated_data.get("egress_per_request_kb", 0.0),
+            internet_transfer_ratio=validated_data.get("internet_transfer_ratio", 100.0),
         )
 
         # Calculate cost
@@ -120,34 +98,23 @@ def calculate_vm_cost() -> Union[Response, tuple[Response, int]]:
         if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
 
-        # Validate required fields
-        required_fields = ["provider", "instance_type"]
-        missing_fields = [field for field in required_fields if field not in data]
+        # Validate inputs with security boundaries (PBI-SEC-ESSENTIAL)
+        try:
+            validated_data = validate_vm_inputs(data)
+        except ValidationError as e:
+            return jsonify({"error": str(e)}), 400
 
-        if missing_fields:
-            return (
-                jsonify({"error": f"Missing required fields: {missing_fields}"}),
-                400,
-            )
-
-        # Create configuration
+        # Create configuration with validated data
         config = VMConfig(
-            provider=data["provider"],
-            instance_type=data["instance_type"],
-            region=data.get("region", "ap-northeast-1"),
+            provider=validated_data["provider"],
+            instance_type=validated_data["instance_type"],
+            region=validated_data["region"],
         )
 
-        # Check if egress parameters are provided for PBI10
-        monthly_executions = data.get("monthly_executions", 0)
-        egress_per_request_kb = data.get("egress_per_request_kb", 0.0)
-        internet_transfer_ratio = data.get("internet_transfer_ratio", 100.0)
-
-        # Validate internet transfer ratio if provided
-        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
-            return (
-                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
-                400,
-            )
+        # Extract egress parameters from validated data
+        monthly_executions = validated_data.get("monthly_executions", 0)
+        egress_per_request_kb = validated_data.get("egress_per_request_kb", 0.0)
+        internet_transfer_ratio = validated_data.get("internet_transfer_ratio", 100.0)
 
         # Calculate cost with or without egress
         if monthly_executions > 0 and egress_per_request_kb >= 0:
@@ -253,23 +220,13 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
                 int(min_executions + i * step_size) for i in range(steps)
             ]
 
-        # Validate egress parameter for comparison
-        egress_per_request_kb = lambda_config_data.get("egress_per_request_kb", 0.0)
-        if egress_per_request_kb < 0:
-            return (
-                jsonify({"error": "Egress transfer amount must be zero or positive"}),
-                400,
-            )
-
-        # Validate internet transfer ratio parameter for comparison (PBI10)
-        internet_transfer_ratio = lambda_config_data.get(
-            "internet_transfer_ratio", 100.0
-        )
-        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
-            return (
-                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
-                400,
-            )
+        # Validate lambda configuration with security boundaries (PBI-SEC-ESSENTIAL)
+        try:
+            validated_lambda_data = validate_lambda_inputs(lambda_config_data)
+            egress_per_request_kb = validated_lambda_data.get("egress_per_request_kb", 0.0)
+            internet_transfer_ratio = validated_lambda_data.get("internet_transfer_ratio", 100.0)
+        except ValidationError as e:
+            return jsonify({"error": str(e)}), 400
 
         # Calculate Lambda costs for each execution point
         comparison_data = []
@@ -427,23 +384,13 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
         exchange_rate = data.get("exchange_rate", 150.0)
         custom_egress_rates = data.get("custom_egress_rates", {})
 
-        # Validate egress parameter
-        egress_per_request_kb = lambda_config_data.get("egress_per_request_kb", 0.0)
-        if egress_per_request_kb < 0:
-            return (
-                jsonify({"error": "Egress transfer amount must be zero or positive"}),
-                400,
-            )
-
-        # Validate internet transfer ratio parameter for CSV export (PBI10)
-        internet_transfer_ratio = lambda_config_data.get(
-            "internet_transfer_ratio", 100.0
-        )
-        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
-            return (
-                jsonify({"error": "転送割合は0-100の範囲で入力してください"}),
-                400,
-            )
+        # Validate lambda configuration with security boundaries (PBI-SEC-ESSENTIAL)
+        try:
+            validated_lambda_data = validate_lambda_inputs(lambda_config_data)
+            egress_per_request_kb = validated_lambda_data.get("egress_per_request_kb", 0.0)
+            internet_transfer_ratio = validated_lambda_data.get("internet_transfer_ratio", 100.0)
+        except ValidationError as e:
+            return jsonify({"error": str(e)}), 400
 
         # Create lambda config
         lambda_config = LambdaConfig(
@@ -496,10 +443,7 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
             if vm_result:
                 vm_results.append(vm_result)
 
-        # Generate CSV content
-        csv_lines = []
-
-        # CSV Headers
+        # Generate CSV content with security sanitization (PBI-SEC-ESSENTIAL)
         headers = [
             "provider",
             "instance_type",
@@ -523,7 +467,8 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
                 ]
             )
 
-        csv_lines.append(",".join(headers))
+        # Collect all data rows
+        data_rows = []
 
         # Lambda costs
         lambda_execution_cost = (
@@ -571,9 +516,10 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
                     ]
                 )
 
-            csv_lines.append(",".join(row))
+            data_rows.append(row)
 
-        csv_content = "\n".join(csv_lines)
+        # Create safe CSV content with sanitization
+        csv_content = create_safe_csv_content(headers, data_rows)
 
         # Return CSV as response
         response = Response(
@@ -737,23 +683,14 @@ def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
         if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
         
-        # Validate required fields
-        required_fields = [
-            "provider",
-            "memory_mb", 
-            "execution_time_seconds",
-            "monthly_executions"
-        ]
-        missing_fields = [field for field in required_fields if field not in data]
+        # Validate inputs with security boundaries (PBI-SEC-ESSENTIAL)
+        try:
+            validated_data = validate_serverless_inputs(data)
+        except ValidationError as e:
+            return jsonify({"error": str(e)}), 400
         
-        if missing_fields:
-            return (
-                jsonify({"error": f"Missing required fields: {missing_fields}"}),
-                400,
-            )
-        
-        # Validate provider
-        provider = data["provider"]
+        # Additional provider validation against supported providers
+        provider = validated_data["provider"]
         supported_providers = serverless_calc.get_supported_providers()
         if provider not in supported_providers:
             return (
@@ -763,44 +700,14 @@ def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
                 400,
             )
         
-        # Validate numeric parameters
-        try:
-            memory_mb = int(data["memory_mb"])
-            execution_time_seconds = float(data["execution_time_seconds"])
-            monthly_executions = int(data["monthly_executions"])
-        except (ValueError, TypeError) as e:
-            return (
-                jsonify({"error": f"Invalid numeric parameters: {str(e)}"}),
-                400,
-            )
-        
-        # Validate optional parameters
-        cpu_count = data.get("cpu_count")
-        if cpu_count is not None:
-            try:
-                cpu_count = float(cpu_count)
-                if cpu_count <= 0:
-                    return jsonify({"error": "CPU count must be positive"}), 400
-            except (ValueError, TypeError):
-                return jsonify({"error": "Invalid CPU count"}), 400
-        
-        egress_per_request_kb = data.get("egress_per_request_kb", 0.0)
-        if egress_per_request_kb < 0:
-            return (
-                jsonify({"error": "Egress transfer amount must be zero or positive"}),  
-                400,
-            )
-        
-        internet_transfer_ratio = data.get("internet_transfer_ratio", 100.0)
-        if internet_transfer_ratio < 0 or internet_transfer_ratio > 100:
-            return (
-                jsonify({"error": "Internet transfer ratio must be between 0 and 100"}),
-                400,
-            )
-        
-        exchange_rate = data.get("exchange_rate", 150.0)
-        if exchange_rate <= 0:
-            return jsonify({"error": "Exchange rate must be positive"}), 400
+        # Extract validated parameters
+        memory_mb = validated_data["memory_mb"]
+        execution_time_seconds = validated_data["execution_time_seconds"]
+        monthly_executions = validated_data["monthly_executions"]
+        cpu_count = validated_data.get("cpu_count")
+        egress_per_request_kb = validated_data.get("egress_per_request_kb", 0.0)
+        internet_transfer_ratio = validated_data.get("internet_transfer_ratio", 100.0)
+        exchange_rate = validated_data.get("exchange_rate", 150.0)
         
         # Create serverless configuration
         config = ServerlessConfig(
