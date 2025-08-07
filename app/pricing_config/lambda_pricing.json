@@ -1,0 +1,21 @@
+{
+  "aws_lambda": {
+    "region": "ap-northeast-1",
+    "request_price_per_million": 0.20,
+    "compute_price_per_gb_second": 0.0000166667,
+    "free_tier": {
+      "requests_per_month": 1000000,
+      "gb_seconds_per_month": 400000
+    },
+    "limits": {
+      "memory_mb": {
+        "min": 128,
+        "max": 10240
+      },
+      "execution_time_seconds": {
+        "min": 0.1,
+        "max": 900
+      }
+    }
+  }
+}
