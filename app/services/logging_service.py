@@ -77,9 +77,9 @@ class StructuredFormatter(logging.Formatter):
                     "remote_addr": request.remote_addr,
                     "user_agent": request.headers.get("User-Agent", ""),
                 }
-            except Exception as e:
-                # Request context not available in non-request threads
-                logger.debug(f"Request context not available: {e}")
+            except Exception:
+                # Ignore errors when request context is not available
+                pass
 
         # Add exception information
         if record.exc_info:

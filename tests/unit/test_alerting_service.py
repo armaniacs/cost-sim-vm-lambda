@@ -900,7 +900,7 @@ class TestIntegrationScenarios:
         service.active_alerts["mem-1"] = memory_alert
 
         # Test correlation
-        alerts_list = list(service.active_alerts.values())
+        # alerts_list = list(service.active_alerts.values())
 
         # Test individual alert correlation
         cpu_group = service.correlation_engine.correlate_alert(cpu_alert)

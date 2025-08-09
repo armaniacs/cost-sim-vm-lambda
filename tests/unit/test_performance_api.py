@@ -4,7 +4,8 @@ Tests all performance monitoring API routes and functionality
 """
 
 import sys
-from datetime import datetime
+
+# # from datetime import datetime
 from unittest.mock import MagicMock, Mock, patch
 
 import pytest
@@ -60,7 +61,6 @@ class TestPerformanceAPI:
             patch("app.api.performance_api.cache_service") as mock_cache,
             patch("app.api.performance_api.query_optimizer") as mock_query,
         ):
-
             # Setup default mock returns
             mock_perf.get_dashboard_data.return_value = {
                 "response_times": {"avg": 150, "p95": 300},
@@ -532,9 +532,9 @@ class TestPerformanceAPI:
 
     def test_index_recommendations_exception(self, client, mock_services):
         """Test index recommendations exception handling"""
-        mock_services["query_optimizer"].get_table_optimization_report.side_effect = (
-            Exception("Recommendations error")
-        )
+        mock_services[
+            "query_optimizer"
+        ].get_table_optimization_report.side_effect = Exception("Recommendations error")
 
         response = client.get("/api/v1/performance/index/recommendations")
         assert response.status_code == 200
@@ -570,9 +570,9 @@ class TestPerformanceAPI:
 
     def test_performance_alerts_exception(self, client, mock_services):
         """Test performance alerts exception handling"""
-        mock_services["performance_monitor"].alert_manager.check_alerts.side_effect = (
-            Exception("Alerts error")
-        )
+        mock_services[
+            "performance_monitor"
+        ].alert_manager.check_alerts.side_effect = Exception("Alerts error")
 
         response = client.get("/api/v1/performance/alerts")
         assert response.status_code == 500
@@ -597,9 +597,9 @@ class TestPerformanceAPI:
                 return {"path": "/api/v1/orders", "avg_time": 200, "requests": 800}
             return {}
 
-        mock_services["performance_monitor"].get_endpoint_metrics.side_effect = (
-            get_endpoint_metrics
-        )
+        mock_services[
+            "performance_monitor"
+        ].get_endpoint_metrics.side_effect = get_endpoint_metrics
 
         response = client.get("/api/v1/performance/endpoints")
         assert response.status_code == 200
@@ -618,9 +618,9 @@ class TestPerformanceAPI:
         mock_services["performance_monitor"].metrics.endpoint_times = {
             "/api/v1/users": [120, 130, 110],
         }
-        mock_services["performance_monitor"].get_endpoint_metrics.side_effect = (
-            Exception("Endpoints error")
-        )
+        mock_services[
+            "performance_monitor"
+        ].get_endpoint_metrics.side_effect = Exception("Endpoints error")
 
         response = client.get("/api/v1/performance/endpoints")
         assert response.status_code == 500
@@ -652,9 +652,9 @@ class TestPerformanceAPI:
             "hit_rate": 85.0,
             "memory_usage": 512,
         }
-        mock_services["performance_monitor"].alert_manager.check_alerts.return_value = (
-            []
-        )
+        mock_services[
+            "performance_monitor"
+        ].alert_manager.check_alerts.return_value = []
 
         response = client.get("/api/v1/performance/reports/performance")
         assert response.status_code == 200
@@ -691,9 +691,9 @@ class TestPerformanceAPI:
             "hit_rate": 85.0,
             "memory_usage": 512,
         }
-        mock_services["performance_monitor"].alert_manager.check_alerts.return_value = (
-            []
-        )
+        mock_services[
+            "performance_monitor"
+        ].alert_manager.check_alerts.return_value = []
 
         response = client.get(
             "/api/v1/performance/reports/performance?period=week&format=json"

@@ -81,8 +81,10 @@ class TestMonitoringSystemIntegration:
                 # Find our test log entry
                 test_log_entry = None
                 for log_entry in recent_logs:
-                    if (log_entry.get("message") == "Test log message" and 
-                        log_entry.get("logger") == "test_logger"):
+                    if (
+                        log_entry.get("message") == "Test log message"
+                        and log_entry.get("logger") == "test_logger"
+                    ):
                         test_log_entry = log_entry
                         break
 

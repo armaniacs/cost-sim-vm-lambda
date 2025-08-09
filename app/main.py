@@ -4,7 +4,7 @@ Main Flask application module
 
 import os
 
-from flask import Flask, g, request, make_response
+from flask import Flask
 from flask_cors import CORS
 
 from app.config import config
@@ -51,13 +51,15 @@ def configure_cors(app: Flask) -> None:
 
 def add_security_headers(response):
     """Add security headers to all responses"""
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'DENY'
-    response.headers['X-XSS-Protection'] = '1; mode=block'
-    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    response.headers['Permissions-Policy'] = 'geolocation=(), camera=(), microphone=()'
-    
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers[
+        "Strict-Transport-Security"
+    ] = "max-age=31536000; includeSubDomains"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "geolocation=(), camera=(), microphone=()"
+
     # Content Security Policy for enhanced security
     csp = (
         "default-src 'self'; "
@@ -70,7 +72,7 @@ def add_security_headers(response):
         "base-uri 'self'; "
         "form-action 'self'"
     )
-    response.headers['Content-Security-Policy'] = csp
+    response.headers["Content-Security-Policy"] = csp
     return response
 
 

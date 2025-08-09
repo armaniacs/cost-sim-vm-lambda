@@ -585,16 +585,19 @@ class QueryOptimizer:
         """Generate sample queries for analysis."""
         # Validate table name to prevent SQL injection
         import re
-        if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', table_name):
+
+        if not re.match(r"^[a-zA-Z_][a-zA-Z0-9_]*$", table_name):
             raise ValueError("Invalid table name")
-        
+
         # This would typically be based on actual query logs
         # For now, return common query patterns with validated table name
         return [
             f"SELECT * FROM {table_name} WHERE id = 1",  # nosec B608
-            f"SELECT * FROM {table_name} ORDER BY created_at DESC LIMIT 10",  # nosec B608
+            f"SELECT * FROM {table_name} "
+            f"ORDER BY created_at DESC LIMIT 10",  # nosec B608
             f"SELECT COUNT(*) FROM {table_name} WHERE status = 'active'",  # nosec B608
-            f"SELECT * FROM {table_name} WHERE created_at > NOW() - INTERVAL '1 day'",  # nosec B608
+            f"SELECT * FROM {table_name} WHERE created_at > "
+            f"NOW() - INTERVAL '1 day'",  # nosec B608
         ]
 
 

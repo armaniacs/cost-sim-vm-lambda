@@ -147,20 +147,26 @@ class AsyncDatabaseService:
                 for update_data in updates:
                     id_value = update_data.pop("id")
 
-                    # Update record - use parameterized query with validated column names
-                    if not hasattr(model_class, '__tablename__') or not model_class.__tablename__:
+                    # Update record - use parameterized query with validated columns
+                    if (
+                        not hasattr(model_class, "__tablename__")
+                        or not model_class.__tablename__
+                    ):
                         raise ValueError("Invalid model class")
-                    
-                    # Validate column names against model attributes to prevent SQL injection
+
+                    # Validate column names against model attributes
+                    # to prevent SQL injection
                     valid_columns = [col.name for col in model_class.__table__.columns]
                     invalid_columns = set(update_data.keys()) - set(valid_columns)
                     if invalid_columns:
                         raise ValueError(f"Invalid column names: {invalid_columns}")
-                    
+
                     # Validated table name and parameterized query - SQL injection safe
                     table_name = model_class.__tablename__
-                    set_clause = ', '.join([f'{k} = :{k}' for k in update_data.keys()])
-                    stmt = text(f"UPDATE {table_name} SET {set_clause} WHERE id = :id")  # nosec B608
+                    set_clause = ", ".join([f"{k} = :{k}" for k in update_data.keys()])
+                    stmt = text(
+                        f"UPDATE {table_name} SET {set_clause} WHERE id = :id"
+                    )  # nosec B608
 
                     result = await session.execute(
                         stmt, {**update_data, "id": id_value}
@@ -226,7 +232,7 @@ class AsyncPricingService:
         where_clause = " AND ".join(conditions) if conditions else "1=1"
 
         # Safe parameterized query - where_clause contains only pre-built conditions
-        query = f"""  
+        query = f"""
             SELECT * FROM pricing_snapshots
             WHERE {where_clause}
             ORDER BY effective_date DESC
@@ -313,7 +319,7 @@ class AsyncCalculationService:
         where_clause = " AND ".join(conditions) if conditions else "1=1"
 
         # Safe parameterized query - where_clause contains only pre-built conditions
-        query = f"""  
+        query = f"""
             SELECT * FROM calculation_history
             WHERE {where_clause}
             ORDER BY created_at DESC
