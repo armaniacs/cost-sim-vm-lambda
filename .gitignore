@@ -156,3 +156,9 @@ safety-report.json
 temp/
 cookies.*
 .serena/
+
+debug.log
+debug.log.*
+warninig.log
+warninig.log.*
+logs/*
