@@ -2,6 +2,7 @@
 Unit tests for Flask application creation and basic functionality
 Following t_wada TDD principles: Red -> Green -> Refactor
 """
+
 from app.main import create_app
 
 

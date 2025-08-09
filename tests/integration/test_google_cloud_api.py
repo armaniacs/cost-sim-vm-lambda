@@ -2,6 +2,7 @@
 Integration tests for Google Cloud provider API
 Testing API endpoints with Google Cloud VM configurations
 """
+
 import pytest
 from flask.testing import FlaskClient
 

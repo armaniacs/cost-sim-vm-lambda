@@ -13,27 +13,25 @@ Base = declarative_base()
 
 class Database:
     """Database connection and session management (stub)"""
-    
+
     def __init__(self):
         self.engine = None
         self.session = None
-    
+
     def init_app(self, app):
         """Initialize database with Flask app (stub)"""
-        pass
-    
+
     def create_all(self):
         """Create all database tables (stub)"""
-        pass
-    
+
     def drop_all(self):
         """Drop all database tables (stub)"""
-        pass
 
 
 def get_db_session():
     """Get database session (stub for testing)"""
     from unittest.mock import MagicMock
+
     return MagicMock()
 
 

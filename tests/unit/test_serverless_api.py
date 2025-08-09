@@ -5,8 +5,8 @@ Following t_wada TDD: Red -> Green -> Refactor
 This test file drives the implementation of /api/serverless endpoint
 Focusing on GCP Functions integration (Phase 1A)
 """
+
 import json
-import pytest
 
 
 class TestServerlessAPI:
@@ -23,39 +23,41 @@ class TestServerlessAPI:
             "exchange_rate": 150.0,
             "egress_per_request_kb": 10.0,
             "internet_transfer_ratio": 100.0,
-            "include_ecosystem_benefits": False
+            "include_ecosystem_benefits": False,
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 200
         data = json.loads(response.data)
-        
+
         assert data["success"] is True
         assert "data" in data
-        
+
         result_data = data["data"]
         assert result_data["provider"] == "gcp_functions"
         assert result_data["service_name"] == "Google Cloud Functions"
         assert isinstance(result_data["total_cost_usd"], (int, float))
         assert isinstance(result_data["total_cost_jpy"], (int, float))
         assert result_data["total_cost_usd"] > 0  # Should have cost above free tier
-        assert result_data["total_cost_jpy"] > result_data["total_cost_usd"]  # JPY > USD
-        
+        assert (
+            result_data["total_cost_jpy"] > result_data["total_cost_usd"]
+        )  # JPY > USD
+
         # Check cost breakdown structure
         assert "cost_breakdown" in result_data
         assert "request_cost" in result_data["cost_breakdown"]
         assert "compute_cost" in result_data["cost_breakdown"]
-        
+
         # Check free tier savings
         assert "free_tier_savings" in result_data
         assert "request_savings" in result_data["free_tier_savings"]
         assert "compute_savings" in result_data["free_tier_savings"]
-        
+
         # Check configuration echoed back
         assert "configuration" in result_data
         assert result_data["configuration"]["memory_mb"] == 512
@@ -70,18 +72,18 @@ class TestServerlessAPI:
             "execution_time_seconds": 10.0,
             "monthly_executions": 2000000,
             "include_free_tier": True,
-            "exchange_rate": 150.0
+            "exchange_rate": 150.0,
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 200
         data = json.loads(response.data)
-        
+
         assert data["success"] is True
         result_data = data["data"]
         assert result_data["provider"] == "aws_lambda"
@@ -95,18 +97,20 @@ class TestServerlessAPI:
             "memory_mb": 512,
             # Missing execution_time_seconds and monthly_executions
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
-        assert "Execution time" in data["error"] or "Monthly executions" in data["error"]
+        assert (
+            "Execution time" in data["error"] or "Monthly executions" in data["error"]
+        )
 
     def test_serverless_endpoint_unsupported_provider(self, client):
         """Test API response for unsupported provider"""
@@ -114,18 +118,18 @@ class TestServerlessAPI:
             "provider": "azure_functions",  # Not implemented yet
             "memory_mb": 512,
             "execution_time_seconds": 5.0,
-            "monthly_executions": 1000000
+            "monthly_executions": 1000000,
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
         assert "not supported" in data["error"]
 
@@ -135,18 +139,18 @@ class TestServerlessAPI:
             "provider": "gcp_functions",
             "memory_mb": 64,  # Below minimum for GCP Functions
             "execution_time_seconds": 5.0,
-            "monthly_executions": 1000000
+            "monthly_executions": 1000000,
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
 
     def test_serverless_endpoint_invalid_execution_time(self, client):
@@ -155,18 +159,18 @@ class TestServerlessAPI:
             "provider": "gcp_functions",
             "memory_mb": 512,
             "execution_time_seconds": 1000.0,  # Above maximum for GCP Functions
-            "monthly_executions": 1000000
+            "monthly_executions": 1000000,
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
 
     def test_serverless_endpoint_invalid_egress_amount(self, client):
@@ -176,18 +180,18 @@ class TestServerlessAPI:
             "memory_mb": 512,
             "execution_time_seconds": 5.0,
             "monthly_executions": 1000000,
-            "egress_per_request_kb": -10.0  # Negative value
+            "egress_per_request_kb": -10.0,  # Negative value
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
         assert "Egress per request must be between 0.0 and 1000000.0" in data["error"]
 
@@ -198,57 +202,55 @@ class TestServerlessAPI:
             "memory_mb": 512,
             "execution_time_seconds": 5.0,
             "monthly_executions": 1000000,
-            "internet_transfer_ratio": 150.0  # Above 100%
+            "internet_transfer_ratio": 150.0,  # Above 100%
         }
-        
+
         response = client.post(
-            '/api/v1/calculator/serverless',
+            "/api/v1/calculator/serverless",
             data=json.dumps(payload),
-            content_type='application/json'
+            content_type="application/json",
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
         assert "Internet transfer ratio must be between 0.0 and 100.0" in data["error"]
 
     def test_serverless_endpoint_no_json_data(self, client):
         """Test API response when no JSON data is provided"""
         response = client.post(
-            '/api/v1/calculator/serverless',
-            data='',
-            content_type='application/json'
+            "/api/v1/calculator/serverless", data="", content_type="application/json"
         )
-        
+
         assert response.status_code == 400
         data = json.loads(response.data)
-        
+
         assert "error" in data
         assert "No JSON data provided" in data["error"]
 
     def test_serverless_providers_endpoint_success(self, client):
         """Test /api/serverless/providers endpoint returns supported providers"""
-        response = client.get('/api/v1/calculator/serverless/providers')
-        
+        response = client.get("/api/v1/calculator/serverless/providers")
+
         assert response.status_code == 200
         data = json.loads(response.data)
-        
+
         assert data["success"] is True
         assert "data" in data
-        
+
         result_data = data["data"]
         assert "supported_providers" in result_data
         assert "provider_info" in result_data
-        
+
         # Should include both aws_lambda and gcp_functions
         assert "aws_lambda" in result_data["supported_providers"]
         assert "gcp_functions" in result_data["supported_providers"]
-        
+
         # Should have provider info for each
         assert "aws_lambda" in result_data["provider_info"]
         assert "gcp_functions" in result_data["provider_info"]
-        
+
         # Check GCP Functions provider info structure
         gcp_info = result_data["provider_info"]["gcp_functions"]
         assert gcp_info["name"] == "Google Cloud Functions"

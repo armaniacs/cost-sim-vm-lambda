@@ -1,6 +1,7 @@
 """
 Configuration settings for the Cost Simulator application
 """
+
 import os
 from typing import Type
 
@@ -13,7 +14,7 @@ class Config:
 
     # Flask server configuration
     PORT = int(os.environ.get("PORT", 5001))
-    HOST = os.environ.get("HOST", "0.0.0.0")
+    HOST = os.environ.get("HOST", "127.0.0.1")
 
     # Environment detection
     FLASK_ENV = os.environ.get("FLASK_ENV", "development")
@@ -42,6 +43,7 @@ class TestingConfig(Config):
 
     TESTING = True
     DEBUG = True
+    PROPAGATE_EXCEPTIONS = False  # Ensure exceptions are converted to HTTP responses
 
 
 class ProductionConfig(Config):

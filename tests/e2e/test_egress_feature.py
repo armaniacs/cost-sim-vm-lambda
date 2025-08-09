@@ -4,6 +4,7 @@ Following BDD scenarios and Outside-In TDD approach
 
 BDD Scenario: egress費用を含む基本的なコスト比較
 """
+
 import time
 
 import pytest

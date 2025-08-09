@@ -4,6 +4,7 @@ Following t_wada TDD principles - Green Phase: Minimum implementation to pass te
 
 Calculates internet egress transfer costs for different cloud providers
 """
+
 from dataclasses import dataclass
 from typing import Dict, Optional
 

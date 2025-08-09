@@ -4,6 +4,7 @@ Following BDD scenarios and t_wada TDD approach
 
 Tests the complete user journey for setting internet transfer ratio
 """
+
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient

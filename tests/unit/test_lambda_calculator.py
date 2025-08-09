@@ -4,6 +4,7 @@ Following t_wada TDD: Red -> Green -> Refactor
 
 This test file drives the implementation of LambdaCalculator class
 """
+
 import pytest
 
 from app.models.lambda_calculator import LambdaCalculator, LambdaConfig

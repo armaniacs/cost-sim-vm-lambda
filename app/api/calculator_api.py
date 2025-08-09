@@ -2,15 +2,21 @@
 Calculator API endpoints
 REST API for Lambda and VM cost calculations
 """
+
 from typing import Union
 
 from flask import Blueprint, Response, jsonify, request
 
 from app.models.lambda_calculator import LambdaCalculator, LambdaConfig
-from app.models.vm_calculator import VMCalculator, VMConfig
 from app.models.serverless_calculator import ServerlessCalculator, ServerlessConfig
-from app.utils.validation import ValidationError, validate_lambda_inputs, validate_vm_inputs, validate_serverless_inputs
+from app.models.vm_calculator import VMCalculator, VMConfig
 from app.utils.csv_sanitizer import create_safe_csv_content
+from app.utils.validation import (
+    ValidationError,
+    validate_lambda_inputs,
+    validate_serverless_inputs,
+    validate_vm_inputs,
+)
 
 # Create Blueprint
 calculator_bp = Blueprint("calculator", __name__)
@@ -53,7 +59,9 @@ def calculate_lambda_cost() -> Union[Response, tuple[Response, int]]:
             monthly_executions=validated_data["monthly_executions"],
             include_free_tier=validated_data["include_free_tier"],
             egress_per_request_kb=validated_data.get("egress_per_request_kb", 0.0),
-            internet_transfer_ratio=validated_data.get("internet_transfer_ratio", 100.0),
+            internet_transfer_ratio=validated_data.get(
+                "internet_transfer_ratio", 100.0
+            ),
         )
 
         # Calculate cost
@@ -223,8 +231,12 @@ def calculate_comparison() -> Union[Response, tuple[Response, int]]:
         # Validate lambda configuration with security boundaries (PBI-SEC-ESSENTIAL)
         try:
             validated_lambda_data = validate_lambda_inputs(lambda_config_data)
-            egress_per_request_kb = validated_lambda_data.get("egress_per_request_kb", 0.0)
-            internet_transfer_ratio = validated_lambda_data.get("internet_transfer_ratio", 100.0)
+            egress_per_request_kb = validated_lambda_data.get(
+                "egress_per_request_kb", 0.0
+            )
+            internet_transfer_ratio = validated_lambda_data.get(
+                "internet_transfer_ratio", 100.0
+            )
         except ValidationError as e:
             return jsonify({"error": str(e)}), 400
 
@@ -387,8 +399,12 @@ def export_csv() -> Union[Response, tuple[Response, int]]:
         # Validate lambda configuration with security boundaries (PBI-SEC-ESSENTIAL)
         try:
             validated_lambda_data = validate_lambda_inputs(lambda_config_data)
-            egress_per_request_kb = validated_lambda_data.get("egress_per_request_kb", 0.0)
-            internet_transfer_ratio = validated_lambda_data.get("internet_transfer_ratio", 100.0)
+            egress_per_request_kb = validated_lambda_data.get(
+                "egress_per_request_kb", 0.0
+            )
+            internet_transfer_ratio = validated_lambda_data.get(
+                "internet_transfer_ratio", 100.0
+            )
         except ValidationError as e:
             return jsonify({"error": str(e)}), 400
 
@@ -662,10 +678,12 @@ def convert_currency() -> Union[Response, tuple[Response, int]]:
 def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
     """
     Calculate serverless costs for various providers
-    
+
     Expected JSON payload:
     {
-        "provider": "gcp_functions",  // "aws_lambda", "gcp_functions", "gcp_cloudrun", "azure_functions", "oci_functions"
+        "provider": "gcp_functions",
+        // Supported: "aws_lambda", "gcp_functions", "gcp_cloudrun",
+        // "azure_functions", "oci_functions"
         "memory_mb": 512,
         "execution_time_seconds": 5,
         "monthly_executions": 1000000,
@@ -679,27 +697,32 @@ def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
     """
     try:
         data = request.get_json(silent=True)
-        
+
         if data is None:
             return jsonify({"error": "No JSON data provided"}), 400
-        
+
         # Validate inputs with security boundaries (PBI-SEC-ESSENTIAL)
         try:
             validated_data = validate_serverless_inputs(data)
         except ValidationError as e:
             return jsonify({"error": str(e)}), 400
-        
+
         # Additional provider validation against supported providers
         provider = validated_data["provider"]
         supported_providers = serverless_calc.get_supported_providers()
         if provider not in supported_providers:
             return (
-                jsonify({
-                    "error": f"Provider '{provider}' not supported. Available: {supported_providers}"
-                }),
+                jsonify(
+                    {
+                        "error": (
+                            f"Provider '{provider}' not supported. "
+                            f"Available: {supported_providers}"
+                        )
+                    }
+                ),
                 400,
             )
-        
+
         # Extract validated parameters
         memory_mb = validated_data["memory_mb"]
         execution_time_seconds = validated_data["execution_time_seconds"]
@@ -708,7 +731,7 @@ def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
         egress_per_request_kb = validated_data.get("egress_per_request_kb", 0.0)
         internet_transfer_ratio = validated_data.get("internet_transfer_ratio", 100.0)
         exchange_rate = validated_data.get("exchange_rate", 150.0)
-        
+
         # Create serverless configuration
         config = ServerlessConfig(
             provider=provider,
@@ -720,13 +743,13 @@ def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
             egress_per_request_kb=float(egress_per_request_kb),
             internet_transfer_ratio=float(internet_transfer_ratio),
             exchange_rate=float(exchange_rate),
-            include_ecosystem_benefits=data.get("include_ecosystem_benefits", False)
+            include_ecosystem_benefits=data.get("include_ecosystem_benefits", False),
         )
-        
+
         # Calculate cost using unified serverless calculator
         include_egress_free_tier = data.get("include_egress_free_tier")
         result = serverless_calc.calculate(config, include_egress_free_tier)
-        
+
         # Convert ServerlessResult to API response format
         response_data = {
             "provider": result.provider,
@@ -742,12 +765,12 @@ def calculate_serverless_cost() -> Union[Response, tuple[Response, int]]:
                 "execution_time_seconds": config.execution_time_seconds,
                 "monthly_executions": config.monthly_executions,
                 "cpu_count": config.cpu_count,
-                "include_free_tier": config.include_free_tier
-            }
+                "include_free_tier": config.include_free_tier,
+            },
         }
-        
+
         return jsonify({"success": True, "data": response_data})
-        
+
     except ValueError as e:
         # Handle validation errors from ServerlessCalculator
         return jsonify({"error": str(e)}), 400
@@ -766,18 +789,20 @@ def get_serverless_providers() -> Union[Response, tuple[Response, int]]:
     try:
         providers = serverless_calc.get_supported_providers()
         provider_info = {}
-        
+
         for provider in providers:
             provider_info[provider] = serverless_calc.get_provider_info(provider)
-        
-        return jsonify({
-            "success": True,
-            "data": {
-                "supported_providers": providers,
-                "provider_info": provider_info
+
+        return jsonify(
+            {
+                "success": True,
+                "data": {
+                    "supported_providers": providers,
+                    "provider_info": provider_info,
+                },
             }
-        })
-        
+        )
+
     except Exception as e:
         return (
             jsonify({"error": f"Internal server error: {str(e)}"}),

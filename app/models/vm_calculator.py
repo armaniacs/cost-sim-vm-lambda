@@ -2,6 +2,7 @@
 VM cost calculation module
 AWS EC2, Sakura Cloud, Google Cloud, Azure, and OCI pricing calculator
 """
+
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 

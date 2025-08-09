@@ -2,6 +2,7 @@
 AWS Lambda cost calculation module
 Following t_wada TDD principles - Green Phase: Minimum implementation to pass tests
 """
+
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
@@ -29,10 +30,25 @@ class LambdaCalculator:
     FREE_TIER_REQUESTS = 1_000_000
     FREE_TIER_GB_SECONDS = 400_000
 
-    def __init__(self) -> None:
+    def __init__(self, pricing_config: Optional[Dict[str, Any]] = None) -> None:
         """Initialize the calculator"""
         # Import here to avoid circular imports
         from app.models.egress_calculator import EgressCalculator
+
+        # Store pricing configuration
+        self.pricing_config = pricing_config or {}
+
+        # Apply custom pricing if provided
+        if pricing_config and "request_price_per_million" in pricing_config:
+            self.REQUEST_PRICE_PER_MILLION = pricing_config["request_price_per_million"]
+        if pricing_config and "compute_price_per_gb_second" in pricing_config:
+            self.COMPUTE_PRICE_PER_GB_SECOND = pricing_config[
+                "compute_price_per_gb_second"
+            ]
+        if pricing_config and "free_tier_requests" in pricing_config:
+            self.FREE_TIER_REQUESTS = pricing_config["free_tier_requests"]
+        if pricing_config and "free_tier_gb_seconds" in pricing_config:
+            self.FREE_TIER_GB_SECONDS = pricing_config["free_tier_gb_seconds"]
 
         self.egress_calculator = EgressCalculator()
 

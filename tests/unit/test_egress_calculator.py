@@ -4,6 +4,7 @@ Following t_wada TDD principles: Red -> Green -> Refactor
 
 Tests the business logic for egress cost calculations
 """
+
 import pytest
 
 from app.models.egress_calculator import EgressCalculator, EgressConfig

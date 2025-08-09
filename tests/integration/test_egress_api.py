@@ -4,6 +4,7 @@ Following BDD scenarios and t_wada TDD approach
 
 Tests the API layer integration for egress cost calculations
 """
+
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
@@ -236,7 +237,7 @@ class TestEgressAPIIntegration:
                 "memory_mb": 512,
                 "execution_time_seconds": 5,
                 "monthly_executions": 1_000_000,
-                "include_free_tier": True
+                "include_free_tier": True,
                 # egress_per_request_kb missing - should default to 0
             },
             "vm_configs": [],
@@ -388,7 +389,7 @@ class TestEgressAPIIntegration:
                     "memory_mb": 512,
                     "execution_time_seconds": 5,
                     "monthly_executions": 1000000,
-                    "egress_per_request_kb": -1
+                    "egress_per_request_kb": -1,
                 },
                 "vm_configs": [],
             },
@@ -415,7 +416,7 @@ class TestEgressAPIIntegration:
                     "memory_mb": 512,
                     "execution_time_seconds": 5,
                     "monthly_executions": 1000000,
-                    "egress_per_request_kb": -1
+                    "egress_per_request_kb": -1,
                 }
             },
         )

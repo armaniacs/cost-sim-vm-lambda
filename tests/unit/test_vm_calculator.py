@@ -2,6 +2,7 @@
 Unit tests for VM cost calculation
 Following t_wada TDD principles
 """
+
 import pytest
 
 from app.models.vm_calculator import VMCalculator, VMConfig

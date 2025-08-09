@@ -1,10 +1,11 @@
 """
 Main Flask application module
 """
+
 import os
 
-from flask import Flask
-from flask_cors import CORS  # type: ignore
+from flask import Flask, g, request, make_response
+from flask_cors import CORS
 
 from app.config import config
 from app.security.env_validator import validate_environment_or_exit
@@ -14,35 +15,63 @@ def configure_cors(app: Flask) -> None:
     """
     Configure CORS with strict origin control based on environment
     PBI-SEC-ESSENTIAL implementation
-    
+
     Args:
         app: Flask application instance
     """
-    flask_env = app.config.get('FLASK_ENV', os.environ.get('FLASK_ENV', 'development')).lower()
-    
-    if flask_env == 'production':
+    flask_env = app.config.get(
+        "FLASK_ENV", os.environ.get("FLASK_ENV", "development")
+    ).lower()
+
+    if flask_env == "production":
         # Production: only specific domains
-        origins_env = os.environ.get('CORS_ORIGINS', '')
+        origins_env = os.environ.get("CORS_ORIGINS", "")
         if origins_env:
-            allowed_origins = [origin.strip() for origin in origins_env.split(',') if origin.strip()]
+            allowed_origins = [
+                origin.strip() for origin in origins_env.split(",") if origin.strip()
+            ]
         else:
             # Default production domains (should be configured via environment)
             allowed_origins = [
-                'https://cost-simulator.example.com',
-                'https://cost-calc.example.com'
+                "https://cost-simulator.example.com",
+                "https://cost-calc.example.com",
             ]
     else:
         # Development: localhost only
-        allowed_origins = [
-            'http://localhost:5001',
-            'http://127.0.0.1:5001'
-        ]
-    
+        allowed_origins = ["http://localhost:5001", "http://127.0.0.1:5001"]
+
     # Configure CORS with security settings
-    CORS(app, 
-         origins=allowed_origins,
-         supports_credentials=False,  # Disable credentials for security
-         max_age=3600)  # Cache preflight for 1 hour
+    CORS(
+        app,
+        origins=allowed_origins,
+        supports_credentials=False,  # Disable credentials for security
+        max_age=3600,
+    )  # Cache preflight for 1 hour
+
+
+def add_security_headers(response):
+    """Add security headers to all responses"""
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
+    response.headers['Permissions-Policy'] = 'geolocation=(), camera=(), microphone=()'
+    
+    # Content Security Policy for enhanced security
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+        "img-src 'self' data:; "
+        "font-src 'self' https://cdn.jsdelivr.net; "
+        "connect-src 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    response.headers['Content-Security-Policy'] = csp
+    return response
 
 
 def create_app(config_name: str = "default") -> Flask:
@@ -57,18 +86,31 @@ def create_app(config_name: str = "default") -> Flask:
     """
     # Validate security environment before creating app (PBI-SEC-ESSENTIAL)
     validate_environment_or_exit()
-    
+
     app = Flask(__name__)
 
-    # Determine configuration
-    config_name_to_use = os.environ.get("FLASK_ENV") or config_name
+    # Determine configuration - explicit config_name takes precedence in tests
+    if config_name == "testing":
+        config_name_to_use = "testing"
+    else:
+        config_name_to_use = os.environ.get("FLASK_ENV") or config_name
+
     app.config.from_object(config.get(config_name_to_use, config["default"]))
 
     # Configure CORS with environment-based security (PBI-SEC-ESSENTIAL)
     configure_cors(app)
 
+    # Add security headers to all responses
+    app.after_request(add_security_headers)
+
+    # Initialize monitoring integration
+    from app.services.monitoring_integration import monitoring_integration
+
+    monitoring_integration.init_app(app)
+
     # Register blueprints
     from app.api.calculator_api import calculator_bp
+
     app.register_blueprint(calculator_bp, url_prefix="/api/v1/calculator")
 
     # Frontend routes
